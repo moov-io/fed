@@ -52,7 +52,7 @@ func (d *Dictionary) addRouting(routing *Routing) *Dictionary {
 }
 
 func readFile() {
-	f, err := os.Open("./testdata/FedACHdir.txt")
+	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
