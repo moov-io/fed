@@ -5,6 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/analysis/lang/en"
+	"github.com/blevesearch/bleve/mapping"
+)
+
+const (
+	batchSize = 100
+	filePath  = "./data/FedACHdir.txt"
+	indexPath = "routing-search.bleve"
 )
 
 // Routing holds a FedACH routing record
@@ -51,24 +61,25 @@ func (d *Dictionary) addRouting(routing *Routing) *Dictionary {
 	return d
 }
 
-func readFile() {
-	f, err := os.Open("./data/FedACHdir.txt")
+func readFile() *Dictionary {
+	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
-
+	fmt.Printf("reading file: %v", f.Name())
 	scanner := bufio.NewScanner(f)
 	lineNum := 0
 	dict := new(Dictionary)
 	for scanner.Scan() {
-		dict.addRouting(parseFedACH(scanner.Text()))
-		fmt.Printf("Routing # %v \t Name: %v\n", dict.Routes[lineNum].RoutingNumber, dict.Routes[lineNum].CustomerName)
+		dict.addRouting(parseRouting(scanner.Text()))
+		//fmt.Printf("Routing # %v \t Name: %v\n", dict.Routes[lineNum].RoutingNumber, dict.Routes[lineNum].CustomerName)
 		lineNum++
 	}
+	return dict
 }
 
-func parseFedACH(line string) *Routing {
+func parseRouting(line string) *Routing {
 	if len(line) == 0 {
 		return nil
 	}
@@ -109,5 +120,99 @@ func parseFedACH(line string) *Routing {
 }
 
 func main() {
-	readFile()
+	routingIndex, err := bleve.Open(indexPath)
+	if err == bleve.ErrorIndexPathDoesNotExist {
+		log.Printf("Creating new index...")
+		// create a mapping
+		indexMapping, err := buildIndexMapping()
+		if err != nil {
+			fmt.Println("buildIndexMapping")
+			log.Fatal(err)
+		}
+		//indexMapping := bleve.NewIndexMapping()
+		routingIndex, err = bleve.New(indexPath, indexMapping)
+		if err != nil {
+			fmt.Println("routingIndex")
+			log.Fatal(err)
+		}
+		log.Println("go routine")
+		err = indexRouting(routingIndex)
+		if err != nil {
+			log.Println("go routine fatal")
+
+			log.Fatal(err)
+		}
+	} else if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Printf("Opening existing index...\n")
+	}
+	query := bleve.NewMatchQuery("veridian")
+	search := bleve.NewSearchRequest(query)
+	searchResults, err := routingIndex.Search(search)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(searchResults)
+}
+
+func indexRouting(i bleve.Index) error {
+	// build the Dictionary
+	log.Printf("Indexing...\n")
+	dict := readFile()
+
+	count := 0
+	batch := i.NewBatch()
+	batchCount := 0
+
+	for _, route := range dict.Routes {
+		batch.Index(route.RoutingNumber, route)
+		batchCount++
+		if batchCount >= batchSize {
+			err := i.Batch(batch)
+			if err != nil {
+				return err
+			}
+			batch = i.NewBatch()
+			batchCount = 0
+			fmt.Printf("Created batch index at count: %v \n", count)
+		}
+		count++
+
+	}
+	if batchCount > 0 {
+		err := i.Batch(batch)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return nil
+}
+
+func buildIndexMapping() (mapping.IndexMapping, error) {
+
+	// a generic reusable mapping for english text
+	englishTextFieldMapping := bleve.NewTextFieldMapping()
+	englishTextFieldMapping.Analyzer = en.AnalyzerName
+
+	// a generic reusable mapping for keyword text
+	//keywordFieldMapping := bleve.NewTextFieldMapping()
+	//keywordFieldMapping.Analyzer = keyword.Name
+
+	routingMapping := bleve.NewDocumentMapping()
+
+	// name
+	routingMapping.AddFieldMappingsAt("CustomerName", englishTextFieldMapping)
+
+	//routingMapping.AddFieldMappingsAt("City", keywordFieldMapping)
+	//routingMapping.AddFieldMappingsAt("State", keywordFieldMapping)
+
+	indexMapping := bleve.NewIndexMapping()
+	indexMapping.AddDocumentMapping("Routing", routingMapping)
+
+	//indexMapping.TypeField = "type"
+	//indexMapping.DefaultAnalyzer = "en"
+
+	return indexMapping, nil
 }

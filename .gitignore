@@ -1,0 +1,22 @@
+#### joe made this: http://goel.io/joe
+
+#####=== Go ===#####
+
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+#*
+*.sublime-*
+*~
+.#*
+.project
+.settings
+.DS_Store
+/routing-search
+/routing-search.bleve
