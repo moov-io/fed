@@ -17,6 +17,8 @@ const (
 	indexPath = "routing-search.bleve"
 )
 
+var lookup map[string]*Routing
+
 // Routing holds a FedACH routing record
 type Routing struct {
 	//RoutingNumber (9): 011000015
@@ -61,7 +63,7 @@ func (d *Dictionary) addRouting(routing *Routing) *Dictionary {
 	return d
 }
 
-func readFile() *Dictionary {
+func readFile() map[string]*Routing {
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -70,13 +72,16 @@ func readFile() *Dictionary {
 	fmt.Printf("reading file: %v", f.Name())
 	scanner := bufio.NewScanner(f)
 	lineNum := 0
-	dict := new(Dictionary)
+	lookup = make(map[string]*Routing)
+	//dict := new(Dictionary)
 	for scanner.Scan() {
-		dict.addRouting(parseRouting(scanner.Text()))
+		//dict.addRouting(parseRouting(scanner.Text()))
+		route := parseRouting(scanner.Text())
+		lookup[route.RoutingNumber] = route
 		//fmt.Printf("Routing # %v \t Name: %v\n", dict.Routes[lineNum].RoutingNumber, dict.Routes[lineNum].CustomerName)
 		lineNum++
 	}
-	return dict
+	return lookup
 }
 
 func parseRouting(line string) *Routing {
@@ -120,6 +125,7 @@ func parseRouting(line string) *Routing {
 }
 
 func main() {
+	lookup = readFile()
 	routingIndex, err := bleve.Open(indexPath)
 	if err == bleve.ErrorIndexPathDoesNotExist {
 		log.Printf("Creating new index...")
@@ -147,7 +153,7 @@ func main() {
 	} else {
 		log.Printf("Opening existing index...\n")
 	}
-	query := bleve.NewMatchQuery("veridian")
+	query := bleve.NewFuzzyQuery("waterloo")
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := routingIndex.Search(search)
 	if err != nil {
@@ -155,18 +161,20 @@ func main() {
 		return
 	}
 	fmt.Println(searchResults)
+	for _, val := range searchResults.Hits {
+		id := val.ID
+		fmt.Printf("lookup[%v]: %v\n", id, lookup[id])
+	}
 }
 
 func indexRouting(i bleve.Index) error {
 	// build the Dictionary
 	log.Printf("Indexing...\n")
-	dict := readFile()
-
 	count := 0
 	batch := i.NewBatch()
 	batchCount := 0
 
-	for _, route := range dict.Routes {
+	for _, route := range lookup {
 		batch.Index(route.RoutingNumber, route)
 		batchCount++
 		if batchCount >= batchSize {
