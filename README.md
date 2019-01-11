@@ -1,9 +1,29 @@
-wadearnold/fed
+moov-io/fed
 
-Package 'wadearnold/fed' implements utility services for interacting with the United States Federal Reserve System. 
+Package 'moov-io/fed' implements utility services for searching the United States Federal Reserve System.
 
-- [FedACH Participant ](https://www.frbservices.org/EPaymentsDirectory/FedACHdir.txt) Directory and [File Format](View the FedACH Directory File Format only) parser.
-- [Fedwire Participants](https://www.frbservices.org/EPaymentsDirectory/fpddir.txt) directory and [File Format](https://www.frbservices.org/EPaymentsDirectory/fedwireFormat.html) parser.
-- [Holiday Schedules](https://www.frbservices.org/holidayschedules/) for processing dates.  
+# FedWire and FedACH data from the Federal Reserve Bank Services
 
-Project is in active development.
+The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/).
+
+## FedWire Directory
+
+*  [FedWire](./docs/fpddir.md)
+
+## FedACH Directory
+
+*  [FedACH](./docs/FedACHdir.md)
+
+## Other resources
+
+*  [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
+
+## Copyright and Terms of Use
+
+(c) Federal Reserve Banks
+
+By accesing the [data](./data/) in this repository your agree to the [Federal Reserve Banks' Terms of Use](FRBS_TERMS.md) and the [E-Payments Routing Directory Terms of Use Agreement](FRBS_AGREEMENT.md).  
+
+## Disclaimer
+
+**THIS REPOSITORY IS NOT AFFILIATED WITH THE FEDERAL RESERVE BANKS AN IS NOT AN OFFICIAL SOURCE FOR THE FEDWIRE AND THE FEDACH DATA.**
