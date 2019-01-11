@@ -3,22 +3,25 @@ package feddir
 import (
 	"bufio"
 	"io"
+	"strings"
 )
 
-// RoutingDictionary of Participant records
-type RoutingDictionary struct {
+// FedACHDictionary of Participant records
+type FedACHDictionary struct {
+	// Participants is a list of Participant structs
 	Participants []*Participant
 	scanner      *bufio.Scanner
 	line         string
 }
 
-func NewRoutingDictionary(r io.Reader) *RoutingDictionary {
-	return &RoutingDictionary{
+// NewFedACHDictionary creates a FedACHDictionary
+func NewFedACHDictionary(r io.Reader) *FedACHDictionary {
+	return &FedACHDictionary{
 		scanner: bufio.NewScanner(r),
 	}
 }
 
-// Participant holds a FedACH routing record as defined by FEDACh
+// Participant holds a FedACH routing record as defined by Fed ACH Format
 // https://www.frbservices.org/EPaymentsDirectory/achFormat.html
 type Participant struct {
 	// RoutingNumber The institution's routing number
@@ -26,7 +29,7 @@ type Participant struct {
 	// OfficeCode Main office or branch O=main B=branch
 	OfficeCode string
 	// ServicingFrbNumber Servicing Fed's main office routing number
-	ServicinFrbNumber string
+	ServicingFrbNumber string
 	// RecordTypeCode The code indicating the ABA number to be used to route or send ACH items to the RFI
 	// 0 = Institution is a Federal Reserve Bank
 	// 1 = Send items to customer routing number
@@ -45,8 +48,13 @@ type Participant struct {
 	// StatusCode Code is based on the customers receiver code
 	// 1=Receives Gov/Comm
 	StatusCode string
-	// ViewCode (1): 1
+	// ViewCode
 	ViewCode string
+}
+
+// CustomerNameLabel returns a formated for display CustomerName
+func (p *Participant) CustomerNameLabel() string {
+	return strings.Title(strings.ToLower(p.CustomerName))
 }
 
 // Location City name and state code in the institution's delivery address
@@ -63,59 +71,61 @@ type Location struct {
 	PostalCodeExtension string
 }
 
-// Read parses a single line or multiple line
-func (rd *RoutingDictionary) Read() error {
+// Read parses a single line or multiple lines of FedACHdir text
+func (f *FedACHDictionary) Read() error {
 	// read through the entire file
-	for rd.scanner.Scan() {
-		rd.line = rd.scanner.Text()
+	for f.scanner.Scan() {
+		f.line = f.scanner.Text()
 
-		if err := rd.parseRouting(); err != nil {
+		if err := f.parseParticipant(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (rd *RoutingDictionary) parseRouting() error {
-	route := new(Participant)
+// TODO return a parsing error if the format or file is wrong.
+// TODO trim spaces on fields that are space padded
+func (f *FedACHDictionary) parseParticipant() error {
+	p := new(Participant)
 
-	if len(rd.line) == 0 {
+	// TODO should I check if the total length is the same? 155 i believe?
+	if len(f.line) == 0 {
 		return nil
 	}
 
 	//RoutingNumber (9): 011000015
-	route.RoutingNumber = rd.line[:9]
+	p.RoutingNumber = f.line[:9]
 	// OfficeCode (1): O
-	route.OfficeCode = rd.line[9:10]
+	p.OfficeCode = f.line[9:10]
 	// ServicingFrbNumber (9): 011000015
-	route.ServicinFrbNumber = rd.line[10:19]
+	p.ServicingFrbNumber = f.line[10:19]
 	// RecordTypeCode (1): 0
-	route.RecordTypeCode = rd.line[19:20]
+	p.RecordTypeCode = f.line[19:20]
 	// ChangeDate (6): 122415
-	route.Revised = rd.line[20:26]
+	p.Revised = f.line[20:26]
 	// NewRoutingNumber (9): 000000000
-	route.NewRoutingNumber = rd.line[26:35]
+	p.NewRoutingNumber = f.line[26:35]
 	// CustomerName (36): FEDERAL RESERVE BANK
-	route.CustomerName = rd.line[35:71]
+	p.CustomerName = strings.Trim(f.line[35:71], " ")
 	// Address (36): 1000 PEACHTREE ST N.E.
-	route.Address = rd.line[71:107]
+	p.Address = strings.Trim(f.line[71:107], " ")
 	// City (20): ATLANTA
-	route.City = rd.line[107:127]
+	p.City = strings.Trim(f.line[107:127], " ")
 	// State (2): GA
-	route.State = rd.line[127:129]
+	p.State = f.line[127:129]
 	// PostalCode (5): 30309
-	route.PostalCode = rd.line[129:134]
+	p.PostalCode = f.line[129:134]
 	// PostalCodeExtension (4): 4470
-	route.PostalCodeExtension = rd.line[134:138]
+	p.PostalCodeExtension = f.line[134:138]
 	// PhoneNumber(10): 8773722457
-	route.PhoneNumber = rd.line[138:148]
+	p.PhoneNumber = f.line[138:148]
 	// StatusCode (1): 1
-	route.StatusCode = rd.line[148:149]
+	p.StatusCode = f.line[148:149]
 	// ViewCode (1): 1
-	route.ViewCode = rd.line[149:150]
+	p.ViewCode = f.line[149:150]
 
-	rd.Participants = append(rd.Participants, route)
-
+	// TODO should I consider keying this off of routing number or something else?
+	f.Participants = append(f.Participants, p)
 	return nil
-
 }

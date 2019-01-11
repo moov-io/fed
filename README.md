@@ -1,24 +1,24 @@
-moov-io/fed
+# moov-io/fed
 
 Package 'moov-io/fed' implements utility services for searching the United States Federal Reserve System.
 
-# FedWire and FedACH data from the Federal Reserve Bank Services
+## FedWire and FedACH data from the Federal Reserve Bank Services
 
 The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/).
 
-## FedWire Directory
+### FedWire Directory
 
-*  [FedWire](./docs/fpddir.md)
+* [FedWire](./docs/fpddir.md)
 
-## FedACH Directory
+### FedACH Directory
 
-*  [FedACH](./docs/FedACHdir.md)
+* [FedACH](./docs/FedACHdir.md)
 
-## Other resources
+### Other resources
 
-*  [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
+* [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
 
-## Copyright and Terms of Use
+### Copyright and Terms of Use
 
 (c) Federal Reserve Banks
 
