@@ -6,22 +6,22 @@ import (
 	"strings"
 )
 
-// FedACHDictionary of Participant records
-type FedACHDictionary struct {
+// ACHDictionary of Participant records
+type ACHDictionary struct {
 	// Participants is a list of Participant structs
 	Participants []*Participant
 	scanner      *bufio.Scanner
 	line         string
 }
 
-// NewFedACHDictionary creates a FedACHDictionary
-func NewFedACHDictionary(r io.Reader) *FedACHDictionary {
-	return &FedACHDictionary{
+// NewACHDictionary creates a ACHDictionary
+func NewACHDictionary(r io.Reader) *ACHDictionary {
+	return &ACHDictionary{
 		scanner: bufio.NewScanner(r),
 	}
 }
 
-// Participant holds a FedACH routing record as defined by Fed ACH Format
+// Participant holds a FedACHdir routing record as defined by Fed ACH Format
 // https://www.frbservices.org/EPaymentsDirectory/achFormat.html
 type Participant struct {
 	// RoutingNumber The institution's routing number
@@ -72,7 +72,7 @@ type Location struct {
 }
 
 // Read parses a single line or multiple lines of FedACHdir text
-func (f *FedACHDictionary) Read() error {
+func (f *ACHDictionary) Read() error {
 	// read through the entire file
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
@@ -86,7 +86,7 @@ func (f *FedACHDictionary) Read() error {
 
 // TODO return a parsing error if the format or file is wrong.
 // TODO trim spaces on fields that are space padded
-func (f *FedACHDictionary) parseParticipant() error {
+func (f *ACHDictionary) parseParticipant() error {
 	p := new(Participant)
 
 	// TODO should I check if the total length is the same? 155 i believe?

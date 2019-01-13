@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-func TestParseRouting(t *testing.T) {
+func TestParseParticipant(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
 
-	f := NewFedACHDictionary(strings.NewReader(line))
+	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
 
 	// TODO should I consider getting this from a accessor or a keyed dictionary?
@@ -62,13 +62,13 @@ func TestParseRouting(t *testing.T) {
 	}
 }
 
-func TestFedACHdirRead(t *testing.T) {
+func TestACHDirectoryRead(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
 	defer f.Close()
-	achDir := NewFedACHDictionary(f)
+	achDir := NewACHDictionary(f)
 	err = achDir.Read()
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -81,7 +81,7 @@ func TestFedACHdirRead(t *testing.T) {
 func TestParticipantLabel(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
 
-	f := NewFedACHDictionary(strings.NewReader(line))
+	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
 
 	// TODO should I consider getting this from a accessor or a keyed dictionary?
