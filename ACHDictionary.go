@@ -9,15 +9,17 @@ import (
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
-	Participants []*Participant
-	scanner      *bufio.Scanner
-	line         string
+	Participants     []*Participant
+	scanner          *bufio.Scanner
+	line             string
+	IndexParticipant map[string]*Participant
 }
 
 // NewACHDictionary creates a ACHDictionary
 func NewACHDictionary(r io.Reader) *ACHDictionary {
 	return &ACHDictionary{
-		scanner: bufio.NewScanner(r),
+		IndexParticipant: map[string]*Participant{},
+		scanner:          bufio.NewScanner(r),
 	}
 }
 
@@ -26,7 +28,7 @@ func NewACHDictionary(r io.Reader) *ACHDictionary {
 type Participant struct {
 	// RoutingNumber The institution's routing number
 	RoutingNumber string
-	// OfficeCode Main office or branch O=main B=branch
+	// OfficeCode Main/Head Office or Branch. O=main B=branch
 	OfficeCode string
 	// ServicingFrbNumber Servicing Fed's main office routing number
 	ServicingFrbNumber string
@@ -127,5 +129,6 @@ func (f *ACHDictionary) parseParticipant() error {
 
 	// TODO should I consider keying this off of routing number or something else?
 	f.Participants = append(f.Participants, p)
+	f.IndexParticipant[p.RoutingNumber] = p
 	return nil
 }

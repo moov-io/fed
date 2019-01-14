@@ -76,6 +76,12 @@ func TestACHDirectoryRead(t *testing.T) {
 	if len(achDir.Participants) != 18198 {
 		t.Errorf("Expected '19189' got: %v", len(achDir.Participants))
 	}
+
+	if fi, ok := achDir.IndexParticipant["073905527"]; ok {
+		if ok {
+			t.Errorf("Expected `073905527` got : %v", fi)
+		}
+	}
 }
 
 func TestParticipantLabel(t *testing.T) {
