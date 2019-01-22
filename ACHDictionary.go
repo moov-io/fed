@@ -2,6 +2,7 @@ package feddir
 
 import (
 	"bufio"
+	//"github.com/moov-io/base"
 	"io"
 	"strings"
 )
@@ -54,7 +55,8 @@ type Participant struct {
 	ViewCode string
 }
 
-// CustomerNameLabel returns a formated for display CustomerName
+// CustomerNameLabel returns a formatted string Title for displaying CustomerName
+//ToDo: Review CU (Credit Union) which returns as Cu
 func (p *Participant) CustomerNameLabel() string {
 	return strings.Title(strings.ToLower(p.CustomerName))
 }
@@ -130,5 +132,14 @@ func (f *ACHDictionary) parseParticipant() error {
 	// TODO should I consider keying this off of routing number or something else?
 	f.Participants = append(f.Participants, p)
 	f.IndexParticipant[p.RoutingNumber] = p
+	return nil
+}
+
+// ToDo: Should this remain exportable?
+// RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber
+func (f *ACHDictionary) RoutingNumberSearch(routingNumber string) *Participant {
+	if _, ok := f.IndexParticipant[routingNumber]; ok {
+		return f.IndexParticipant[routingNumber]
+	}
 	return nil
 }
