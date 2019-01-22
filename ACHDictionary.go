@@ -24,35 +24,35 @@ func NewACHDictionary(r io.Reader) *ACHDictionary {
 	}
 }
 
-// Participant holds a FedACHdir routing record as defined by Fed ACH Format
+// Participant holds a FedACH dir routing record as defined by Fed ACH Format
 // https://www.frbservices.org/EPaymentsDirectory/achFormat.html
 type Participant struct {
 	// RoutingNumber The institution's routing number
-	RoutingNumber string
+	RoutingNumber string `json:"routingNumber"`
 	// OfficeCode Main/Head Office or Branch. O=main B=branch
-	OfficeCode string
+	OfficeCode string `json:"officeCode"`
 	// ServicingFrbNumber Servicing Fed's main office routing number
-	ServicingFrbNumber string
+	ServicingFrbNumber string `json:"servicingFrbNumber"`
 	// RecordTypeCode The code indicating the ABA number to be used to route or send ACH items to the RFI
 	// 0 = Institution is a Federal Reserve Bank
 	// 1 = Send items to customer routing number
 	// 2 = Send items to customer using new routing number field
-	RecordTypeCode string
+	RecordTypeCode string `json:"recordTypeCod"`
 	// Revised Date of last revision: YYYYMMDD, or blank
-	Revised string
+	Revised string `json:"revised"`
 	// NewRoutingNumber Institution's new routing number resulting from a merger or renumber
-	NewRoutingNumber string
+	NewRoutingNumber string `json:"newRoutingNumber"`
 	// CustomerName (36): FEDERAL RESERVE BANK
-	CustomerName string
+	CustomerName string `json:"customerName"`
 	// Location is the delivery address
-	Location
+	Location `json:"location"`
 	// PhoneNumber The institution's phone number
-	PhoneNumber string
+	PhoneNumber string `json:"phoneNumber"`
 	// StatusCode Code is based on the customers receiver code
 	// 1=Receives Gov/Comm
-	StatusCode string
+	StatusCode string `json:"statusCode"`
 	// ViewCode
-	ViewCode string
+	ViewCode string `json:"viewCode"`
 }
 
 // CustomerNameLabel returns a formatted string Title for displaying CustomerName
@@ -64,15 +64,15 @@ func (p *Participant) CustomerNameLabel() string {
 // Location City name and state code in the institution's delivery address
 type Location struct {
 	// Address
-	Address string
+	Address string `json:"address"`
 	// City
-	City string
+	City string `json:"city"`
 	// State
-	State string
+	State string `json:"state"`
 	// PostalCode
-	PostalCode string
+	PostalCode string `json:"postalCode"`
 	// PostalCodeExtension
-	PostalCodeExtension string
+	PostalCodeExtension string `json:"postalCodeExtension"`
 }
 
 // Read parses a single line or multiple lines of FedACHdir text
