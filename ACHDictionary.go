@@ -135,8 +135,8 @@ func (f *ACHDictionary) parseParticipant() error {
 	return nil
 }
 
-// ToDo: Should this remain exportable?
 // RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber
+// ToDo: Should this remain exportable?
 func (f *ACHDictionary) RoutingNumberSearch(routingNumber string) *Participant {
 	if _, ok := f.IndexParticipant[routingNumber]; ok {
 		return f.IndexParticipant[routingNumber]
