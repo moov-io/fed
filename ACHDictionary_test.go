@@ -78,7 +78,7 @@ func TestACHDirectoryRead(t *testing.T) {
 	}
 
 	if fi, ok := achDir.IndexParticipant["073905527"]; ok {
-		if ok {
+		if !ok {
 			t.Errorf("Expected `073905527` got : %v", fi)
 		}
 	}
