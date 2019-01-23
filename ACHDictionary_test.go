@@ -5,7 +5,6 @@
 package feddir
 
 import (
-	//"golang.org/x/tools/go/internal/gcimporter/testdata"
 	"os"
 	"strings"
 	"testing"
