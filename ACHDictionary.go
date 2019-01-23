@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+const (
+	routingNumberLength = 9
+)
+
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
@@ -135,11 +139,12 @@ func (f *ACHDictionary) parseParticipant() error {
 	return nil
 }
 
-// RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber
+// RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber.  Routing Number validation
+// is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included
 // ToDo: Should this remain exportable?
-func (f *ACHDictionary) RoutingNumberSearch(routingNumber string) *Participant {
-	if _, ok := f.IndexParticipant[routingNumber]; ok {
-		return f.IndexParticipant[routingNumber]
+func (f *ACHDictionary) RoutingNumberSearch(s string) *Participant {
+	if _, ok := f.IndexParticipant[s]; ok {
+		return f.IndexParticipant[s]
 	}
 	return nil
 }

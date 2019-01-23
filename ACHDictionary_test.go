@@ -120,8 +120,8 @@ func TestRoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// TestRoutingNumberSearchNil tests that an invalid routing number returns nil
-func TestRoutingNumberSearchNil(t *testing.T) {
+// TestInvalidRoutingNumberSearch tests that an invalid routing number returns nil
+func TestInvalidRoutingNumberSearch(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
