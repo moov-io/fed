@@ -1,14 +1,13 @@
+// Copyright 2019 The Moov Authors
+// Use of this source code is governed by an Apache License
+// license that can be found in the LICENSE file.
+
 package feddir
 
 import (
 	"bufio"
-	//"github.com/moov-io/base"
 	"io"
 	"strings"
-)
-
-const (
-	routingNumberLength = 9
 )
 
 // ACHDictionary of Participant records
