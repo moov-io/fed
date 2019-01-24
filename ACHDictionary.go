@@ -30,7 +30,7 @@ func NewACHDictionary(r io.Reader) *ACHDictionary {
 	}
 }
 
-// Participant holds a FedACH dir routing record as defined by Fed ACH Format
+// ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format
 // https://www.frbservices.org/EPaymentsDirectory/achFormat.html
 type ACHParticipant struct {
 	// RoutingNumber The institution's routing number
