@@ -1,3 +1,7 @@
+// Copyright 2019 The Moov Authors
+// Use of this source code is governed by an Apache License
+// license that can be found in the LICENSE file.
+
 package feddir
 
 import (
@@ -79,7 +83,7 @@ func TestACHDirectoryRead(t *testing.T) {
 
 	if fi, ok := achDir.IndexParticipant["073905527"]; ok {
 		if !ok {
-			t.Errorf("Expected `073905527` got : %v", fi)
+			t.Errorf("Expected `073905527` got : %v", fi.RoutingNumber)
 		}
 	}
 }
@@ -97,4 +101,44 @@ func TestParticipantLabel(t *testing.T) {
 		t.Errorf("CustomerNameLabel Expected 'Lincoln Savings Bank' got: %v", participant.CustomerNameLabel())
 	}
 
+}
+
+// TestRoutingNumberSearch tests that a valid routing number defined in FedACHDir returns the participant data
+func TestRoutingNumberSearch(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+
+	p := achDir.RoutingNumberSearch("325183657")
+
+	if p.CustomerName != "LOWER VALLEY CU" {
+		t.Errorf("Expected `LOWER VALLEY CU` got : %v", p.CustomerName)
+	}
+}
+
+// TestInvalidRoutingNumberSearch tests that an invalid routing number returns nil
+func TestInvalidRoutingNumberSearch(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+
+	p := achDir.RoutingNumberSearch("433")
+
+	if p != nil {
+		t.Errorf("%s", "433 should have returned nil")
+	}
 }
