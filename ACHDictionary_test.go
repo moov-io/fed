@@ -17,7 +17,7 @@ func TestParseParticipant(t *testing.T) {
 	f.Read()
 
 	// TODO should I consider getting this from a accessor or a keyed dictionary?
-	participant := f.Participants[0]
+	participant := f.ACHParticipants[0]
 
 	if participant.RoutingNumber != "073905527" {
 		t.Errorf("CustomerName Expected '073905527' got: %v", participant.RoutingNumber)
@@ -77,13 +77,23 @@ func TestACHDirectoryRead(t *testing.T) {
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
-	if len(achDir.Participants) != 18198 {
-		t.Errorf("Expected '19189' got: %v", len(achDir.Participants))
+	if len(achDir.ACHParticipants) != 18198 {
+		t.Errorf("Expected '19189' got: %v", len(achDir.ACHParticipants))
 	}
 
-	if fi, ok := achDir.IndexParticipant["073905527"]; ok {
+	if fi, ok := achDir.IndexACHParticipant["073905527"]; ok {
 		if !ok {
 			t.Errorf("Expected `073905527` got : %v", fi.RoutingNumber)
+		}
+	}
+}
+
+func TestInvalidRecordLength(t *testing.T) {
+	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E"
+	f := NewACHDictionary(strings.NewReader(line))
+	if err := f.Read(); err != nil {
+		if !Has(err, NewRecordWrongLengthErr(80)) {
+			t.Errorf("%T: %s", err, err)
 		}
 	}
 }
@@ -95,7 +105,7 @@ func TestParticipantLabel(t *testing.T) {
 	f.Read()
 
 	// TODO should I consider getting this from a accessor or a keyed dictionary?
-	participant := f.Participants[0]
+	participant := f.ACHParticipants[0]
 
 	if participant.CustomerNameLabel() != "Lincoln Savings Bank" {
 		t.Errorf("CustomerNameLabel Expected 'Lincoln Savings Bank' got: %v", participant.CustomerNameLabel())
