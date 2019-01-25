@@ -94,7 +94,8 @@ func (f *ACHDictionary) Read() error {
 		}
 		//ToDo: utf8.RuneCountInString(record) != 155 check ?
 		if err := f.parseACHParticipant(); err != nil {
-			return err
+			f.errors.Add(err)
+			return f.errors
 		}
 	}
 	return nil

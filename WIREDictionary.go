@@ -69,14 +69,14 @@ func (f *WIREDictionary) Read() error {
 		f.line = f.scanner.Text()
 
 		if len(f.line) != 101 {
-			err := NewRecordWrongLengthErr(101, len(f.line))
-			f.errors.Add(err)
+			f.errors.Add(NewRecordWrongLengthErr(101, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
 
 		if err := f.parseWIREParticipant(); err != nil {
-			return err
+			f.errors.Add(err)
+			return f.errors
 		}
 	}
 	return nil
