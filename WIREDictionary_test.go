@@ -48,7 +48,7 @@ func TestWIREParseParticipant(t *testing.T) {
 }
 
 func TestWIREDirectoryRead(t *testing.T) {
-	f, err := os.Open("./data/Fpddir.txt")
+	f, err := os.Open("./data/fpddir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
@@ -83,7 +83,7 @@ func TestWIREInvalidRecordLength(t *testing.T) {
 
 // TestWIRERoutingNumberSearch tests that a valid routing number defined in FedWIREDir returns the participant data
 func TestWIRERoutingNumberSearch(t *testing.T) {
-	f, err := os.Open("./data/Fpddir.txt")
+	f, err := os.Open("./data/fpddir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
@@ -109,7 +109,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 
 // TestInvalidWIRERoutingNumberSearch tests that an invalid routing number returns nil
 func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
-	f, err := os.Open("./data/Fpddir.txt")
+	f, err := os.Open("./data/fpddir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
