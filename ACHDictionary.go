@@ -87,12 +87,11 @@ func (f *ACHDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if len(f.line) != 155 {
+		if utf8.RuneCountInString(record) != 155 {
 			f.errors.Add(NewRecordWrongLengthErr(155, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
-		}
-		//ToDo: utf8.RuneCountInString(record) != 155 check ?
+		}		
 		if err := f.parseACHParticipant(); err != nil {
 			f.errors.Add(err)
 			return f.errors
