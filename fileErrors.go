@@ -16,14 +16,15 @@ var ErrFileTooLong = errors.New("file exceeds maximum possible number of lines")
 
 // RecordWrongLengthErr is the error given when a record is the wrong length
 type RecordWrongLengthErr struct {
-	Message string
-	Length  int
+	Message        string
+	LengthRequired int
+	Length         int
 }
 
 // NewRecordWrongLengthErr creates a new error of the RecordWrongLengthErr type
-func NewRecordWrongLengthErr(length int) RecordWrongLengthErr {
+func NewRecordWrongLengthErr(lengthRequired int, length int) RecordWrongLengthErr {
 	return RecordWrongLengthErr{
-		Message: fmt.Sprintf("must be 155 characters and found %d", length),
+		Message: fmt.Sprintf("must be %d characters and found %d", lengthRequired, length),
 		Length:  length,
 	}
 }

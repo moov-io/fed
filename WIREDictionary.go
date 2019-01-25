@@ -69,10 +69,10 @@ func (f *WIREDictionary) Read() error {
 		f.line = f.scanner.Text()
 
 		if len(f.line) != 101 {
-			err := NewRecordWrongLengthErr(len(f.line))
+			err := NewRecordWrongLengthErr(101, len(f.line))
 			f.errors.Add(err)
 			// Return with error if the record length is incorrect as this file is a FED file
-			return err
+			return f.errors
 		}
 
 		if err := f.parseWIREParticipant(); err != nil {
@@ -89,7 +89,7 @@ func (f *WIREDictionary) parseWIREParticipant() error {
 	//RoutingNumber (9): 011000015
 	p.RoutingNumber = f.line[:9]
 	// TelegraphicName (18): FED
-	p.TelegraphicName = f.line[9:27]
+	p.TelegraphicName = strings.Trim(f.line[9:27], " ")
 	// CustomerName (36): FEDERAL RESERVE BANK
 	p.CustomerName = strings.Trim(f.line[27:63], " ")
 	// State (2): GA
@@ -104,7 +104,6 @@ func (f *WIREDictionary) parseWIREParticipant() error {
 	p.BookEntrySecuritiesTransferStatus = f.line[92:93]
 	// Date YYYYMMDD (8): 122415
 	p.Date = f.line[93:101]
-	//
 	f.WIREParticipants = append(f.WIREParticipants, p)
 	f.IndexWIREParticipant[p.RoutingNumber] = p
 	return nil
