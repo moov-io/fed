@@ -68,7 +68,7 @@ func (f *WIREDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if len(f.line) != 101 {
+		if utf8.RuneCountInString(f.line) != 101 {
 			f.errors.Add(NewRecordWrongLengthErr(101, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
