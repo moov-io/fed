@@ -92,7 +92,7 @@ func (f *ACHDictionary) Read() error {
 			f.errors.Add(NewRecordWrongLengthErr(155, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
-		}		
+		}
 		if err := f.parseACHParticipant(); err != nil {
 			f.errors.Add(err)
 			return f.errors
