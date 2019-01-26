@@ -1,0 +1,4 @@
+github.com/moov-io/base v0.6.0 h1:y+PlTdIX/0vO3Uf7MbqYGmfmYIbwdj6uzClYbFz4aLM=
+github.com/moov-io/base v0.6.0/go.mod h1:pPu/TAc9PkaaegbREVEeDHsGqyAlvji9vqTuARuAnd0=
+github.com/rickar/cal v1.0.0 h1:kb1QBxUDVz433Pw+NB4o6auW75d7HdsaD5ZsdnPdV/E=
+github.com/rickar/cal v1.0.0/go.mod h1:3GBx8OBrvh4/y/JTxM0e1bUUIHMnqILl1rMANHWExxQ=

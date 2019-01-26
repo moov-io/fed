@@ -6,30 +6,34 @@ package feddir
 
 import (
 	"bufio"
+	"github.com/moov-io/base"
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
-	Participants     []*Participant
-	scanner          *bufio.Scanner
-	line             string
-	IndexParticipant map[string]*Participant
+	ACHParticipants     []*ACHParticipant
+	scanner             *bufio.Scanner
+	line                string
+	IndexACHParticipant map[string]*ACHParticipant
+	// errors holds each error encountered when attempting to parse the file
+	errors base.ErrorList
 }
 
 // NewACHDictionary creates a ACHDictionary
 func NewACHDictionary(r io.Reader) *ACHDictionary {
 	return &ACHDictionary{
-		IndexParticipant: map[string]*Participant{},
-		scanner:          bufio.NewScanner(r),
+		IndexACHParticipant: map[string]*ACHParticipant{},
+		scanner:             bufio.NewScanner(r),
 	}
 }
 
-// Participant holds a FedACH dir routing record as defined by Fed ACH Format
+// ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format
 // https://www.frbservices.org/EPaymentsDirectory/achFormat.html
-type Participant struct {
+type ACHParticipant struct {
 	// RoutingNumber The institution's routing number
 	RoutingNumber string `json:"routingNumber"`
 	// OfficeCode Main/Head Office or Branch. O=main B=branch
@@ -48,7 +52,7 @@ type Participant struct {
 	// CustomerName (36): FEDERAL RESERVE BANK
 	CustomerName string `json:"customerName"`
 	// Location is the delivery address
-	Location `json:"location"`
+	ACHLocation `json:"achlocation"`
 	// PhoneNumber The institution's phone number
 	PhoneNumber string `json:"phoneNumber"`
 	// StatusCode Code is based on the customers receiver code
@@ -60,12 +64,12 @@ type Participant struct {
 
 // CustomerNameLabel returns a formatted string Title for displaying CustomerName
 //ToDo: Review CU (Credit Union) which returns as Cu
-func (p *Participant) CustomerNameLabel() string {
+func (p *ACHParticipant) CustomerNameLabel() string {
 	return strings.Title(strings.ToLower(p.CustomerName))
 }
 
-// Location City name and state code in the institution's delivery address
-type Location struct {
+// ACHLocation City name and state code in the institution's delivery address
+type ACHLocation struct {
 	// Address
 	Address string `json:"address"`
 	// City
@@ -84,22 +88,22 @@ func (f *ACHDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if err := f.parseParticipant(); err != nil {
-			return err
+		if utf8.RuneCountInString(f.line) != 155 {
+			f.errors.Add(NewRecordWrongLengthErr(155, len(f.line)))
+			// Return with error if the record length is incorrect as this file is a FED file
+			return f.errors
+		}
+		if err := f.parseACHParticipant(); err != nil {
+			f.errors.Add(err)
+			return f.errors
 		}
 	}
 	return nil
 }
 
 // TODO return a parsing error if the format or file is wrong.
-// TODO trim spaces on fields that are space padded
-func (f *ACHDictionary) parseParticipant() error {
-	p := new(Participant)
-
-	// TODO should I check if the total length is the same? 155 i believe?
-	if len(f.line) == 0 {
-		return nil
-	}
+func (f *ACHDictionary) parseACHParticipant() error {
+	p := new(ACHParticipant)
 
 	//RoutingNumber (9): 011000015
 	p.RoutingNumber = f.line[:9]
@@ -132,18 +136,17 @@ func (f *ACHDictionary) parseParticipant() error {
 	// ViewCode (1): 1
 	p.ViewCode = f.line[149:150]
 
-	// TODO should I consider keying this off of routing number or something else?
-	f.Participants = append(f.Participants, p)
-	f.IndexParticipant[p.RoutingNumber] = p
+	f.ACHParticipants = append(f.ACHParticipants, p)
+	f.IndexACHParticipant[p.RoutingNumber] = p
 	return nil
 }
 
 // RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber.  Routing Number validation
-// is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included
+// is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
 // ToDo: Should this remain exportable?
-func (f *ACHDictionary) RoutingNumberSearch(s string) *Participant {
-	if _, ok := f.IndexParticipant[s]; ok {
-		return f.IndexParticipant[s]
+func (f *ACHDictionary) RoutingNumberSearch(s string) *ACHParticipant {
+	if _, ok := f.IndexACHParticipant[s]; ok {
+		return f.IndexACHParticipant[s]
 	}
 	return nil
 }
