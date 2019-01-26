@@ -9,6 +9,7 @@ import (
 	"github.com/moov-io/base"
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 // WIREDictionary of Participant records
