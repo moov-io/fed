@@ -2,6 +2,8 @@
 // Use of this source code is governed by an Apache License
 // license that can be found in the LICENSE file.
 
+// ToDo:  Create an interface?
+
 package feddir
 
 import (
@@ -15,10 +17,15 @@ import (
 // WIREDictionary of Participant records
 type WIREDictionary struct {
 	// Participants is a list of Participant structs
-	WIREParticipants     []*WIREParticipant
-	scanner              *bufio.Scanner
-	line                 string
-	IndexWIREParticipant map[string]*WIREParticipant
+	WIREParticipants []*WIREParticipant
+	//scanner provides a convenient interface for reading data
+	scanner *bufio.Scanner
+	// line being read
+	line string
+	// IndexWIRERoutingNumber creates an index of WIREParticipants keyed by WIREParticipant.RoutingNumber
+	IndexWIRERoutingNumber map[string]*WIREParticipant
+	// IndexWIRECustomerName creates an index of WIREParticipants keyed by WIREParticipant.CustomerName
+	IndexWIRECustomerName map[string][]*WIREParticipant
 	// errors holds each error encountered when attempting to parse the file
 	errors base.ErrorList
 }
@@ -26,8 +33,9 @@ type WIREDictionary struct {
 // NewWIREDictionary creates a WIREDictionary
 func NewWIREDictionary(r io.Reader) *WIREDictionary {
 	return &WIREDictionary{
-		IndexWIREParticipant: map[string]*WIREParticipant{},
-		scanner:              bufio.NewScanner(r),
+		IndexWIRERoutingNumber: map[string]*WIREParticipant{},
+		IndexWIRECustomerName:  map[string][]*WIREParticipant{},
+		scanner:                bufio.NewScanner(r),
 	}
 }
 
@@ -74,8 +82,11 @@ func (f *WIREDictionary) Read() error {
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
-
 		if err := f.parseWIREParticipant(); err != nil {
+			f.errors.Add(err)
+			return f.errors
+		}
+		if err := f.createIndexWIRECustomerName(); err != nil {
 			f.errors.Add(err)
 			return f.errors
 		}
@@ -106,14 +117,30 @@ func (f *WIREDictionary) parseWIREParticipant() error {
 	// Date YYYYMMDD (8): 122415
 	p.Date = f.line[93:101]
 	f.WIREParticipants = append(f.WIREParticipants, p)
-	f.IndexWIREParticipant[p.RoutingNumber] = p
+	f.IndexWIRERoutingNumber[p.RoutingNumber] = p
+	return nil
+}
+
+// createIndexWIRECustomerName creates an index of Financial Institutions keyed by ACHParticipant.CustomerName
+func (f *WIREDictionary) createIndexWIRECustomerName() error {
+	for _, wireP := range f.WIREParticipants {
+		f.IndexWIRECustomerName[wireP.CustomerName] = append(f.IndexWIRECustomerName[wireP.CustomerName], wireP)
+	}
 	return nil
 }
 
 // RoutingNumberSearch returns a FEDWIRE participant based on a Participant.RoutingNumber
 func (f *WIREDictionary) RoutingNumberSearch(s string) *WIREParticipant {
-	if _, ok := f.IndexWIREParticipant[s]; ok {
-		return f.IndexWIREParticipant[s]
+	if _, ok := f.IndexWIRERoutingNumber[s]; ok {
+		return f.IndexWIRERoutingNumber[s]
+	}
+	return nil
+}
+
+// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *WIREDictionary) FinancialInstitutionSearch(s string) []*WIREParticipant {
+	if _, ok := f.IndexWIRECustomerName[s]; ok {
+		return f.IndexWIRECustomerName[s]
 	}
 	return nil
 }

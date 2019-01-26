@@ -14,7 +14,7 @@ func TestWIREParseParticipant(t *testing.T) {
 	f := NewWIREDictionary(strings.NewReader(line))
 	f.Read()
 
-	if fi, ok := f.IndexWIREParticipant["325280039"]; ok {
+	if fi, ok := f.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.RoutingNumber != "325280039" {
 			t.Errorf("Expected `325280039` got : %s", fi.RoutingNumber)
 		}
@@ -62,7 +62,7 @@ func TestWIREDirectoryRead(t *testing.T) {
 		t.Errorf("Expected '7693' got: %v", len(wireDir.WIREParticipants))
 	}
 
-	if fi, ok := wireDir.IndexWIREParticipant["325280039"]; ok {
+	if fi, ok := wireDir.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.TelegraphicName != "MAC FCU" {
 			t.Errorf("Expected `MAC FCU` got : %s", fi.TelegraphicName)
 		}
@@ -126,3 +126,5 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 		t.Errorf("%s", "325183657 should have returned nil")
 	}
 }
+
+// ToDo:  Add test for Wire Financial Institution

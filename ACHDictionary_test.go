@@ -18,7 +18,7 @@ func TestACHParseParticipant(t *testing.T) {
 	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
 
-	if fi, ok := f.IndexACHParticipant["073905527"]; ok {
+	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.RoutingNumber != "073905527" {
 			t.Errorf("CustomerName Expected '073905527' got: %v", fi.RoutingNumber)
 		}
@@ -78,12 +78,12 @@ func TestACHDirectoryRead(t *testing.T) {
 	achDir := NewACHDictionary(f)
 	err = achDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 	if len(achDir.ACHParticipants) != 18198 {
 		t.Errorf("Expected '18198' got: %v", len(achDir.ACHParticipants))
 	}
-	if fi, ok := achDir.IndexACHParticipant["073905527"]; ok {
+	if fi, ok := achDir.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.CustomerName != "LINCOLN SAVINGS BANK" {
 			t.Errorf("Expected `LINCOLN SAVINGS BANK` got : %v", fi.CustomerName)
 		}
@@ -108,7 +108,7 @@ func TestACHParticipantLabel(t *testing.T) {
 	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
 
-	if fi, ok := f.IndexACHParticipant["073905527"]; ok {
+	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.CustomerNameLabel() != "Lincoln Savings Bank" {
 			t.Errorf("CustomerNameLabel Expected 'Lincoln Savings Bank' got: %v", fi.CustomerNameLabel())
 		}
@@ -127,17 +127,17 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 	achDir := NewACHDictionary(f)
 	err = achDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 
-	ap := achDir.RoutingNumberSearch("325183657")
+	fi := achDir.RoutingNumberSearch("325183657")
 
-	if ap == nil {
+	if fi == nil {
 		t.Errorf("ach routing number `325183657` not found")
 	}
 
-	if ap.CustomerName != "LOWER VALLEY CU" {
-		t.Errorf("Expected `LOWER VALLEY CU` got : %v", ap.CustomerName)
+	if fi.CustomerName != "LOWER VALLEY CU" {
+		t.Errorf("Expected `LOWER VALLEY CU` got : %v", fi.CustomerName)
 	}
 }
 
@@ -151,12 +151,38 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	achDir := NewACHDictionary(f)
 	err = achDir.Read()
 	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi := achDir.RoutingNumberSearch("433")
+
+	if fi != nil {
+		t.Errorf("%s", "433 should have returned nil")
+	}
+}
+
+// TestACHFinancialInstitutionSearch tests that a Financial Institution defined in FedACHDir returns the participant data
+func TestACHFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
 		t.Errorf("%T: %s", err, err)
 	}
 
-	p := achDir.RoutingNumberSearch("433")
+	fi := achDir.FinancialInstitutionSearch("BANK OF AMERICA N.A")
 
-	if p != nil {
-		t.Errorf("%s", "433 should have returned nil")
+	if fi == nil {
+		t.Fatalf("ach financial institution `BANK OF AMERICA N.A` not found")
+	}
+
+	for _, f := range fi {
+		if f.CustomerName != "BANK OF AMERICA N.A" {
+			t.Errorf("Expected `BANK OF AMERICA, N.A.` got : %v", f.CustomerName)
+		}
 	}
 }
