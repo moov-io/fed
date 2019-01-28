@@ -127,4 +127,28 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// ToDo:  Add test for Wire Financial Institution
+// TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant data
+func TestWIREFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/fpddir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	wireDir := NewWIREDictionary(f)
+	err = wireDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi := wireDir.FinancialInstitutionSearch("TRUGROCER FEDERAL CREDIT UNION")
+
+	if fi == nil {
+		t.Fatalf("wire financial institution `TRUGROCER FEDERAL CREDIT UNION` not found")
+	}
+
+	for _, f := range fi {
+		if f.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
+			t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
+		}
+	}
+}

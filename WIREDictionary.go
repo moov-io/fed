@@ -86,10 +86,10 @@ func (f *WIREDictionary) Read() error {
 			f.errors.Add(err)
 			return f.errors
 		}
-		if err := f.createIndexWIRECustomerName(); err != nil {
-			f.errors.Add(err)
-			return f.errors
-		}
+	}
+	if err := f.createIndexWIRECustomerName(); err != nil {
+		f.errors.Add(err)
+		return f.errors
 	}
 	return nil
 }
