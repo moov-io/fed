@@ -171,7 +171,7 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 	achDir := NewACHDictionary(f)
 	err = achDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 
 	fi := achDir.FinancialInstitutionSearch("BANK OF AMERICA N.A")

@@ -56,7 +56,7 @@ func TestWIREDirectoryRead(t *testing.T) {
 	wireDir := NewWIREDictionary(f)
 	err = wireDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 	if len(wireDir.WIREParticipants) != 7693 {
 		t.Errorf("Expected '7693' got: %v", len(wireDir.WIREParticipants))
@@ -91,7 +91,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 	wireDir := NewWIREDictionary(f)
 	err = wireDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 
 	fi := wireDir.RoutingNumberSearch("324172465")
@@ -111,7 +111,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	f, err := os.Open("./data/fpddir.txt")
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 	defer f.Close()
 	wireDir := NewWIREDictionary(f)
