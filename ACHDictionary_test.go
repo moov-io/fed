@@ -182,7 +182,7 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 
 	for _, f := range fi {
 		if f.CustomerName != "BANK OF AMERICA N.A" {
-			t.Errorf("Expected `BANK OF AMERICA, N.A.` got : %v", f.CustomerName)
+			t.Errorf("Expected `BANK OF AMERICA, N.A` got : %v", f.CustomerName)
 		}
 	}
 }
