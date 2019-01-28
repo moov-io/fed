@@ -121,7 +121,7 @@ func (f *WIREDictionary) parseWIREParticipant() error {
 	return nil
 }
 
-// createIndexWIRECustomerName creates an index of Financial Institutions keyed by ACHParticipant.CustomerName
+// createIndexWIRECustomerName creates an index of Financial Institutions keyed by WIREParticipant.CustomerName
 func (f *WIREDictionary) createIndexWIRECustomerName() error {
 	for _, wireP := range f.WIREParticipants {
 		f.IndexWIRECustomerName[wireP.CustomerName] = append(f.IndexWIRECustomerName[wireP.CustomerName], wireP)
@@ -129,7 +129,8 @@ func (f *WIREDictionary) createIndexWIRECustomerName() error {
 	return nil
 }
 
-// RoutingNumberSearch returns a FEDWIRE participant based on a Participant.RoutingNumber
+// RoutingNumberSearch returns a FEDWIRE participant based on a WIREParticipant.RoutingNumber.  Routing Number
+// validation is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
 func (f *WIREDictionary) RoutingNumberSearch(s string) *WIREParticipant {
 	if _, ok := f.IndexWIRERoutingNumber[s]; ok {
 		return f.IndexWIRERoutingNumber[s]
@@ -137,7 +138,7 @@ func (f *WIREDictionary) RoutingNumberSearch(s string) *WIREParticipant {
 	return nil
 }
 
-// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+// FinancialInstitutionSearch returns a FEDWIRE participant based on a WIREParticipant.CustomerName
 func (f *WIREDictionary) FinancialInstitutionSearch(s string) []*WIREParticipant {
 	if _, ok := f.IndexWIRECustomerName[s]; ok {
 		return f.IndexWIRECustomerName[s]

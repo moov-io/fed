@@ -155,7 +155,7 @@ func (f *ACHDictionary) createIndexACHCustomerName() error {
 	return nil
 }
 
-// CustomerNameLabel returns a formatted string Title for displaying CustomerName
+// CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName
 // ToDo: Review CU (Credit Union) which returns as Cu
 func (p *ACHParticipant) CustomerNameLabel() string {
 	s := strings.Title(strings.ToLower(p.CustomerName))
