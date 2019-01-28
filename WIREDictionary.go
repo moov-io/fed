@@ -33,7 +33,7 @@ type WIREDictionary struct {
 // NewWIREDictionary creates a WIREDictionary
 func NewWIREDictionary(r io.Reader) *WIREDictionary {
 	return &WIREDictionary{
-		IndexWIRERoutingNumber: map[string]*WIREParticipant{},
+		IndexWIRERoutingNumber: make(map[string]*WIREParticipant),
 		IndexWIRECustomerName:  map[string][]*WIREParticipant{},
 		scanner:                bufio.NewScanner(r),
 	}
