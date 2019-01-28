@@ -33,7 +33,7 @@ type ACHDictionary struct {
 // NewACHDictionary creates a ACHDictionary
 func NewACHDictionary(r io.Reader) *ACHDictionary {
 	return &ACHDictionary{
-		IndexACHRoutingNumber: map[string]*ACHParticipant{},
+		IndexACHRoutingNumber: make(map[string]*ACHParticipant),
 		IndexACHCustomerName:  map[string][]*ACHParticipant{},
 		scanner:               bufio.NewScanner(r),
 	}
