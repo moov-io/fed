@@ -34,7 +34,7 @@ type WIREDictionary struct {
 func NewWIREDictionary(r io.Reader) *WIREDictionary {
 	return &WIREDictionary{
 		IndexWIRERoutingNumber: make(map[string]*WIREParticipant),
-		IndexWIRECustomerName:  map[string][]*WIREParticipant{},
+		IndexWIRECustomerName:  make(map[string][]*WIREParticipant),
 		scanner:                bufio.NewScanner(r),
 	}
 }
