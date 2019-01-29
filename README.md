@@ -1,4 +1,4 @@
-# moov-io/fed
+moov-io/fed
 ===
 [![GoDoc](https://godoc.org/github.com/moov-io/fed?status.svg)](https://godoc.org/github.com/moov-io/fed)
 [![Build Status](https://travis-ci.com/moov-io/fed.svg?branch=master)](https://travis-ci.com/moov-io/fed)
