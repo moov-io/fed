@@ -15,10 +15,15 @@ import (
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
-	ACHParticipants     []*ACHParticipant
-	scanner             *bufio.Scanner
-	line                string
-	IndexACHParticipant map[string]*ACHParticipant
+	ACHParticipants []*ACHParticipant
+	//scanner provides a convenient interface for reading data
+	scanner *bufio.Scanner
+	// line being read
+	line string
+	// IndexACHRoutingNumber creates an index of ACHParticipants keyed by ACHParticipant.RoutingNumber
+	IndexACHRoutingNumber map[string]*ACHParticipant
+	// IndexACHCustomerName creates an index of ACHParticipants keyed by ACHParticipant.CustomerName
+	IndexACHCustomerName map[string][]*ACHParticipant
 	// errors holds each error encountered when attempting to parse the file
 	errors base.ErrorList
 }
@@ -26,8 +31,9 @@ type ACHDictionary struct {
 // NewACHDictionary creates a ACHDictionary
 func NewACHDictionary(r io.Reader) *ACHDictionary {
 	return &ACHDictionary{
-		IndexACHParticipant: map[string]*ACHParticipant{},
-		scanner:             bufio.NewScanner(r),
+		IndexACHRoutingNumber: make(map[string]*ACHParticipant),
+		IndexACHCustomerName:  make(map[string][]*ACHParticipant),
+		scanner:               bufio.NewScanner(r),
 	}
 }
 
@@ -62,12 +68,6 @@ type ACHParticipant struct {
 	ViewCode string `json:"viewCode"`
 }
 
-// CustomerNameLabel returns a formatted string Title for displaying CustomerName
-//ToDo: Review CU (Credit Union) which returns as Cu
-func (p *ACHParticipant) CustomerNameLabel() string {
-	return strings.Title(strings.ToLower(p.CustomerName))
-}
-
 // ACHLocation City name and state code in the institution's delivery address
 type ACHLocation struct {
 	// Address
@@ -98,6 +98,7 @@ func (f *ACHDictionary) Read() error {
 			return f.errors
 		}
 	}
+	f.createIndexACHCustomerName()
 	return nil
 }
 
@@ -137,16 +138,37 @@ func (f *ACHDictionary) parseACHParticipant() error {
 	p.ViewCode = f.line[149:150]
 
 	f.ACHParticipants = append(f.ACHParticipants, p)
-	f.IndexACHParticipant[p.RoutingNumber] = p
+	f.IndexACHRoutingNumber[p.RoutingNumber] = p
 	return nil
 }
 
-// RoutingNumberSearch returns a FEDACH participant based on a Participant.RoutingNumber.  Routing Number validation
+// createIndexACHCustomerName creates an index of Financial Institutions keyed by ACHParticipant.CustomerName
+func (f *ACHDictionary) createIndexACHCustomerName() {
+	for _, achP := range f.ACHParticipants {
+		f.IndexACHCustomerName[achP.CustomerName] = append(f.IndexACHCustomerName[achP.CustomerName], achP)
+	}
+}
+
+// CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName
+// ToDo: Review CU (Credit Union) which returns as Cu
+func (p *ACHParticipant) CustomerNameLabel() string {
+	s := strings.Title(strings.ToLower(p.CustomerName))
+	return s
+}
+
+// RoutingNumberSearch returns a FEDACH participant based on a ACHParticipant.RoutingNumber.  Routing Number validation
 // is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
-// ToDo: Should this remain exportable?
 func (f *ACHDictionary) RoutingNumberSearch(s string) *ACHParticipant {
-	if _, ok := f.IndexACHParticipant[s]; ok {
-		return f.IndexACHParticipant[s]
+	if _, ok := f.IndexACHRoutingNumber[s]; ok {
+		return f.IndexACHRoutingNumber[s]
+	}
+	return nil
+}
+
+// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
+	if _, ok := f.IndexACHCustomerName[s]; ok {
+		return f.IndexACHCustomerName[s]
 	}
 	return nil
 }
