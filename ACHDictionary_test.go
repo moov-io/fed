@@ -186,3 +186,23 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 		}
 	}
 }
+
+// TestInvalidACHFinancialInstitutionSearch tests that a Financial Institution defined in FedACHDir returns the participant data
+func TestInvalidACHFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi := achDir.FinancialInstitutionSearch("XYZ")
+
+	if fi != nil {
+		t.Errorf("%s", "XYZ should have returned nil")
+	}
+}

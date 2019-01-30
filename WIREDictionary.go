@@ -86,10 +86,7 @@ func (f *WIREDictionary) Read() error {
 			return f.errors
 		}
 	}
-	if err := f.createIndexWIRECustomerName(); err != nil {
-		f.errors.Add(err)
-		return f.errors
-	}
+	f.createIndexWIRECustomerName()
 	return nil
 }
 
@@ -121,11 +118,10 @@ func (f *WIREDictionary) parseWIREParticipant() error {
 }
 
 // createIndexWIRECustomerName creates an index of Financial Institutions keyed by WIREParticipant.CustomerName
-func (f *WIREDictionary) createIndexWIRECustomerName() error {
+func (f *WIREDictionary) createIndexWIRECustomerName() {
 	for _, wireP := range f.WIREParticipants {
 		f.IndexWIRECustomerName[wireP.CustomerName] = append(f.IndexWIRECustomerName[wireP.CustomerName], wireP)
 	}
-	return nil
 }
 
 // RoutingNumberSearch returns a FEDWIRE participant based on a WIREParticipant.RoutingNumber.  Routing Number

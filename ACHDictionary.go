@@ -98,10 +98,7 @@ func (f *ACHDictionary) Read() error {
 			return f.errors
 		}
 	}
-	if err := f.createIndexACHCustomerName(); err != nil {
-		f.errors.Add(err)
-		return f.errors
-	}
+	f.createIndexACHCustomerName()
 	return nil
 }
 
@@ -146,11 +143,10 @@ func (f *ACHDictionary) parseACHParticipant() error {
 }
 
 // createIndexACHCustomerName creates an index of Financial Institutions keyed by ACHParticipant.CustomerName
-func (f *ACHDictionary) createIndexACHCustomerName() error {
+func (f *ACHDictionary) createIndexACHCustomerName() {
 	for _, achP := range f.ACHParticipants {
 		f.IndexACHCustomerName[achP.CustomerName] = append(f.IndexACHCustomerName[achP.CustomerName], achP)
 	}
-	return nil
 }
 
 // CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName

@@ -127,7 +127,7 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in  FedWIREDir returns the participant
+// TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant
 // data
 func TestWIREFinancialInstitutionSearch(t *testing.T) {
 	f, err := os.Open("./data/fpddir.txt")
@@ -152,5 +152,35 @@ func TestWIREFinancialInstitutionSearch(t *testing.T) {
 			t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
 		}
 	}
+}
 
+// TestInvalidWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant
+// data
+func TestInvalidWIREFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/fpddir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	wireDir := NewWIREDictionary(f)
+	err = wireDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi := wireDir.FinancialInstitutionSearch("XYZ")
+
+	if fi != nil {
+		t.Errorf("%s", "XYZ should have returned nil")
+	}
+}
+
+func TestWIREParsingError(t *testing.T) {
+	var line = "011000536FHLB BOSTON       FEDERAL HOME LOAN BANK              MABOSTON                   © Y20170818"
+	f := NewWIREDictionary(strings.NewReader(line))
+	if err := f.Read(); err != nil {
+		if !Has(err, NewRecordWrongLengthErr(101, 51)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
 }
