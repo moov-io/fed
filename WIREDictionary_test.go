@@ -1,7 +1,3 @@
-// Copyright 2019 The Moov Authors
-// Use of this source code is governed by an Apache License
-// license that can be found in the LICENSE file.
-
 package fed
 
 import (
@@ -18,7 +14,7 @@ func TestWIREParseParticipant(t *testing.T) {
 	f := NewWIREDictionary(strings.NewReader(line))
 	f.Read()
 
-	if fi, ok := f.IndexWIREParticipant["325280039"]; ok {
+	if fi, ok := f.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.RoutingNumber != "325280039" {
 			t.Errorf("Expected `325280039` got : %s", fi.RoutingNumber)
 		}
@@ -60,13 +56,13 @@ func TestWIREDirectoryRead(t *testing.T) {
 	wireDir := NewWIREDictionary(f)
 	err = wireDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 	if len(wireDir.WIREParticipants) != 7693 {
 		t.Errorf("Expected '7693' got: %v", len(wireDir.WIREParticipants))
 	}
 
-	if fi, ok := wireDir.IndexWIREParticipant["325280039"]; ok {
+	if fi, ok := wireDir.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.TelegraphicName != "MAC FCU" {
 			t.Errorf("Expected `MAC FCU` got : %s", fi.TelegraphicName)
 		}
@@ -95,7 +91,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 	wireDir := NewWIREDictionary(f)
 	err = wireDir.Read()
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 
 	fi := wireDir.RoutingNumberSearch("324172465")
@@ -115,7 +111,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	f, err := os.Open("./data/fpddir.txt")
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
 	defer f.Close()
 	wireDir := NewWIREDictionary(f)
@@ -129,4 +125,32 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	if fi != nil {
 		t.Errorf("%s", "325183657 should have returned nil")
 	}
+}
+
+// TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in  FedWIREDir returns the participant
+// data
+func TestWIREFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/fpddir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	wireDir := NewWIREDictionary(f)
+	err = wireDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi := wireDir.FinancialInstitutionSearch("TRUGROCER FEDERAL CREDIT UNION")
+
+	if fi == nil {
+		t.Fatalf("wire financial institution `TRUGROCER FEDERAL CREDIT UNION` not found")
+	}
+
+	for _, f := range fi {
+		if f.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
+			t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
+		}
+	}
+
 }
