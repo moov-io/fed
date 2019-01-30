@@ -12,6 +12,15 @@ import (
 	"unicode/utf8"
 )
 
+const (
+	// FileLineLength is the FedACH text file line length
+	FileLineLength = 155
+	// MaximumRecordsReturned is the maximum records to be returned when searching
+	MaximumRecordsReturned = 499
+	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
+	MinimumRoutingNumberDigits = 2
+)
+
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
@@ -88,8 +97,8 @@ func (f *ACHDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if utf8.RuneCountInString(f.line) != 155 {
-			f.errors.Add(NewRecordWrongLengthErr(155, len(f.line)))
+		if utf8.RuneCountInString(f.line) != FileLineLength {
+			f.errors.Add(NewRecordWrongLengthErr(FileLineLength, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
@@ -156,9 +165,9 @@ func (p *ACHParticipant) CustomerNameLabel() string {
 	return s
 }
 
-// RoutingNumberSearch returns a FEDACH participant based on a ACHParticipant.RoutingNumber.  Routing Number validation
-// is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
-func (f *ACHDictionary) RoutingNumberSearch(s string) *ACHParticipant {
+// RoutingNumberSearchSingle returns a FEDACH participant based on a ACHParticipant.RoutingNumber.  Routing Number
+// validation is only that it exists in IndexParticipant.  Expecting a valid 9 digit routing number.
+func (f *ACHDictionary) RoutingNumberSearchSingle(s string) *ACHParticipant {
 	if _, ok := f.IndexACHRoutingNumber[s]; ok {
 		return f.IndexACHRoutingNumber[s]
 	}
@@ -171,4 +180,31 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
 		return f.IndexACHCustomerName[s]
 	}
 	return nil
+}
+
+// RoutingNumberSearch returns FEDACH participants if ACHParticipant.RoutingNumber begins with prefix string s.
+// The first 2 digits of the routing number are required.
+func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error) {
+
+	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
+		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
+		// The first 2 digits are required
+		return nil, f.errors
+	}
+
+	Participants := make([]*ACHParticipant, 0)
+
+	for _, achP := range f.ACHParticipants {
+		if strings.HasPrefix(achP.RoutingNumber, s) {
+			Participants = append(Participants, achP)
+		}
+	}
+
+	if len(Participants) > MaximumRecordsReturned {
+		f.errors.Add(ErrToManyRecords)
+		// Return with error if the search result is greater than 499
+		return nil, f.errors
+	}
+
+	return Participants, nil
 }

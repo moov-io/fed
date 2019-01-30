@@ -12,7 +12,12 @@ import (
 )
 
 // ErrFileTooLong is the error given when a file exceeds the maximum possible length
-var ErrFileTooLong = errors.New("file exceeds maximum possible number of lines")
+var (
+	ErrFileTooLong = errors.New("file exceeds maximum possible number of lines")
+	// Similar to FEDACH site
+	ErrToManyRecords = errors.New("there are more than 499 FedACH Participants matching your search criteria. " +
+		"Make your search more specific and try again")
+)
 
 // RecordWrongLengthErr is the error given when a record is the wrong length
 type RecordWrongLengthErr struct {
