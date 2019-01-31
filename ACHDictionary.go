@@ -12,6 +12,18 @@ import (
 	"unicode/utf8"
 )
 
+const (
+	// FileLineLength is the FedACH text file line length
+	FileLineLength = 155
+	// MaximumRecordsReturned is the maximum records to be returned when searching
+	MaximumRecordsReturned = 499
+	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
+	MinimumRoutingNumberDigits = 2
+	// MaximumRoutingNumberDigits is the maximum number of digits allowed for searching by routing number
+	// Based on https://www.frbservices.org/EPaymentsDirectory/search.html
+	MaximumRoutingNumberDigits = 9
+)
+
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
@@ -26,6 +38,8 @@ type ACHDictionary struct {
 	IndexACHCustomerName map[string][]*ACHParticipant
 	// errors holds each error encountered when attempting to parse the file
 	errors base.ErrorList
+	// validator is composed for data validation
+	validator
 }
 
 // NewACHDictionary creates a ACHDictionary
@@ -88,8 +102,8 @@ func (f *ACHDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if utf8.RuneCountInString(f.line) != 155 {
-			f.errors.Add(NewRecordWrongLengthErr(155, len(f.line)))
+		if utf8.RuneCountInString(f.line) != FileLineLength {
+			f.errors.Add(NewRecordWrongLengthErr(FileLineLength, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
@@ -156,19 +170,58 @@ func (p *ACHParticipant) CustomerNameLabel() string {
 	return s
 }
 
-// RoutingNumberSearch returns a FEDACH participant based on a ACHParticipant.RoutingNumber.  Routing Number validation
-// is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
-func (f *ACHDictionary) RoutingNumberSearch(s string) *ACHParticipant {
+// RoutingNumberSearchSingle returns a FEDACH participant based on a ACHParticipant.RoutingNumber.  Routing Number
+// validation is only that it exists in IndexParticipant.  Expecting a valid 9 digit routing number.
+func (f *ACHDictionary) RoutingNumberSearchSingle(s string) *ACHParticipant {
 	if _, ok := f.IndexACHRoutingNumber[s]; ok {
 		return f.IndexACHRoutingNumber[s]
 	}
 	return nil
 }
 
-// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
+// FinancialInstitutionSearchSingle returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) FinancialInstitutionSearchSingle(s string) []*ACHParticipant {
 	if _, ok := f.IndexACHCustomerName[s]; ok {
 		return f.IndexACHCustomerName[s]
 	}
 	return nil
+}
+
+// RoutingNumberSearch returns FEDACH participants if ACHParticipant.RoutingNumber begins with prefix string s.
+// The first 2 digits of the routing number are required.
+// Based on https://www.frbservices.org/EPaymentsDirectory/search.html
+func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error) {
+	s = strings.TrimSpace(s)
+
+	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
+		// The first 2 digits (characters) are required
+		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
+		return nil, f.errors
+	}
+	if utf8.RuneCountInString(s) > MaximumRoutingNumberDigits {
+		f.errors.Add(NewRecordWrongLengthErr(9, len(s)))
+		// Routing Number cannot be greater than 10 digits (characters)
+		return nil, f.errors
+	}
+	if err := f.isNumeric(s); err != nil {
+		// Routing Number is not numeric
+		f.errors.Add(ErrRoutingNumberNumeric)
+		return nil, f.errors
+	}
+
+	Participants := make([]*ACHParticipant, 0)
+
+	for _, achP := range f.ACHParticipants {
+		if strings.HasPrefix(achP.RoutingNumber, s) {
+			Participants = append(Participants, achP)
+		}
+	}
+
+	if len(Participants) > MaximumRecordsReturned {
+		// Return with error if the search result is greater than 499
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
+		return nil, f.errors
+	}
+
+	return Participants, nil
 }
