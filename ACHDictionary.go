@@ -179,8 +179,8 @@ func (f *ACHDictionary) RoutingNumberSearchSingle(s string) *ACHParticipant {
 	return nil
 }
 
-// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
+// FinancialInstitutionSearchSingle returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) FinancialInstitutionSearchSingle(s string) []*ACHParticipant {
 	if _, ok := f.IndexACHCustomerName[s]; ok {
 		return f.IndexACHCustomerName[s]
 	}
@@ -219,7 +219,7 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 
 	if len(Participants) > MaximumRecordsReturned {
 		// Return with error if the search result is greater than 499
-		f.errors.Add(ErrToManyRecords)
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
 		return nil, f.errors
 	}
 

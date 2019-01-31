@@ -15,10 +15,28 @@ import (
 var (
 	ErrFileTooLong = errors.New("file exceeds maximum possible number of lines")
 	// Similar to FEDACH site
-	ErrToManyRecords = errors.New("there are more than 499 FedACH Participants matching your search criteria. " +
-		"Make your search more specific and try again")
 	ErrRoutingNumberNumeric = errors.New("the routing number entered is not numeric")
 )
+
+// NumberOfRecordsReturnedError is the error when the number of records returned is not correct
+type NumberOfRecordsReturnedError struct {
+	Message                string
+	NumberOfRecords        int
+	MaximumNumberOfRecords int
+}
+
+// NewNumberOfRecordsReturnedError creates a new error of the NumberOfRecordsReturnedError type
+func NewNumberOfRecordsReturnedError(numberOfRecords, maximumNumberOfRecords int) NumberOfRecordsReturnedError {
+	return NumberOfRecordsReturnedError{
+		Message:                fmt.Sprintf("%d matching your criteria which exceeds the maximum %d allowed to be returned. Make your search more specific and try again", numberOfRecords, maximumNumberOfRecords),
+		NumberOfRecords:        numberOfRecords,
+		MaximumNumberOfRecords: maximumNumberOfRecords,
+	}
+}
+
+func (e NumberOfRecordsReturnedError) Error() string {
+	return e.Message
+}
 
 // RecordWrongLengthErr is the error given when a record is the wrong length
 type RecordWrongLengthErr struct {
@@ -30,8 +48,9 @@ type RecordWrongLengthErr struct {
 // NewRecordWrongLengthErr creates a new error of the RecordWrongLengthErr type
 func NewRecordWrongLengthErr(lengthRequired int, length int) RecordWrongLengthErr {
 	return RecordWrongLengthErr{
-		Message: fmt.Sprintf("must be %d characters and found %d", lengthRequired, length),
-		Length:  length,
+		Message:        fmt.Sprintf("must be %d characters and found %d", lengthRequired, length),
+		LengthRequired: lengthRequired,
+		Length:         length,
 	}
 }
 

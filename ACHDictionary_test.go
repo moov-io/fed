@@ -141,8 +141,8 @@ func TestACHRoutingNumberSearchSingle(t *testing.T) {
 	}
 }
 
-// TestInvalidRoutingNumberSearch tests that an invalid routing number returns nil
-func TestInvalidACHRoutingNumberSearch(t *testing.T) {
+// TestInvalidRoutingNumberSearchSingle tests that an invalid routing number returns nil
+func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -161,9 +161,9 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// TestACHFinancialInstitutionSearch tests that a Financial Institution defined in FedACHDir returns
+// TestACHFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedACHDir returns
 // participant data
-func TestACHFinancialInstitutionSearch(t *testing.T) {
+func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -175,7 +175,7 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 		t.Fatalf("%T: %s", err, err)
 	}
 
-	fi := achDir.FinancialInstitutionSearch("BANK OF AMERICA N.A")
+	fi := achDir.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
 
 	if fi == nil {
 		t.Fatalf("ach financial institution `BANK OF AMERICA N.A` not found")
@@ -188,9 +188,9 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 	}
 }
 
-// TestInvalidACHFinancialInstitutionSearch tests that a Financial Institution defined in FedACHDir returns
+// TestInvalidACHFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedACHDir returns
 // the participant data
-func TestInvalidACHFinancialInstitutionSearch(t *testing.T) {
+func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -202,7 +202,7 @@ func TestInvalidACHFinancialInstitutionSearch(t *testing.T) {
 		t.Fatalf("%T: %s", err, err)
 	}
 
-	fi := achDir.FinancialInstitutionSearch("XYZ")
+	fi := achDir.FinancialInstitutionSearchSingle("XYZ")
 
 	if fi != nil {
 		t.Errorf("%s", "XYZ should have returned nil")
@@ -210,7 +210,7 @@ func TestInvalidACHFinancialInstitutionSearch(t *testing.T) {
 }
 
 // TestACHRoutingNumberSearch tests that routing number search returns nil or FEDACH participant data
-func TestRoutingNumberSearch(t *testing.T) {
+func TestACHRoutingNumberSearch(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -233,8 +233,8 @@ func TestRoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// TestACHRoutingNumberToMany tests that routing number search returns nil or FEDACH participant data
-func TestRoutingNumberSearchToMany(t *testing.T) {
+// TestACHRoutingNumberSearchToMany tests that routing number search returns nil or FEDACH participant data
+func TestACHRoutingNumberSearchToMany(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -246,16 +246,18 @@ func TestRoutingNumberSearchToMany(t *testing.T) {
 		t.Fatalf("%T: %s", err, err)
 	}
 
-	if _, err := achDir.RoutingNumberSearch("02"); err != nil {
-		if !Has(err, ErrToManyRecords) {
+	fi, err := achDir.RoutingNumberSearch("02")
+
+	if err != nil {
+		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), MaximumRecordsReturned)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
 }
 
-// TestACHRoutingNumberMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
+// TestACHRoutingNumberSearchMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is less than 2.
-func TestRoutingNumberSearchMinimumLength(t *testing.T) {
+func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -275,7 +277,7 @@ func TestRoutingNumberSearchMinimumLength(t *testing.T) {
 }
 
 // TestInvalidACHRoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
-func TestInvalidRoutingNumberSearch(t *testing.T) {
+func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
