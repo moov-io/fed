@@ -19,6 +19,8 @@ const (
 	MaximumRecordsReturned = 499
 	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
 	MinimumRoutingNumberDigits = 2
+	// MaximumRoutingNumberDigits is the maximum number of digits allowed for searching by routing number
+	MaximumRoutingNumberDigits = 9
 )
 
 // ACHDictionary of Participant records
@@ -35,6 +37,8 @@ type ACHDictionary struct {
 	IndexACHCustomerName map[string][]*ACHParticipant
 	// errors holds each error encountered when attempting to parse the file
 	errors base.ErrorList
+	// validator is composed for data validation
+	validator
 }
 
 // NewACHDictionary creates a ACHDictionary
@@ -185,10 +189,23 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
 // RoutingNumberSearch returns FEDACH participants if ACHParticipant.RoutingNumber begins with prefix string s.
 // The first 2 digits of the routing number are required.
 func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error) {
+	s = strings.TrimSpace(s)
 
 	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
 		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
-		// The first 2 digits are required
+		// The first 2 digits (characters) are required
+		return nil, f.errors
+	}
+
+	if utf8.RuneCountInString(s) > MaximumRoutingNumberDigits {
+		f.errors.Add(NewRecordWrongLengthErr(9, len(s)))
+		// Routing Number cannot be greater than 10 digits (characters)
+		return nil, f.errors
+	}
+
+	if err := f.isNumeric(s); err != nil {
+		f.errors.Add(ErrRoutingNumberNumeric)
+		// Routing Number is not numeric
 		return nil, f.errors
 	}
 

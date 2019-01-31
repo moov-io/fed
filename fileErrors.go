@@ -17,6 +17,7 @@ var (
 	// Similar to FEDACH site
 	ErrToManyRecords = errors.New("there are more than 499 FedACH Participants matching your search criteria. " +
 		"Make your search more specific and try again")
+	ErrRoutingNumberNumeric = errors.New("the routing number entered is not numeric")
 )
 
 // RecordWrongLengthErr is the error given when a record is the wrong length

@@ -253,9 +253,9 @@ func TestRoutingNumberSearchToMany(t *testing.T) {
 	}
 }
 
-// TestACHRoutingNumberSearchWrongLength tests that routing number search returns a RecordWrongLengthErr if the
+// TestACHRoutingNumberMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is less than 2.
-func TestRoutingNumberSearchWrongLength(t *testing.T) {
+func TestRoutingNumberSearchMinimumLength(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -295,5 +295,47 @@ func TestInvalidRoutingNumberSearch(t *testing.T) {
 
 	if len(fi) != 0 {
 		t.Errorf("%s", "ach routing number search should have returned nil")
+	}
+}
+
+// TestACHRoutingNumberMaximumLength tests that routing number search returns a RecordWrongLengthErr if the
+// length of the string passed in is greater than 9.
+func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	if _, err := achDir.RoutingNumberSearch("1234567890"); err != nil {
+		if !Has(err, NewRecordWrongLengthErr(9, 10)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+}
+
+// TestACHRoutingNumberNumeric tests that routing number search returns an ErrRoutingNumberNumeric if the
+// string passed is not numeric.
+func TestACHRoutingNumberNumeric(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	if _, err := achDir.RoutingNumberSearch("1  S5"); err != nil {
+		if !Has(err, ErrRoutingNumberNumeric) {
+			t.Errorf("%T: %s", err, err)
+		}
 	}
 }
