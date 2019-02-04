@@ -7,7 +7,9 @@ package fed
 import (
 	"bufio"
 	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/strcmp"
 	"io"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -222,6 +224,62 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
 		return nil, f.errors
 	}
+
+	return Participants, nil
+}
+
+// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
+	s = strings.ToLower(s)
+
+	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinklerMatchPercentage
+	// and LevenshteinMatchPercentage
+	Participants := make([]*ACHParticipant, 0)
+
+	// JaroWinklerMatchPercentage is the search match percentage for strcmp.JaroWinkler for CustomerName
+	// (Financial Institution Name)
+	var JaroWinklerMatchPercentage = 0.85
+	// LevenshteinMatchPercentage is the search match percentage for strcmp.Levenshtein for CustomerName
+	// (Financial Institution Name)
+	var LevenshteinMatchPercentage = 0.85
+
+	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+	// typos are less common to happen at the beginning.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > JaroWinklerMatchPercentage {
+			Participants = append(Participants, achP)
+		}
+	}
+
+	// Levenshtein is the "edit distance" between two strings. This is the count of operations
+	// (insert, delete, replace) needed for two strings to be equal.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > LevenshteinMatchPercentage {
+
+			// Only append if the not included in the Participant sub-set
+			if len(Participants) != 0 {
+				for _, p := range Participants {
+					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
+						break
+					}
+				}
+				Participants = append(Participants, achP)
+
+			} else {
+				Participants = append(Participants, achP)
+			}
+		}
+	}
+
+	if len(Participants) > MaximumRecordsReturned {
+		// Return with error if the search result is greater than 499
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
+		return nil, f.errors
+	}
+
+	// Sort the result
+	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
 	return Participants, nil
 }

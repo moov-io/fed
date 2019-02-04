@@ -1,3 +1,15 @@
+## v0.8.0 (Released 2019-02-01)
+
+ADDITIONS
+
+- Added `Has` and `Match` functions to support type-based error handling
+
+## v0.7.0 (Released 2019-01-31)
+
+ADDITIONS
+
+- Add `ID() string` to return a random identifier.
+
 ## v0.6.0 (Released 2019-01-25)
 
 ADDITIONS

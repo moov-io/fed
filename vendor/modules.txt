@@ -1,4 +1,9 @@
-# github.com/moov-io/base v0.6.0
+# github.com/docker/docker v1.13.1
+github.com/docker/docker/pkg/namesgenerator
+github.com/docker/docker/pkg/random
+# github.com/moov-io/base v0.8.0
 github.com/moov-io/base
 # github.com/rickar/cal v1.0.0
 github.com/rickar/cal
+# github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9
+github.com/xrash/smetrics
