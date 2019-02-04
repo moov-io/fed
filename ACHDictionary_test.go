@@ -5,7 +5,6 @@
 package fed
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -365,9 +364,5 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 	// no results
 	if fi == nil {
 		t.Fatalf("No Financial Institutions matched your search query")
-	}
-
-	for _, bank := range fi {
-		fmt.Printf("Financial Institions: %s RoutingNumber: %s \n", bank.CustomerName, bank.RoutingNumber)
 	}
 }
