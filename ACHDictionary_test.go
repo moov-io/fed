@@ -364,21 +364,10 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 
 	// no results
 	if fi == nil {
-		t.Fatalf("No Finacial Institutions matched your search query")
+		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
 	for _, bank := range fi {
 		fmt.Printf("Financial Institions: %s RoutingNumber: %s \n", bank.CustomerName, bank.RoutingNumber)
 	}
-
-	/* For MAP
-		for _, banks := range fi {
-		for _, b := range banks {
-				fmt.Printf("Financial Institutions: %s RoutingNumber: %s \n", b.CustomerName, b.RoutingNumber)
-		}
-
-	}
-
-	*/
-
 }
