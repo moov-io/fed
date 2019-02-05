@@ -21,6 +21,11 @@ FED computes string similarity using the JaroWinkler and Levenshtein algorithm a
 | `ACHMaximumRecordsReturned` | Maximum number of records to be returned from search | 499 |
 
 
+### Usage
+
+Go library
+github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
+
 ## FedWire and FedACH data from the Federal Reserve Bank Services
 
 The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/).
