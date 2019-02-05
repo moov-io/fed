@@ -14,11 +14,13 @@ import (
 	"unicode/utf8"
 )
 
+var (
+	maximumRecordsReturned = 499
+)
+
 const (
 	// FileLineLength is the FedACH text file line length
 	FileLineLength = 155
-	// MaximumRecordsReturned is the maximum records to be returned when searching
-	MaximumRecordsReturned = 499
 	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
 	MinimumRoutingNumberDigits = 2
 	// MaximumRoutingNumberDigits is the maximum number of digits allowed for searching by routing number
@@ -219,9 +221,9 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		}
 	}
 
-	if len(Participants) > MaximumRecordsReturned {
+	if len(Participants) > maximumRecordsReturned {
 		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), maximumRecordsReturned))
 		return nil, f.errors
 	}
 
@@ -272,9 +274,9 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 		}
 	}
 
-	if len(Participants) > MaximumRecordsReturned {
+	if len(Participants) > maximumRecordsReturned {
 		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), maximumRecordsReturned))
 		return nil, f.errors
 	}
 
