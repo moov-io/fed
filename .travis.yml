@@ -14,11 +14,11 @@ matrix:
       cache:
         directories:
           - "/home/travis/.cache/go-build" # GOCACHE
-    - os: osx
-      go: 1.11.x
-      cache:
-        directories:
-          - "/Users/travis/Library/Caches/go-build" # GOCACHE
+   # - os: osx
+    #  go: 1.11.x
+     # cache:
+      #  directories:
+       #   - "/Users/travis/Library/Caches/go-build" # GOCACHE
 before_install:
   - go get -u github.com/client9/misspell/cmd/misspell
   - go get -u golang.org/x/lint/golint
