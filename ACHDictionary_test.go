@@ -249,7 +249,7 @@ func TestACHRoutingNumberSearchToMany(t *testing.T) {
 	fi, err := achDir.RoutingNumberSearch("02")
 
 	if err != nil {
-		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), maximumRecordsReturned)) {
+		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), ACHMaximumRecordsReturned)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -368,7 +368,7 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 }
 
 func TestACHFinancialInstitutionSearchToMany(t *testing.T) {
-	maximumRecordsReturned = 200
+	ACHMaximumRecordsReturned = 200
 
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
@@ -385,11 +385,11 @@ func TestACHFinancialInstitutionSearchToMany(t *testing.T) {
 
 	// error trapped
 	if err != nil {
-		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), maximumRecordsReturned)) {
+		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), ACHMaximumRecordsReturned)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
 
 	// reset maximumRecordsReturned to ACHDictionary value
-	maximumRecordsReturned = 499
+	ACHMaximumRecordsReturned = 499
 }

@@ -15,7 +15,15 @@ import (
 )
 
 var (
-	maximumRecordsReturned = 499
+	// ACHJaroWinklerMatchPercentage is the search similarity percentage for strcmp.JaroWinkler for CustomerName
+	// (Financial Institution Name)
+	ACHJaroWinklerSimilarity = 0.85
+	// ACHLevenshteinMatchPercentage is the search similarity percentage for strcmp.Levenshtein for CustomerName
+	// (Financial Institution Name)
+	ACHLevenshteinSimilarity = 0.85
+	// maximumRecordsReturned is the maximum number of records to be returned - Currently this matches the FED Site
+	// maximum
+	ACHMaximumRecordsReturned = 499
 )
 
 const (
@@ -221,9 +229,9 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		}
 	}
 
-	if len(Participants) > maximumRecordsReturned {
+	if len(Participants) > ACHMaximumRecordsReturned {
 		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), maximumRecordsReturned))
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), ACHMaximumRecordsReturned))
 		return nil, f.errors
 	}
 
@@ -238,18 +246,11 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// and LevenshteinMatchPercentage
 	Participants := make([]*ACHParticipant, 0)
 
-	// JaroWinklerMatchPercentage is the search match percentage for strcmp.JaroWinkler for CustomerName
-	// (Financial Institution Name)
-	var JaroWinklerMatchPercentage = 0.85
-	// LevenshteinMatchPercentage is the search match percentage for strcmp.Levenshtein for CustomerName
-	// (Financial Institution Name)
-	var LevenshteinMatchPercentage = 0.85
-
 	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
 	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
 	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > JaroWinklerMatchPercentage {
+		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
 			Participants = append(Participants, achP)
 		}
 	}
@@ -257,7 +258,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// Levenshtein is the "edit distance" between two strings. This is the count of operations
 	// (insert, delete, replace) needed for two strings to be equal.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > LevenshteinMatchPercentage {
+		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
 
 			// Only append if the not included in the Participant sub-set
 			if len(Participants) != 0 {
@@ -274,9 +275,9 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 		}
 	}
 
-	if len(Participants) > maximumRecordsReturned {
+	if len(Participants) > ACHMaximumRecordsReturned {
 		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), maximumRecordsReturned))
+		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), ACHMaximumRecordsReturned))
 		return nil, f.errors
 	}
 
