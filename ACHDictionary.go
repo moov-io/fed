@@ -15,13 +15,13 @@ import (
 )
 
 var (
-	// ACHJaroWinklerMatchPercentage is the search similarity percentage for strcmp.JaroWinkler for CustomerName
+	// ACHJaroWinklerSimilarity is the search similarity percentage for strcmp.JaroWinkler for CustomerName
 	// (Financial Institution Name)
 	ACHJaroWinklerSimilarity = 0.85
-	// ACHLevenshteinMatchPercentage is the search similarity percentage for strcmp.Levenshtein for CustomerName
+	// ACHLevenshteinSimilarity is the search similarity percentage for strcmp.Levenshtein for CustomerName
 	// (Financial Institution Name)
 	ACHLevenshteinSimilarity = 0.85
-	// maximumRecordsReturned is the maximum number of records to be returned - Currently this matches the FED Site
+	// ACHMaximumRecordsReturned is the maximum number of records to be returned - Currently this matches the FED Site
 	// maximum
 	ACHMaximumRecordsReturned = 499
 )
@@ -94,7 +94,7 @@ type ACHParticipant struct {
 	ViewCode string `json:"viewCode"`
 }
 
-// ACHLocation City name and state code in the institution's delivery address
+// ACHLocation is the institution's delivery address
 type ACHLocation struct {
 	// Address
 	Address string `json:"address"`
@@ -176,7 +176,6 @@ func (f *ACHDictionary) createIndexACHCustomerName() {
 }
 
 // CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName
-// ToDo: Review CU (Credit Union) which returns as Cu
 func (p *ACHParticipant) CustomerNameLabel() string {
 	s := strings.Title(strings.ToLower(p.CustomerName))
 	return s
@@ -242,8 +241,8 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
 	s = strings.ToLower(s)
 
-	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinklerMatchPercentage
-	// and LevenshteinMatchPercentage
+	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
+	// and Levenshtein similarity
 	Participants := make([]*ACHParticipant, 0)
 
 	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
