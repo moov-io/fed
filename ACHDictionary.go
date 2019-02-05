@@ -21,9 +21,6 @@ var (
 	// ACHLevenshteinSimilarity is the search similarity percentage for strcmp.Levenshtein for CustomerName
 	// (Financial Institution Name)
 	ACHLevenshteinSimilarity = 0.85
-	// ACHMaximumRecordsReturned is the maximum number of records to be returned - Currently this matches the FED Site
-	// maximum
-	ACHMaximumRecordsReturned = 499
 )
 
 const (
@@ -228,12 +225,6 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		}
 	}
 
-	if len(Participants) > ACHMaximumRecordsReturned {
-		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), ACHMaximumRecordsReturned))
-		return nil, f.errors
-	}
-
 	return Participants, nil
 }
 
@@ -272,12 +263,6 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 				Participants = append(Participants, achP)
 			}
 		}
-	}
-
-	if len(Participants) > ACHMaximumRecordsReturned {
-		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), ACHMaximumRecordsReturned))
-		return nil, f.errors
 	}
 
 	// Sort the result
