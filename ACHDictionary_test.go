@@ -28,10 +28,8 @@ func helperLoadFEDACHFile(t *testing.T) *ACHDictionary {
 
 func TestACHParseParticipant(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
-
 	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
-
 	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.RoutingNumber != "073905527" {
 			t.Errorf("CustomerName Expected '073905527' got: %v", fi.RoutingNumber)
@@ -85,7 +83,6 @@ func TestACHParseParticipant(t *testing.T) {
 
 func TestACHDirectoryRead(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	if len(achDir.ACHParticipants) != 18198 {
 		t.Errorf("Expected '18198' got: %v", len(achDir.ACHParticipants))
 	}
@@ -110,10 +107,8 @@ func TestACHInvalidRecordLength(t *testing.T) {
 
 func TestACHParticipantLabel(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
-
 	f := NewACHDictionary(strings.NewReader(line))
 	f.Read()
-
 	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.CustomerNameLabel() != "Lincoln Savings Bank" {
 			t.Errorf("CustomerNameLabel Expected 'Lincoln Savings Bank' got: %v", fi.CustomerNameLabel())
@@ -126,13 +121,10 @@ func TestACHParticipantLabel(t *testing.T) {
 // TestACHRoutingNumberSearchSingle tests that a valid routing number defined in FedACHDir returns participant data
 func TestACHRoutingNumberSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi := achDir.RoutingNumberSearchSingle("325183657")
-
 	if fi == nil {
 		t.Errorf("ach routing number `325183657` not found")
 	}
-
 	if fi.CustomerName != "LOWER VALLEY CU" {
 		t.Errorf("Expected `LOWER VALLEY CU` got : %v", fi.CustomerName)
 	}
@@ -141,9 +133,7 @@ func TestACHRoutingNumberSearchSingle(t *testing.T) {
 // TestInvalidRoutingNumberSearchSingle tests that an invalid routing number returns nil
 func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi := achDir.RoutingNumberSearchSingle("433")
-
 	if fi != nil {
 		t.Errorf("%s", "433 should have returned nil")
 	}
@@ -153,13 +143,10 @@ func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
 // participant data
 func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi := achDir.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
-
 	if fi == nil {
 		t.Fatalf("ach financial institution `BANK OF AMERICA N.A` not found")
 	}
-
 	for _, f := range fi {
 		if f.CustomerName != "BANK OF AMERICA N.A" {
 			t.Errorf("Expected `BANK OF AMERICA, N.A` got : %s", f.CustomerName)
@@ -171,9 +158,7 @@ func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 // the participant data
 func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi := achDir.FinancialInstitutionSearchSingle("XYZ")
-
 	if fi != nil {
 		t.Errorf("%s", "XYZ should have returned nil")
 	}
@@ -182,13 +167,10 @@ func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 // TestACHRoutingNumberSearch tests that routing number search returns nil or FEDACH participant data
 func TestACHRoutingNumberSearch(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.RoutingNumberSearch("325")
-
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-
 	if fi == nil {
 		t.Errorf("%s", "325 should have returned values")
 	}
@@ -197,14 +179,10 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 // TestACHRoutingNumberSearch02 tests string 02
 func TestACHRoutingNumberSearch02(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.RoutingNumberSearch("02")
-
 	if err != nil {
-		t.Errorf("%T: %s", err, err)
+		t.Fatalf("%T: %s", err, err)
 	}
-
-	// no results
 	if fi == nil {
 		t.Fatalf("ach routing number search should have returned results")
 	}
@@ -215,7 +193,6 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 // length of the string passed in is less than 2.
 func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	if _, err := achDir.RoutingNumberSearch("0"); err != nil {
 		if !Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
@@ -226,13 +203,10 @@ func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 // TestInvalidACHRoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
 func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.RoutingNumberSearch("777777777")
-
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-
 	if len(fi) != 0 {
 		t.Fatal("ach routing number search should have returned nil")
 	}
@@ -242,7 +216,6 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 // length of the string passed in is greater than 9.
 func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	if _, err := achDir.RoutingNumberSearch("1234567890"); err != nil {
 		if !Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
@@ -254,7 +227,6 @@ func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 // string passed is not numeric.
 func TestACHRoutingNumberNumeric(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	if _, err := achDir.RoutingNumberSearch("1  S5"); err != nil {
 		if !Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
@@ -265,15 +237,10 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 // TestACHFinancialInstitutionSearch tests string First Bank
 func TestACHFinancialInstitutionSearch(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.FinancialInstitutionSearch("First Bank")
-
-	// error trapped
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-
-	// no results
 	if fi == nil {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -282,15 +249,10 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 // TestACHFinancialInstitutionFarmers tests string FaRmerS
 func TestACHFinancialInstitutionFarmers(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.FinancialInstitutionSearch("FaRmerS")
-
-	// error trapped
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-
-	// no results
 	if fi == nil {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -299,24 +261,43 @@ func TestACHFinancialInstitutionFarmers(t *testing.T) {
 // TestACHSearchStateFilter tests string Farmers State Bank and filters by the state of Ohio
 func TestACHSearchStateFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
-
 	fi, err := achDir.FinancialInstitutionSearch("Farmers State Bank")
-
-	// error trapped
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-
-	// no results
 	if fi == nil {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
 	filter := StateFilter(fi, "OH")
-
+	if filter == nil {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
 	for _, loc := range filter {
 		if loc.ACHLocation.State != "OH" {
 			t.Errorf("Expected `OH` got : %s", loc.ACHLocation.State)
+		}
+	}
+}
+
+// TestACHSearchCityFilter tests string Farmers State Bank and filters by the city of ARCHBOLD
+func TestACHSearchCityFilter(t *testing.T) {
+	achDir := helperLoadFEDACHFile(t)
+	fi, err := achDir.FinancialInstitutionSearch("Farmers State Bank")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if fi == nil {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+
+	filter := CityFilter(fi, "ARCHBOLD")
+	if filter == nil {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.ACHLocation.City != "ARCHBOLD" {
+			t.Errorf("Expected `ARCHBOLD` got : %s", loc.ACHLocation.City)
 		}
 	}
 }
