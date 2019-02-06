@@ -39,6 +39,7 @@ func (e RecordWrongLengthErr) Error() string {
 }
 
 // ToDo: use base
+
 // Has takes in a (potential) list of errors, and an error to check for. If any of the errors
 // in the list have the same type as the error to check, it returns true. If the "list" isn't
 // actually a list (typically because it is nil), or no errors in the list match the other error

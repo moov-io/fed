@@ -270,3 +270,112 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 
 	return Participants, nil
 }
+
+/*// ToDo: Do we want a JaroWinkler search only
+
+// JaroWinklerFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) JaroWinklerFISearch(s string) ([]*ACHParticipant, error) {
+	s = strings.ToLower(s)
+
+	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
+	// and Levenshtein similarity
+	Participants := make([]*ACHParticipant, 0)
+
+	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+	// typos are less common to happen at the beginning.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+			Participants = append(Participants, achP)
+		}
+	}
+
+	// Sort the result
+	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
+
+	return Participants, nil
+}
+
+// ToDo: Do we want a Levenshtein search only
+
+// LevenshteinFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) LevenshteinFISearch(s string) ([]*ACHParticipant, error) {
+	s = strings.ToLower(s)
+
+	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
+	// and Levenshtein similarity
+	Participants := make([]*ACHParticipant, 0)
+
+	// Levenshtein is the "edit distance" between two strings. This is the count of operations
+	// (insert, delete, replace) needed for two strings to be equal.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+
+			// Only append if the not included in the Participant sub-set
+			if len(Participants) != 0 {
+				for _, p := range Participants {
+					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
+						break
+					}
+				}
+				Participants = append(Participants, achP)
+
+			} else {
+				Participants = append(Participants, achP)
+			}
+		}
+	}
+
+	// Sort the result
+	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
+
+	return Participants, nil
+}*/
+
+// ToDo: Do we want state and city filters based on []*ACHParticipant Result set
+// ToDo: property argument to be generic?
+
+// StateFilter filters ACHParticipant by State
+func StateFilter(achParticipants []*ACHParticipant, state string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range achParticipants {
+		if achP.ACHLocation.State == state {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}
+
+// CityFilter filters ACHParticipant by City
+func CityFilter(achParticipants []*ACHParticipant, city string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range achParticipants {
+		//ToDo:  Do we want a fuzzy search on City?
+		if achP.ACHLocation.City == city {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}
+
+/*// ToDo: Do we want state and city filters based on ACHDICTIONARY??
+//
+func (f *ACHDictionary) StateFilter(state string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range f.ACHParticipants {
+		if achP.ACHLocation.State == state {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}
+
+func (f *ACHDictionary) CityFilter(city string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range f.ACHParticipants {
+		if achP.ACHLocation.City == city {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}*/
