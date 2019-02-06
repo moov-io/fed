@@ -233,8 +233,8 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 	}
 }
 
-// TestACHRoutingNumberSearchToMany tests that routing number search returns nil or FEDACH participant data
-func TestACHRoutingNumberSearchToMany(t *testing.T) {
+// TestACHRoutingNumberSearch02 tests string 02
+func TestACHRoutingNumberSearch02(t *testing.T) {
 	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		t.Errorf("%T: %s", err, err)
@@ -249,10 +249,14 @@ func TestACHRoutingNumberSearchToMany(t *testing.T) {
 	fi, err := achDir.RoutingNumberSearch("02")
 
 	if err != nil {
-		if !Has(err, NewNumberOfRecordsReturnedError(len(fi), MaximumRecordsReturned)) {
-			t.Errorf("%T: %s", err, err)
-		}
+		t.Errorf("%T: %s", err, err)
 	}
+
+	// no results
+	if fi == nil {
+		t.Fatalf("ach routing number search should have returned results")
+	}
+
 }
 
 // TestACHRoutingNumberSearchMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
@@ -296,7 +300,7 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	}
 
 	if len(fi) != 0 {
-		t.Errorf("%s", "ach routing number search should have returned nil")
+		t.Fatal("ach routing number search should have returned nil")
 	}
 }
 
@@ -339,5 +343,57 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 		if !Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
+	}
+}
+
+// TestACHFinancialInstitutionSearch tests string First Bank
+func TestACHFinancialInstitutionSearch(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi, err := achDir.FinancialInstitutionSearch("First Bank")
+
+	// error trapped
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	// no results
+	if fi == nil {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+}
+
+// TestACHFinancialInstitutionFarmers tests string FaRmerS
+func TestACHFinancialInstitutionFarmers(t *testing.T) {
+	f, err := os.Open("./data/FedACHdir.txt")
+	if err != nil {
+		t.Errorf("%T: %s", err, err)
+	}
+	defer f.Close()
+	achDir := NewACHDictionary(f)
+	err = achDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	fi, err := achDir.FinancialInstitutionSearch("FaRmerS")
+
+	// error trapped
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+
+	// no results
+	if fi == nil {
+		t.Fatalf("No Financial Institutions matched your search query")
 	}
 }

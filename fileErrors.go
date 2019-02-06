@@ -18,26 +18,6 @@ var (
 	ErrRoutingNumberNumeric = errors.New("the routing number entered is not numeric")
 )
 
-// NumberOfRecordsReturnedError is the error when the number of records returned is not correct
-type NumberOfRecordsReturnedError struct {
-	Message                string
-	NumberOfRecords        int
-	MaximumNumberOfRecords int
-}
-
-// NewNumberOfRecordsReturnedError creates a new error of the NumberOfRecordsReturnedError type
-func NewNumberOfRecordsReturnedError(numberOfRecords, maximumNumberOfRecords int) NumberOfRecordsReturnedError {
-	return NumberOfRecordsReturnedError{
-		Message:                fmt.Sprintf("%d matching your criteria which exceeds the maximum %d allowed to be returned. Make your search more specific and try again", numberOfRecords, maximumNumberOfRecords),
-		NumberOfRecords:        numberOfRecords,
-		MaximumNumberOfRecords: maximumNumberOfRecords,
-	}
-}
-
-func (e NumberOfRecordsReturnedError) Error() string {
-	return e.Message
-}
-
 // RecordWrongLengthErr is the error given when a record is the wrong length
 type RecordWrongLengthErr struct {
 	Message        string
@@ -58,6 +38,7 @@ func (e RecordWrongLengthErr) Error() string {
 	return e.Message
 }
 
+// ToDo: use base
 // Has takes in a (potential) list of errors, and an error to check for. If any of the errors
 // in the list have the same type as the error to check, it returns true. If the "list" isn't
 // actually a list (typically because it is nil), or no errors in the list match the other error

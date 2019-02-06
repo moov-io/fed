@@ -6,8 +6,25 @@ moov-io/fed
 [![Go Report Card](https://goreportcard.com/badge/github.com/moov-io/fed)](https://goreportcard.com/report/github.com/moov-io/fed)
 [![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/moov-io/fed/master/LICENSE)
 
-
 Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System.
+
+### Configuration
+
+**Search Similarity Metrics**
+
+FED computes string similarity using the JaroWinkler and Levenshtein algorithm and can match sensitivity can be configured with environment variables.
+
+| Environmental Variable | Description | Default |
+|-----|-----|-----|
+| `ACHJaroWinklerSimilarity` | Ratio of boosting the score of exact matches at the beginning of the strings. | 0.85 |
+| `ACHLevenshteinSimilarity` | Ratio of Levenshtein distance for two strings to be considered equal. | 0.85 |
+| `ACHMaximumRecordsReturned` | Maximum number of records to be returned from search | 499 |
+
+
+### Usage
+
+Go library
+github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
 
 ## FedWire and FedACH data from the Federal Reserve Bank Services
 

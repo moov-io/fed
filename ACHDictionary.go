@@ -7,16 +7,25 @@ package fed
 import (
 	"bufio"
 	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/strcmp"
 	"io"
+	"sort"
 	"strings"
 	"unicode/utf8"
+)
+
+var (
+	// ACHJaroWinklerSimilarity is the search similarity percentage for strcmp.JaroWinkler for CustomerName
+	// (Financial Institution Name)
+	ACHJaroWinklerSimilarity = 0.85
+	// ACHLevenshteinSimilarity is the search similarity percentage for strcmp.Levenshtein for CustomerName
+	// (Financial Institution Name)
+	ACHLevenshteinSimilarity = 0.85
 )
 
 const (
 	// FileLineLength is the FedACH text file line length
 	FileLineLength = 155
-	// MaximumRecordsReturned is the maximum records to be returned when searching
-	MaximumRecordsReturned = 499
 	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
 	MinimumRoutingNumberDigits = 2
 	// MaximumRoutingNumberDigits is the maximum number of digits allowed for searching by routing number
@@ -82,7 +91,7 @@ type ACHParticipant struct {
 	ViewCode string `json:"viewCode"`
 }
 
-// ACHLocation City name and state code in the institution's delivery address
+// ACHLocation is the institution's delivery address
 type ACHLocation struct {
 	// Address
 	Address string `json:"address"`
@@ -164,7 +173,6 @@ func (f *ACHDictionary) createIndexACHCustomerName() {
 }
 
 // CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName
-// ToDo: Review CU (Credit Union) which returns as Cu
 func (p *ACHParticipant) CustomerNameLabel() string {
 	s := strings.Title(strings.ToLower(p.CustomerName))
 	return s
@@ -217,11 +225,48 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		}
 	}
 
-	if len(Participants) > MaximumRecordsReturned {
-		// Return with error if the search result is greater than 499
-		f.errors.Add(NewNumberOfRecordsReturnedError(len(Participants), MaximumRecordsReturned))
-		return nil, f.errors
+	return Participants, nil
+}
+
+// FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
+func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
+	s = strings.ToLower(s)
+
+	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
+	// and Levenshtein similarity
+	Participants := make([]*ACHParticipant, 0)
+
+	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+	// typos are less common to happen at the beginning.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+			Participants = append(Participants, achP)
+		}
 	}
+
+	// Levenshtein is the "edit distance" between two strings. This is the count of operations
+	// (insert, delete, replace) needed for two strings to be equal.
+	for _, achP := range f.ACHParticipants {
+		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+
+			// Only append if the not included in the Participant sub-set
+			if len(Participants) != 0 {
+				for _, p := range Participants {
+					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
+						break
+					}
+				}
+				Participants = append(Participants, achP)
+
+			} else {
+				Participants = append(Participants, achP)
+			}
+		}
+	}
+
+	// Sort the result
+	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
 	return Participants, nil
 }
