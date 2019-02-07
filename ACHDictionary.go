@@ -275,7 +275,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		if strings.ToLower(achP.ACHLocation.State) == strings.ToLower(s) {
+		if strings.EqualFold(achP.ACHLocation.State, s) {
 			nsl = append(nsl, achP)
 		}
 	}
@@ -286,7 +286,7 @@ func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant 
 func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		if strings.ToLower(achP.ACHLocation.City) == strings.ToLower(s) {
+		if strings.EqualFold(achP.ACHLocation.City, s) {
 			nsl = append(nsl, achP)
 		}
 	}
@@ -297,7 +297,7 @@ func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if strings.ToLower(achP.ACHLocation.State) == strings.ToLower(s) {
+		if strings.EqualFold(achP.ACHLocation.State, s) {
 
 			nsl = append(nsl, achP)
 		}
@@ -309,7 +309,7 @@ func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 func (f *ACHDictionary) ACHDictionaryCityFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if strings.ToLower(achP.ACHLocation.City) == strings.ToLower(s) {
+		if strings.EqualFold(achP.ACHLocation.City, s) {
 			nsl = append(nsl, achP)
 		}
 	}
