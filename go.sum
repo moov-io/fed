@@ -1,0 +1,8 @@
+github.com/docker/docker v1.13.1/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
+github.com/moov-io/base v0.8.0 h1:2GO0fr72ZK4vLgmQLkfCrOIS/o6MHT7wbSmqsqE1LTw=
+github.com/moov-io/base v0.8.0/go.mod h1:pPu/TAc9PkaaegbREVEeDHsGqyAlvji9vqTuARuAnd0=
+github.com/rickar/cal v1.0.0 h1:kb1QBxUDVz433Pw+NB4o6auW75d7HdsaD5ZsdnPdV/E=
+github.com/rickar/cal v1.0.0/go.mod h1:3GBx8OBrvh4/y/JTxM0e1bUUIHMnqILl1rMANHWExxQ=
+github.com/schollz/closestmatch v2.1.0+incompatible/go.mod h1:RtP1ddjLong6gTkbtmuhtR2uUrrJOpYzYRvbcPAid+g=
+github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9 h1:w8V9v0qVympSF6GjdjIyeqR7+EVhAF9CBQmkmW7Zw0w=
+github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9/go.mod h1:N3UwUGtsrSj3ccvlPHLoLsHnpR27oXr4ZE984MbSER8=

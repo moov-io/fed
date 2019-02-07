@@ -18,7 +18,6 @@ FED computes string similarity using the JaroWinkler and Levenshtein algorithm a
 |-----|-----|-----|
 | `ACHJaroWinklerSimilarity` | Ratio of boosting the score of exact matches at the beginning of the strings. | 0.85 |
 | `ACHLevenshteinSimilarity` | Ratio of Levenshtein distance for two strings to be considered equal. | 0.85 |
-| `ACHMaximumRecordsReturned` | Maximum number of records to be returned from search | 499 |
 
 
 ### Usage
