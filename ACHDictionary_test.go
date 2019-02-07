@@ -302,6 +302,28 @@ func TestACHSearchCityFilter(t *testing.T) {
 	}
 }
 
+// TestACHSearchPostalCodeFilter tests search string `Farmers State Bank` and filters by the postal code of
+func TestACHSearchPostalCodeFilter(t *testing.T) {
+	achDir := helperLoadFEDACHFile(t)
+	fi, err := achDir.FinancialInstitutionSearch("Farmers State Bank")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+
+	filter := PostalCodeFilter(fi, "56208")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.ACHLocation.PostalCode != "56208" {
+			t.Errorf("Expected `56208` got : %s", loc.ACHLocation.PostalCode)
+		}
+	}
+}
+
 // TestACHDictionaryStateFilter tests filtering ACHDictionary.ACHParticipants by the state of `PA`
 func TestACHDictionaryStateFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
@@ -328,6 +350,21 @@ func TestACHDictionaryCityFilter(t *testing.T) {
 	for _, loc := range filter {
 		if loc.ACHLocation.City != "READING" {
 			t.Errorf("Expected `READING` got : %s", loc.ACHLocation.City)
+		}
+	}
+}
+
+// TestACHDictionaryPostalCodeFilter tests filtering ACHDictionary.ACHParticipants by the postal code of `19468`
+func TestACHDictionaryPostalCodeFilter(t *testing.T) {
+	achDir := helperLoadFEDACHFile(t)
+
+	filter := achDir.ACHDictionaryPostalCodeFilter("19468")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.ACHLocation.PostalCode != "19468" {
+			t.Errorf("Expected `19468` got : %s", loc.ACHLocation.PostalCode)
 		}
 	}
 }

@@ -293,6 +293,17 @@ func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	return nsl
 }
 
+// PostalCodeFilter filters ACHParticipant by Postal Code.
+func PostalCodeFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range achParticipants {
+		if strings.EqualFold(achP.ACHLocation.PostalCode, s) {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}
+
 // ACHDictionaryStateFilter filters ACHDictionary.ACHParticipant by state
 func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
@@ -310,6 +321,17 @@ func (f *ACHDictionary) ACHDictionaryCityFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
 		if strings.EqualFold(achP.ACHLocation.City, s) {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}
+
+// ACHDictionaryPostalCodeFilter filters ACHDictionary.ACHParticipant by postal code
+func (f *ACHDictionary) ACHDictionaryPostalCodeFilter(s string) []*ACHParticipant {
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range f.ACHParticipants {
+		if strings.EqualFold(achP.ACHLocation.PostalCode, s) {
 			nsl = append(nsl, achP)
 		}
 	}
