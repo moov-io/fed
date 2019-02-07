@@ -230,7 +230,7 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToUpper(s)
+	s = strings.ToLower(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
 	// and Levenshtein similarity
@@ -240,7 +240,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
 	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToUpper(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
 			Participants = append(Participants, achP)
 		}
 	}
@@ -248,7 +248,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// Levenshtein is the "edit distance" between two strings. This is the count of operations
 	// (insert, delete, replace) needed for two strings to be equal.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToUpper(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
 
 			// Only append if the not included in the Participant sub-set
 			if len(Participants) != 0 {
@@ -270,73 +270,12 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 
 	return Participants, nil
 }
-
-/*// ToDo: Do we want a JaroWinkler search only
-
-// JaroWinklerFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) JaroWinklerFISearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToUpper(s)
-
-	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
-	// and Levenshtein similarity
-	Participants := make([]*ACHParticipant, 0)
-
-	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
-	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
-	// typos are less common to happen at the beginning.
-	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToUpper(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
-			Participants = append(Participants, achP)
-		}
-	}
-
-	// Sort the result
-	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
-
-	return Participants, nil
-}
-
-// ToDo: Do we want a Levenshtein search only
-
-// LevenshteinFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) LevenshteinFISearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToUpper(s)
-
-	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
-	// and Levenshtein similarity
-	Participants := make([]*ACHParticipant, 0)
-
-	// Levenshtein is the "edit distance" between two strings. This is the count of operations
-	// (insert, delete, replace) needed for two strings to be equal.
-	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToUpper(achP.CustomerName), s) > ACHLevenshteinSimilarity {
-
-			// Only append if the not included in the Participant sub-set
-			if len(Participants) != 0 {
-				for _, p := range Participants {
-					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
-						break
-					}
-				}
-				Participants = append(Participants, achP)
-
-			} else {
-				Participants = append(Participants, achP)
-			}
-		}
-	}
-
-	// Sort the result
-	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
-
-	return Participants, nil
-}*/
 
 // StateFilter filters ACHParticipant by State.
 func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		if strings.ToUpper(achP.ACHLocation.State) == strings.ToUpper(s) {
+		if strings.ToLower(achP.ACHLocation.State) == strings.ToLower(s) {
 			nsl = append(nsl, achP)
 		}
 	}
@@ -347,7 +286,7 @@ func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant 
 func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		if strings.ToUpper(achP.ACHLocation.City) == strings.ToUpper(s) {
+		if strings.ToLower(achP.ACHLocation.City) == strings.ToLower(s) {
 			nsl = append(nsl, achP)
 		}
 	}
@@ -358,7 +297,8 @@ func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if strings.ToUpper(achP.ACHLocation.State) == strings.ToUpper(s) {
+		if strings.ToLower(achP.ACHLocation.State) == strings.ToLower(s) {
+
 			nsl = append(nsl, achP)
 		}
 	}
@@ -369,7 +309,7 @@ func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 func (f *ACHDictionary) ACHDictionaryCityFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if strings.ToUpper(achP.ACHLocation.City) == strings.ToUpper(s) {
+		if strings.ToLower(achP.ACHLocation.City) == strings.ToLower(s) {
 			nsl = append(nsl, achP)
 		}
 	}
