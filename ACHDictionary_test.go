@@ -144,7 +144,7 @@ func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
 func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi := achDir.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("ach financial institution `BANK OF AMERICA N.A` not found")
 	}
 	for _, f := range fi {
@@ -154,12 +154,12 @@ func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 	}
 }
 
-// TestInvalidACHFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedACHDir returns
-// the participant data
+// TestInvalidACHFinancialInstitutionSearchSingle tests that a Financial Institution is not defined in FedACHDir
+// returns nil
 func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi := achDir.FinancialInstitutionSearchSingle("XYZ")
-	if fi != nil {
+	if len(fi) != 0 {
 		t.Errorf("%s", "XYZ should have returned nil")
 	}
 }
@@ -171,19 +171,19 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Errorf("%s", "325 should have returned values")
 	}
 }
 
-// TestACHRoutingNumberSearch02 tests string 02
+// TestACHRoutingNumberSearch02 tests string `02` returns results
 func TestACHRoutingNumberSearch02(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi, err := achDir.RoutingNumberSearch("02")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("ach routing number search should have returned results")
 	}
 
@@ -224,7 +224,7 @@ func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 }
 
 // TestACHRoutingNumberNumeric tests that routing number search returns an ErrRoutingNumberNumeric if the
-// string passed is not numeric.
+// string passed in is not numeric.
 func TestACHRoutingNumberNumeric(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	if _, err := achDir.RoutingNumberSearch("1  S5"); err != nil {
@@ -234,43 +234,43 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 	}
 }
 
-// TestACHFinancialInstitutionSearch tests string First Bank
+// TestACHFinancialInstitutionSearch tests search string `First Bank`
 func TestACHFinancialInstitutionSearch(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi, err := achDir.FinancialInstitutionSearch("First Bank")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 }
 
-// TestACHFinancialInstitutionFarmers tests string FaRmerS
+// TestACHFinancialInstitutionFarmers tests search string `FaRmerS`
 func TestACHFinancialInstitutionFarmers(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi, err := achDir.FinancialInstitutionSearch("FaRmerS")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 }
 
-// TestACHSearchStateFilter tests string Farmers State Bank and filters by the state of Ohio
+// TestACHSearchStateFilter tests search string `Farmers State Bank` and filters by the state of Ohio, `OH`
 func TestACHSearchStateFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi, err := achDir.FinancialInstitutionSearch("Farmers State Bank")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
 	filter := StateFilter(fi, "OH")
-	if filter == nil {
+	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 	for _, loc := range filter {
@@ -280,24 +280,54 @@ func TestACHSearchStateFilter(t *testing.T) {
 	}
 }
 
-// TestACHSearchCityFilter tests string Farmers State Bank and filters by the city of ARCHBOLD
+// TestACHSearchCityFilter tests search string `Farmers State Bank` and filters by the city of `ARCHBOLD`
 func TestACHSearchCityFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi, err := achDir.FinancialInstitutionSearch("Farmers State Bank")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
-	if fi == nil {
+	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
 	filter := CityFilter(fi, "ARCHBOLD")
-	if filter == nil {
+	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 	for _, loc := range filter {
 		if loc.ACHLocation.City != "ARCHBOLD" {
 			t.Errorf("Expected `ARCHBOLD` got : %s", loc.ACHLocation.City)
+		}
+	}
+}
+
+// TestACHDictionaryStateFilter tests filtering ACHDictionary.ACHParticipants by the state of `PA`
+func TestACHDictionaryStateFilter(t *testing.T) {
+	achDir := helperLoadFEDACHFile(t)
+
+	filter := achDir.ACHDictionaryStateFilter("pa")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.ACHLocation.State != "PA" {
+			t.Errorf("Expected `PA` got : %s", loc.ACHLocation.State)
+		}
+	}
+}
+
+// TestACHDictionaryCityFilter tests filtering ACHDictionary.ACHParticipants by the city of `Reading`
+func TestACHDictionaryCityFilter(t *testing.T) {
+	achDir := helperLoadFEDACHFile(t)
+
+	filter := achDir.ACHDictionaryCityFilter("Reading")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.ACHLocation.City != "READING" {
+			t.Errorf("Expected `READING` got : %s", loc.ACHLocation.City)
 		}
 	}
 }

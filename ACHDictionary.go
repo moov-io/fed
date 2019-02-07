@@ -187,7 +187,7 @@ func (f *ACHDictionary) RoutingNumberSearchSingle(s string) *ACHParticipant {
 	return nil
 }
 
-// FinancialInstitutionSearchSingle returns a FEDACH participant based on a ACHParticipant.CustomerName
+// FinancialInstitutionSearchSingle returns FEDACH participants based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) FinancialInstitutionSearchSingle(s string) []*ACHParticipant {
 	if _, ok := f.IndexACHCustomerName[s]; ok {
 		return f.IndexACHCustomerName[s]
@@ -230,7 +230,7 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToLower(s)
+	s = strings.ToUpper(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
 	// and Levenshtein similarity
@@ -240,7 +240,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
 	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+		if strcmp.JaroWinkler(strings.ToUpper(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
 			Participants = append(Participants, achP)
 		}
 	}
@@ -248,7 +248,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// Levenshtein is the "edit distance" between two strings. This is the count of operations
 	// (insert, delete, replace) needed for two strings to be equal.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+		if strcmp.Levenshtein(strings.ToUpper(achP.CustomerName), s) > ACHLevenshteinSimilarity {
 
 			// Only append if the not included in the Participant sub-set
 			if len(Participants) != 0 {
@@ -275,7 +275,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 
 // JaroWinklerFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) JaroWinklerFISearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToLower(s)
+	s = strings.ToUpper(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
 	// and Levenshtein similarity
@@ -285,7 +285,7 @@ func (f *ACHDictionary) JaroWinklerFISearch(s string) ([]*ACHParticipant, error)
 	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
 	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+		if strcmp.JaroWinkler(strings.ToUpper(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
 			Participants = append(Participants, achP)
 		}
 	}
@@ -300,7 +300,7 @@ func (f *ACHDictionary) JaroWinklerFISearch(s string) ([]*ACHParticipant, error)
 
 // LevenshteinFISearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) LevenshteinFISearch(s string) ([]*ACHParticipant, error) {
-	s = strings.ToLower(s)
+	s = strings.ToUpper(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
 	// and Levenshtein similarity
@@ -309,7 +309,7 @@ func (f *ACHDictionary) LevenshteinFISearch(s string) ([]*ACHParticipant, error)
 	// Levenshtein is the "edit distance" between two strings. This is the count of operations
 	// (insert, delete, replace) needed for two strings to be equal.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+		if strcmp.Levenshtein(strings.ToUpper(achP.CustomerName), s) > ACHLevenshteinSimilarity {
 
 			// Only append if the not included in the Participant sub-set
 			if len(Participants) != 0 {
@@ -332,14 +332,11 @@ func (f *ACHDictionary) LevenshteinFISearch(s string) ([]*ACHParticipant, error)
 	return Participants, nil
 }*/
 
-// ToDo: Do we want state and city filters based on []*ACHParticipant Result set
-// ToDo: property argument to be generic?
-
-// StateFilter filters ACHParticipant by State
-func StateFilter(achParticipants []*ACHParticipant, state string) []*ACHParticipant {
+// StateFilter filters ACHParticipant by State.
+func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		if achP.ACHLocation.State == state {
+		if strings.ToUpper(achP.ACHLocation.State) == strings.ToUpper(s) {
 			nsl = append(nsl, achP)
 		}
 	}
@@ -347,35 +344,34 @@ func StateFilter(achParticipants []*ACHParticipant, state string) []*ACHParticip
 }
 
 // CityFilter filters ACHParticipant by City
-func CityFilter(achParticipants []*ACHParticipant, city string) []*ACHParticipant {
+func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
-		//ToDo:  Do we want a fuzzy search on City?
-		if achP.ACHLocation.City == city {
+		if strings.ToUpper(achP.ACHLocation.City) == strings.ToUpper(s) {
 			nsl = append(nsl, achP)
 		}
 	}
 	return nsl
 }
 
-/*// ToDo: Do we want state and city filters based on ACHDICTIONARY??
-//
-func (f *ACHDictionary) StateFilter(state string) []*ACHParticipant {
+// ACHDictionaryStateFilter filters ACHDictionary.ACHParticipant by state
+func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if achP.ACHLocation.State == state {
+		if strings.ToUpper(achP.ACHLocation.State) == strings.ToUpper(s) {
 			nsl = append(nsl, achP)
 		}
 	}
 	return nsl
 }
 
-func (f *ACHDictionary) CityFilter(city string) []*ACHParticipant {
+// ACHDictionaryCityFilter filters ACHDictionary.ACHParticipant by city
+func (f *ACHDictionary) ACHDictionaryCityFilter(s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range f.ACHParticipants {
-		if achP.ACHLocation.City == city {
+		if strings.ToUpper(achP.ACHLocation.City) == strings.ToUpper(s) {
 			nsl = append(nsl, achP)
 		}
 	}
 	return nsl
-}*/
+}
