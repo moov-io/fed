@@ -256,7 +256,6 @@ func (f *WIREDictionary) WIREDictionaryStateFilter(s string) []*WIREParticipant 
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range f.WIREParticipants {
 		if strings.EqualFold(wireP.WIRELocation.State, s) {
-
 			nsl = append(nsl, wireP)
 		}
 	}

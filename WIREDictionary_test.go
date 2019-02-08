@@ -5,6 +5,7 @@
 package fed
 
 import (
+	"github.com/moov-io/base"
 	"os"
 	"strings"
 	"testing"
@@ -83,7 +84,7 @@ func TestWIREInvalidRecordLength(t *testing.T) {
 	var line = "325280039MAC FCU           MAC FEDERAL CREDIT UNION"
 	f := NewWIREDictionary(strings.NewReader(line))
 	if err := f.Read(); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(101, 51)) {
+		if !base.Has(err, NewRecordWrongLengthErr(101, 51)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -168,7 +169,7 @@ func TestWIRERoutingNumberSearch02(t *testing.T) {
 func TestWIRERoutingNumberSearchMinimumLength(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
 	if _, err := wireDir.RoutingNumberSearch("0"); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(2, 1)) {
+		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -191,7 +192,7 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 func TestWIRERoutingNumberSearchMaximumLength(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
 	if _, err := wireDir.RoutingNumberSearch("1234567890"); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(9, 10)) {
+		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -202,7 +203,7 @@ func TestWIRERoutingNumberSearchMaximumLength(t *testing.T) {
 func TestWIRERoutingNumberNumeric(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
 	if _, err := wireDir.RoutingNumberSearch("1  S5"); err != nil {
-		if !Has(err, ErrRoutingNumberNumeric) {
+		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -212,7 +213,7 @@ func TestWIREParsingError(t *testing.T) {
 	var line = "011000536FHLB BOSTON       FEDERAL HOME LOAN BANK              MABOSTON                   © Y20170818"
 	f := NewWIREDictionary(strings.NewReader(line))
 	if err := f.Read(); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(101, 51)) {
+		if !base.Has(err, NewRecordWrongLengthErr(101, 51)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
