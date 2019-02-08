@@ -6,6 +6,8 @@ moov-io/fed
 [![Go Report Card](https://goreportcard.com/badge/github.com/moov-io/fed)](https://goreportcard.com/report/github.com/moov-io/fed)
 [![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/moov-io/fed/master/LICENSE)
 
+*project is under active development and is not production ready*
+
 Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System.
 
 ### Configuration
@@ -18,7 +20,6 @@ FED computes string similarity using the JaroWinkler and Levenshtein algorithm a
 |-----|-----|-----|
 | `ACHJaroWinklerSimilarity` | Ratio of boosting the score of exact matches at the beginning of the strings. | 0.85 |
 | `ACHLevenshteinSimilarity` | Ratio of Levenshtein distance for two strings to be considered equal. | 0.85 |
-
 
 ### Usage
 
@@ -49,4 +50,4 @@ By accesing the [data](./data/) in this repository you agree to the [Federal Res
 
 ## Disclaimer
 
-**THIS REPOSITORY IS NOT AFFILIATED WITH THE FEDERAL RESERVE BANKS AN IS NOT AN OFFICIAL SOURCE FOR THE FEDWIRE AND THE FEDACH DATA.**
+**THIS REPOSITORY IS NOT AFFILIATED WITH THE FEDERAL RESERVE BANKS AND IS NOT AN OFFICIAL SOURCE FOR THE FEDWIRE AND THE FEDACH DATA.**

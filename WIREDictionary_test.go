@@ -12,6 +12,20 @@ import (
 
 // Values within the tests can change if the FED WIRE participants change (e.g. Number of participants, etc.)
 
+func helperLoadFEDWIREFile(t *testing.T) *WIREDictionary {
+	f, err := os.Open("./data/fpddir.txt")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	defer f.Close()
+	wireDir := NewWIREDictionary(f)
+	err = wireDir.Read()
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	return wireDir
+}
+
 func TestWIREParseParticipant(t *testing.T) {
 	var line = "325280039MAC FCU           MAC FEDERAL CREDIT UNION            AKFAIRBANKS                Y Y20180629"
 
@@ -52,20 +66,10 @@ func TestWIREParseParticipant(t *testing.T) {
 }
 
 func TestWIREDirectoryRead(t *testing.T) {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Errorf("%T: %s", err, err)
-	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
+	wireDir := helperLoadFEDWIREFile(t)
 	if len(wireDir.WIREParticipants) != 7693 {
 		t.Errorf("Expected '7693' got: %v", len(wireDir.WIREParticipants))
 	}
-
 	if fi, ok := wireDir.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.TelegraphicName != "MAC FCU" {
 			t.Errorf("Expected `MAC FCU` got : %s", fi.TelegraphicName)
@@ -86,24 +90,12 @@ func TestWIREInvalidRecordLength(t *testing.T) {
 }
 
 // TestWIRERoutingNumberSearch tests that a valid routing number defined in FedWIREDir returns the participant data
-func TestWIRERoutingNumberSearch(t *testing.T) {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Errorf("%T: %s", err, err)
-	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-
-	fi := wireDir.RoutingNumberSearch("324172465")
-
+func TestWIRERoutingNumberSearchSingle(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi := wireDir.RoutingNumberSearchSingle("324172465")
 	if fi == nil {
 		t.Errorf("wire routing number `324172465` not found")
 	}
-
 	if fi != nil {
 		if fi.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
 			t.Errorf("Expected `TRUGROCER FEDERAL CREDIT UNION` got : %s", fi.CustomerName)
@@ -112,19 +104,9 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 }
 
 // TestInvalidWIRERoutingNumberSearch tests that an invalid routing number returns nil
-func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
-	if err != nil {
-		t.Errorf("%T: %s", err, err)
-	}
-
-	fi := wireDir.RoutingNumberSearch("325183657")
+func TestInvalidWIRERoutingNumberSearchSingle(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi := wireDir.RoutingNumberSearchSingle("325183657")
 
 	if fi != nil {
 		t.Errorf("%s", "325183657 should have returned nil")
@@ -133,24 +115,12 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 
 // TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant
 // data
-func TestWIREFinancialInstitutionSearch(t *testing.T) {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Errorf("%T: %s", err, err)
-	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-
-	fi := wireDir.FinancialInstitutionSearch("TRUGROCER FEDERAL CREDIT UNION")
-
+func TestWIREFinancialInstitutionSearchSingle(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi := wireDir.FinancialInstitutionSearchSingle("TRUGROCER FEDERAL CREDIT UNION")
 	if fi == nil {
 		t.Fatalf("wire financial institution `TRUGROCER FEDERAL CREDIT UNION` not found")
 	}
-
 	for _, f := range fi {
 		if f.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
 			t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
@@ -158,24 +128,83 @@ func TestWIREFinancialInstitutionSearch(t *testing.T) {
 	}
 }
 
-// TestInvalidWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant
-// data
-func TestInvalidWIREFinancialInstitutionSearch(t *testing.T) {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Errorf("%T: %s", err, err)
+// TestInvalidWIREFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedWIREDir returns
+// the participant data
+func TestInvalidWIREFinancialInstitutionSearchSingle(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi := wireDir.FinancialInstitutionSearchSingle("XYZ")
+	if fi != nil {
+		t.Errorf("%s", "XYZ should have returned nil")
 	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
+}
+
+// TestWIRERoutingNumberSearch tests that routing number search returns nil or FEDWIRE participant data
+func TestWIRERoutingNumberSearch(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.RoutingNumberSearch("325")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
+	if len(fi) == 0 {
+		t.Errorf("%s", "325 should have returned values")
+	}
+}
 
-	fi := wireDir.FinancialInstitutionSearch("XYZ")
+// TestWIRERoutingNumberSearch02 tests string `02` returns results
+func TestWIRERoutingNumberSearch02(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.RoutingNumberSearch("02")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("02 should have returned values")
+	}
 
-	if fi != nil {
-		t.Errorf("%s", "XYZ should have returned nil")
+}
+
+// TestWIRERoutingNumberSearchMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
+// length of the string passed in is less than 2.
+func TestWIRERoutingNumberSearchMinimumLength(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	if _, err := wireDir.RoutingNumberSearch("0"); err != nil {
+		if !Has(err, NewRecordWrongLengthErr(2, 1)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+}
+
+// TestInvalidWIRERoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
+func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.RoutingNumberSearch("777777777")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) != 0 {
+		t.Fatal("wire routing number search should have returned nil")
+	}
+}
+
+// TestWIRERoutingNumberMaximumLength tests that routing number search returns a RecordWrongLengthErr if the
+// length of the string passed in is greater than 9.
+func TestWIRERoutingNumberSearchMaximumLength(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	if _, err := wireDir.RoutingNumberSearch("1234567890"); err != nil {
+		if !Has(err, NewRecordWrongLengthErr(9, 10)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+}
+
+// TestWIRERoutingNumberNumeric tests that routing number search returns an ErrRoutingNumberNumeric if the
+// string passed in is not numeric.
+func TestWIRERoutingNumberNumeric(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	if _, err := wireDir.RoutingNumberSearch("1  S5"); err != nil {
+		if !Has(err, ErrRoutingNumberNumeric) {
+			t.Errorf("%T: %s", err, err)
+		}
 	}
 }
 

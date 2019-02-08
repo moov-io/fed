@@ -184,7 +184,7 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 		t.Fatalf("%T: %s", err, err)
 	}
 	if len(fi) == 0 {
-		t.Fatalf("ach routing number search should have returned results")
+		t.Fatalf("02 should have returned values")
 	}
 
 }
