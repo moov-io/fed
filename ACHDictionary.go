@@ -23,16 +23,6 @@ var (
 	ACHLevenshteinSimilarity = 0.85
 )
 
-const (
-	// FileLineLength is the FedACH text file line length
-	FileLineLength = 155
-	// MinimumRoutingNumberDigits is the minimum number of digits needed searching by routing numbers
-	MinimumRoutingNumberDigits = 2
-	// MaximumRoutingNumberDigits is the maximum number of digits allowed for searching by routing number
-	// Based on https://www.frbservices.org/EPaymentsDirectory/search.html
-	MaximumRoutingNumberDigits = 9
-)
-
 // ACHDictionary of Participant records
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
@@ -111,8 +101,8 @@ func (f *ACHDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if utf8.RuneCountInString(f.line) != FileLineLength {
-			f.errors.Add(NewRecordWrongLengthErr(FileLineLength, len(f.line)))
+		if utf8.RuneCountInString(f.line) != ACHLineLength {
+			f.errors.Add(NewRecordWrongLengthErr(ACHLineLength, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
@@ -264,15 +254,14 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 			}
 		}
 	}
-
 	// Sort the result
 	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
 	return Participants, nil
 }
 
-// StateFilter filters ACHParticipant by State.
-func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
+// ACHParticipantStateFilter filters ACHParticipant by State.
+func ACHParticipantStateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
 		if strings.EqualFold(achP.ACHLocation.State, s) {
@@ -282,8 +271,8 @@ func StateFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant 
 	return nsl
 }
 
-// CityFilter filters ACHParticipant by City
-func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
+// ACHParticipantCityFilter filters ACHParticipant by City
+func ACHParticipantCityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
 		if strings.EqualFold(achP.ACHLocation.City, s) {
@@ -293,8 +282,8 @@ func CityFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	return nsl
 }
 
-// PostalCodeFilter filters ACHParticipant by Postal Code.
-func PostalCodeFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
+// ACHParticipantPostalCodeFilter filters ACHParticipant by Postal Code.
+func ACHParticipantPostalCodeFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
 		if strings.EqualFold(achP.ACHLocation.PostalCode, s) {

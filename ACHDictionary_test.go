@@ -269,7 +269,7 @@ func TestACHSearchStateFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := StateFilter(fi, "OH")
+	filter := ACHParticipantStateFilter(fi, "OH")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -291,7 +291,7 @@ func TestACHSearchCityFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := CityFilter(fi, "ARCHBOLD")
+	filter := ACHParticipantCityFilter(fi, "ARCHBOLD")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -313,7 +313,7 @@ func TestACHSearchPostalCodeFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := PostalCodeFilter(fi, "56208")
+	filter := ACHParticipantPostalCodeFilter(fi, "56208")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}

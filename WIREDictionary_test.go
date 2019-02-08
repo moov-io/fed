@@ -217,3 +217,101 @@ func TestWIREParsingError(t *testing.T) {
 		}
 	}
 }
+
+// TestWIREFinancialInstitutionSearch tests search string `First Bank`
+func TestWIREFinancialInstitutionSearch(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.FinancialInstitutionSearch("First Bank")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+}
+
+// TestWIREFinancialInstitutionFarmers tests search string `FaRmerS`
+func TestWIREFinancialInstitutionFarmers(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.FinancialInstitutionSearch("FaRmerS")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+}
+
+// TestWIRESearchStateFilter tests search string `Farmers State Bank` and filters by the state of North Carolina, `NC`
+func TestWIRESearchStateFilter(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+
+	filter := WIREParticipantStateFilter(fi, "NC")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.WIRELocation.State != "NC" {
+			t.Errorf("Expected `NC` got : %s", loc.WIRELocation.State)
+		}
+	}
+}
+
+// TestWIRESearchCityFilter tests search string `Farmers State Bank` and filters by the city of `SALISBURY`
+func TestWIRESearchCityFilter(t *testing.T) {
+	wireDir := helperLoadFEDWIREFile(t)
+	fi, err := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+
+	filter := WIREParticipantCityFilter(fi, "SALISBURY")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.WIRELocation.City != "SALISBURY" {
+			t.Errorf("Expected `SALISBURY` got : %s", loc.WIRELocation.City)
+		}
+	}
+}
+
+// TestWIREDictionaryStateFilter tests filtering WIREDictionary.WIREParticipants by the state of `PA`
+func TestWIREDictionaryStateFilter(t *testing.T) {
+	achDir := helperLoadFEDWIREFile(t)
+
+	filter := achDir.WIREDictionaryStateFilter("pa")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.WIRELocation.State != "PA" {
+			t.Errorf("Expected `PA` got : %s", loc.WIRELocation.State)
+		}
+	}
+}
+
+// TestWIREDictionaryCityFilter tests filtering WIREDictionary.WIREParticipants by the city of `Reading`
+func TestWIREDictionaryCityFilter(t *testing.T) {
+	achDir := helperLoadFEDWIREFile(t)
+
+	filter := achDir.WIREDictionaryCityFilter("Reading")
+	if len(filter) == 0 {
+		t.Fatalf("No Financial Institutions matched your search query")
+	}
+	for _, loc := range filter {
+		if loc.WIRELocation.City != "READING" {
+			t.Errorf("Expected `READING` got : %s", loc.WIRELocation.City)
+		}
+	}
+}
