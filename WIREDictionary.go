@@ -7,9 +7,20 @@ package fed
 import (
 	"bufio"
 	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/strcmp"
 	"io"
+	"sort"
 	"strings"
 	"unicode/utf8"
+)
+
+var (
+	// WIREJaroWinklerSimilarity is the search similarity percentage for strcmp.JaroWinkler for CustomerName
+	// (Financial Institution Name)
+	WIREJaroWinklerSimilarity = 0.85
+	// WIRELevenshteinSimilarity is the search similarity percentage for strcmp.Levenshtein for CustomerName
+	// (Financial Institution Name)
+	WIRELevenshteinSimilarity = 0.85
 )
 
 // WIREDictionary of Participant records
@@ -26,6 +37,8 @@ type WIREDictionary struct {
 	IndexWIRECustomerName map[string][]*WIREParticipant
 	// errors holds each error encountered when attempting to parse the file
 	errors base.ErrorList
+	// validator is composed for data validation
+	validator
 }
 
 // NewWIREDictionary creates a WIREDictionary
@@ -75,8 +88,8 @@ func (f *WIREDictionary) Read() error {
 	for f.scanner.Scan() {
 		f.line = f.scanner.Text()
 
-		if utf8.RuneCountInString(f.line) != 101 {
-			f.errors.Add(NewRecordWrongLengthErr(101, len(f.line)))
+		if utf8.RuneCountInString(f.line) != WIRELineLength {
+			f.errors.Add(NewRecordWrongLengthErr(WIRELineLength, len(f.line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
@@ -124,19 +137,138 @@ func (f *WIREDictionary) createIndexWIRECustomerName() {
 	}
 }
 
-// RoutingNumberSearch returns a FEDWIRE participant based on a WIREParticipant.RoutingNumber.  Routing Number
+// RoutingNumberSearchSingle returns a FEDWIRE participant based on a WIREParticipant.RoutingNumber.  Routing Number
 // validation is only that it exists in IndexParticipant.  Expecting 9 digits, checksum needs to be included.
-func (f *WIREDictionary) RoutingNumberSearch(s string) *WIREParticipant {
+func (f *WIREDictionary) RoutingNumberSearchSingle(s string) *WIREParticipant {
 	if _, ok := f.IndexWIRERoutingNumber[s]; ok {
 		return f.IndexWIRERoutingNumber[s]
 	}
 	return nil
 }
 
-// FinancialInstitutionSearch returns a FEDWIRE participant based on a WIREParticipant.CustomerName
-func (f *WIREDictionary) FinancialInstitutionSearch(s string) []*WIREParticipant {
+// FinancialInstitutionSearchSingle returns a FEDWIRE participant based on a WIREParticipant.CustomerName
+func (f *WIREDictionary) FinancialInstitutionSearchSingle(s string) []*WIREParticipant {
 	if _, ok := f.IndexWIRECustomerName[s]; ok {
 		return f.IndexWIRECustomerName[s]
 	}
 	return nil
+}
+
+// RoutingNumberSearch returns FEDWIRE participants if WIREParticipant.RoutingNumber begins with prefix string s.
+// The first 2 digits of the routing number are required.
+// Based on https://www.frbservices.org/EPaymentsDirectory/search.html
+func (f *WIREDictionary) RoutingNumberSearch(s string) ([]*WIREParticipant, error) {
+	s = strings.TrimSpace(s)
+
+	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
+		// The first 2 digits (characters) are required
+		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
+		return nil, f.errors
+	}
+	if utf8.RuneCountInString(s) > MaximumRoutingNumberDigits {
+		f.errors.Add(NewRecordWrongLengthErr(9, len(s)))
+		// Routing Number cannot be greater than 10 digits (characters)
+		return nil, f.errors
+	}
+	if err := f.isNumeric(s); err != nil {
+		// Routing Number is not numeric
+		f.errors.Add(ErrRoutingNumberNumeric)
+		return nil, f.errors
+	}
+
+	Participants := make([]*WIREParticipant, 0)
+
+	for _, wireP := range f.WIREParticipants {
+		if strings.HasPrefix(wireP.RoutingNumber, s) {
+			Participants = append(Participants, wireP)
+		}
+	}
+
+	return Participants, nil
+}
+
+// FinancialInstitutionSearch returns a FEDWIRE participant based on a WIREParticipant.CustomerName
+func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipant, error) {
+	s = strings.ToLower(s)
+
+	// Participants is a subset WIREDictionary.WIREParticipants that match the search based on JaroWinkler similarity
+	// and Levenshtein similarity
+	Participants := make([]*WIREParticipant, 0)
+
+	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+	// typos are less common to happen at the beginning.
+	for _, wireP := range f.WIREParticipants {
+		if strcmp.JaroWinkler(strings.ToLower(wireP.CustomerName), s) > WIREJaroWinklerSimilarity {
+			Participants = append(Participants, wireP)
+		}
+	}
+
+	// Levenshtein is the "edit distance" between two strings. This is the count of operations
+	// (insert, delete, replace) needed for two strings to be equal.
+	for _, wireP := range f.WIREParticipants {
+		if strcmp.Levenshtein(strings.ToLower(wireP.CustomerName), s) > WIRELevenshteinSimilarity {
+
+			// Only append if the not included in the Participant sub-set
+			if len(Participants) != 0 {
+				for _, p := range Participants {
+					if p.CustomerName == wireP.CustomerName && p.RoutingNumber == wireP.RoutingNumber {
+						break
+					}
+				}
+				Participants = append(Participants, wireP)
+
+			} else {
+				Participants = append(Participants, wireP)
+			}
+		}
+	}
+	// Sort the result
+	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
+
+	return Participants, nil
+}
+
+// WIREParticipantStateFilter filters WIREParticipant by State.
+func WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+	nsl := make([]*WIREParticipant, 0)
+	for _, wireP := range wireParticipants {
+		if strings.EqualFold(wireP.WIRELocation.State, s) {
+			nsl = append(nsl, wireP)
+		}
+	}
+	return nsl
+}
+
+// WIREParticipantCityFilter filters WIREParticipant by City
+func WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+	nsl := make([]*WIREParticipant, 0)
+	for _, wireP := range wireParticipants {
+		if strings.EqualFold(wireP.WIRELocation.City, s) {
+			nsl = append(nsl, wireP)
+		}
+	}
+	return nsl
+}
+
+// WIREDictionaryStateFilter filters WIREDictionary.WIREParticipant by state
+func (f *WIREDictionary) WIREDictionaryStateFilter(s string) []*WIREParticipant {
+	nsl := make([]*WIREParticipant, 0)
+	for _, wireP := range f.WIREParticipants {
+		if strings.EqualFold(wireP.WIRELocation.State, s) {
+			nsl = append(nsl, wireP)
+		}
+	}
+	return nsl
+}
+
+// WIREDictionaryCityFilter filters WIREDictionary.WIREParticipant by city
+func (f *WIREDictionary) WIREDictionaryCityFilter(s string) []*WIREParticipant {
+	nsl := make([]*WIREParticipant, 0)
+	for _, wireP := range f.WIREParticipants {
+		if strings.EqualFold(wireP.WIRELocation.City, s) {
+			nsl = append(nsl, wireP)
+		}
+	}
+	return nsl
 }

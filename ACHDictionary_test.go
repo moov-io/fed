@@ -5,6 +5,7 @@
 package fed
 
 import (
+	"github.com/moov-io/base"
 	"os"
 	"strings"
 	"testing"
@@ -99,7 +100,7 @@ func TestACHInvalidRecordLength(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E"
 	f := NewACHDictionary(strings.NewReader(line))
 	if err := f.Read(); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(155, 80)) {
+		if !base.Has(err, NewRecordWrongLengthErr(155, 80)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -184,7 +185,7 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 		t.Fatalf("%T: %s", err, err)
 	}
 	if len(fi) == 0 {
-		t.Fatalf("ach routing number search should have returned results")
+		t.Fatalf("02 should have returned values")
 	}
 
 }
@@ -194,7 +195,7 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	if _, err := achDir.RoutingNumberSearch("0"); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(2, 1)) {
+		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -217,7 +218,7 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	if _, err := achDir.RoutingNumberSearch("1234567890"); err != nil {
-		if !Has(err, NewRecordWrongLengthErr(9, 10)) {
+		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -228,7 +229,7 @@ func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 func TestACHRoutingNumberNumeric(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	if _, err := achDir.RoutingNumberSearch("1  S5"); err != nil {
-		if !Has(err, ErrRoutingNumberNumeric) {
+		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
@@ -269,7 +270,7 @@ func TestACHSearchStateFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := StateFilter(fi, "OH")
+	filter := ACHParticipantStateFilter(fi, "OH")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -291,7 +292,7 @@ func TestACHSearchCityFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := CityFilter(fi, "ARCHBOLD")
+	filter := ACHParticipantCityFilter(fi, "ARCHBOLD")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -313,7 +314,7 @@ func TestACHSearchPostalCodeFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := PostalCodeFilter(fi, "56208")
+	filter := ACHParticipantPostalCodeFilter(fi, "56208")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}

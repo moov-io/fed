@@ -7,8 +7,6 @@ package fed
 import (
 	"errors"
 	"fmt"
-	"github.com/moov-io/base"
-	"reflect"
 )
 
 // ErrFileTooLong is the error given when a file exceeds the maximum possible length
@@ -36,26 +34,4 @@ func NewRecordWrongLengthErr(lengthRequired int, length int) RecordWrongLengthEr
 
 func (e RecordWrongLengthErr) Error() string {
 	return e.Message
-}
-
-// ToDo: use base
-
-// Has takes in a (potential) list of errors, and an error to check for. If any of the errors
-// in the list have the same type as the error to check, it returns true. If the "list" isn't
-// actually a list (typically because it is nil), or no errors in the list match the other error
-// it returns false. So it can be used as an easy way to check for a particular kind of error.
-func Has(list error, err error) bool {
-	el, ok := list.(base.ErrorList)
-	if !ok {
-		return false
-	}
-	for i := 0; i < len(el); i++ {
-		if el[i] == err {
-			return true
-		}
-		if reflect.TypeOf(el[i]) == reflect.TypeOf(err) {
-			return true
-		}
-	}
-	return false
 }
