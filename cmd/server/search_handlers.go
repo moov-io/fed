@@ -158,14 +158,14 @@ func wireSearchByRoutingNumber(logger log.Logger, searcher *searcher, routingNum
 			logger.Log("searchFEDWIRE", fmt.Sprintf("search by routing number for %s", routingNumber))
 		}
 
-		achP, err := searcher.FindWIRERoutingNumber(routingNumber)
+		wireP, err := searcher.FindWIRERoutingNumber(routingNumber)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}
 
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
+		if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 			moovhttp.Problem(w, err)
 			return
 		}
