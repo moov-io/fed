@@ -31,22 +31,56 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 			searchByName(logger, searcher, name)(w, r)
 			return
 		}
+
+		// Search By Routing Number
+		if routingNumber := strings.TrimSpace(r.URL.Query().Get("routingNumber")); routingNumber != "" {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by routing number for %s", routingNumber))
+			}
+			searchByRoutingNumber(logger, searcher, routingNumber)(w, r)
+			return
+		}
+
 		// Fallback if no search params were found
 		moovhttp.Problem(w, errNoSearchParams)
 	}
 }
 
-func searchByName(logger log.Logger, searcher *searcher, participantName string) http.HandlerFunc {
+func searchByName(logger log.Logger, searcher *searcher, name string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if len(participantName) == 0 {
+		if len(name) == 0 {
 			moovhttp.Problem(w, errNoSearchParams)
 			return
 		}
 		if logger != nil {
-			logger.Log("searchFEDACH", fmt.Sprintf("search by name for %s", participantName))
+			logger.Log("searchFEDACH", fmt.Sprintf("search by name for %s", name))
 		}
 
-		achP, err := searcher.FindACHFinancialInstitution(participantName)
+		achP, err := searcher.FindACHFinancialInstitution(name)
+		if err != nil {
+			moovhttp.Problem(w, err)
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
+			moovhttp.Problem(w, err)
+			return
+		}
+	}
+}
+
+func searchByRoutingNumber(logger log.Logger, searcher *searcher, routingNumber string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if len(routingNumber) == 0 {
+			moovhttp.Problem(w, errNoSearchParams)
+			return
+		}
+		if logger != nil {
+			logger.Log("searchFEDACH", fmt.Sprintf("search by routing number for %s", routingNumber))
+		}
+
+		achP, err := searcher.FindACHRoutingNumber(routingNumber)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}

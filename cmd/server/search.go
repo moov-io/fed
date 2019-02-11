@@ -33,8 +33,17 @@ type searchResponse struct {
 func (s *searcher) FindACHFinancialInstitution(participantName string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-	// ToDo: Routing Number Search
 	fi, err := s.ACHDictionary.FinancialInstitutionSearch(participantName)
+	if err != nil {
+		return nil, err
+	}
+	return fi, nil
+}
+
+func (s *searcher) FindACHRoutingNumber(routingNumber string) ([]*fed.ACHParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+	fi, err := s.ACHDictionary.RoutingNumberSearch(routingNumber)
 	if err != nil {
 		return nil, err
 	}
