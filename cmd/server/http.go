@@ -15,7 +15,6 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
-
 )
 
 var (
