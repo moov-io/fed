@@ -20,14 +20,16 @@ var (
 )
 
 type searcher struct {
-	ACHDictionary *fed.ACHDictionary
-	sync.RWMutex  // protects all above fields
+	ACHDictionary  *fed.ACHDictionary
+	WIREDictionary *fed.WIREDictionary
+	sync.RWMutex   // protects all above fields
 
 	logger log.Logger
 }
 
 type searchResponse struct {
-	ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 }
 
 func (s *searcher) FindACHFinancialInstitution(participantName string) ([]*fed.ACHParticipant, error) {
@@ -44,6 +46,26 @@ func (s *searcher) FindACHRoutingNumber(routingNumber string) ([]*fed.ACHPartici
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.ACHDictionary.RoutingNumberSearch(routingNumber)
+	if err != nil {
+		return nil, err
+	}
+	return fi, nil
+}
+
+func (s *searcher) FindWIREFinancialInstitution(participantName string) ([]*fed.WIREParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+	fi, err := s.WIREDictionary.FinancialInstitutionSearch(participantName)
+	if err != nil {
+		return nil, err
+	}
+	return fi, nil
+}
+
+func (s *searcher) FindWIRERoutingNumber(routingNumber string) ([]*fed.WIREParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber)
 	if err != nil {
 		return nil, err
 	}
