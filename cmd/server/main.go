@@ -25,8 +25,8 @@ import (
 )
 
 var (
-	httpAddr  = flag.String("http.addr", bind.HTTP("ofac"), "HTTP listen address")
-	adminAddr = flag.String("admin.addr", bind.Admin("ofac"), "Admin HTTP listen address")
+	httpAddr  = flag.String("http.addr", bind.HTTP("fed"), "HTTP listen address")
+	adminAddr = flag.String("admin.addr", bind.Admin("fed"), "Admin HTTP listen address")
 )
 
 func main() {
