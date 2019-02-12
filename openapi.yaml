@@ -33,7 +33,7 @@ paths:
             type: string
             example: Farmers State Bank
           description: Financial Institution Name
-        - name: Routing Number
+        - name: routingNumber
           in: query
           schema:
             type: string
@@ -66,7 +66,7 @@ paths:
             type: string
             example: First Bank
           description: Financial Institution Name
-        - name: Routing Number
+        - name: routingNumber
           in: query
           schema:
             type: string
@@ -210,7 +210,7 @@ components:
           description: Date of last revision
           example: YYYYMMDD, or blank
     WIRELocation:
-      description: WIRELocation is the FEDWIREdelivery address
+      description: WIRELocation is the FEDWIRE delivery address
       properties:
         City:
           type: string
