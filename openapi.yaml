@@ -128,71 +128,78 @@ components:
     ACHParticipant:
       description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       properties:
-        RoutingNumber:
+        routingNumber:
           type: string
           description: The institution's routing number
           example: 231380104
-        OfficeCode:
+        officeCode:
           type: string
-          description: Main/Head Office or Branch. O=main B=branch
-          example: O=main B=branch
-        ServicingFrbNumber:
+          description: Main/Head Office or Branch
+            O = main
+            B = branch
+          example: O, B
+        servicingFrbNumber:
           type: string
           description: Servicing Fed's main office routing number
           example: 101000048
-        RecordTypeCode:
+        recordTypeCode:
           type: string
           description: The code indicating the ABA number to be used to route or send ACH items to the RDFI
-          example: 0 = Institution is a Federal Reserve Bank, 1 = Send items to customer routing number, 2 = Send items to customer using new routing number field
-        Revised:
+            0 = Institution is a Federal Reserve Bank
+            1 = Send items to customer routing number
+            2 = Send items to customer using new routing number field
+          example: 0, 1,  2
+        revised:
           type: string
           description: Date of last revision
           example: YYYYMMDD, or blank
-        NewRoutingNumber:
+        newRoutingNumber:
           type: string
           description: Financial Institution's new routing number resulting from a merger or renumber
           example: 000000000 or valid routing number (e.g. 122203950)
-        CustomerName:
+        customerName:
           type: string
           description: Financial Institution Name
           example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
-        ACHLocation:
+        achLocation:
           type: object
           description: FEDACH delivery address
           items:
             $ref: '#/components/schemas/ACHLocation'
-        PhoneNumber:
+        phoneNumber:
           type: string
           description: The Financial Institution's phone number
           example: 8004460135
-        StatusCode:
+        statusCode:
           type: string
           description: Code is based on the customers receiver code
-          example: 1=Receives Gov/Comm
-        ViewCode:
+            1 = Receives Gov/Comm
+          example: 1
+        viewCode:
           type: string
           description: Code is current view
-          example: 1 = Current view
+            1 = Current view
+          example:
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
-        Address:
+        address:
           type: string
           description: Street Address
           example: PO BOX 27025
-        City:
+        city:
           type: string
           description: City
           example: RICHMOND
-        State:
+        state:
           type: string
           description: State
           example: VA
-        PostalCode:
+        postalCode:
           type: string
           description: Postal Code
           example: 23261
-        PostalExtension:
+        postalExtension:
           type: string
           description: Postal Code Extension
           example: 7025
@@ -206,47 +213,51 @@ components:
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       properties:
-        RoutingNumber:
+        routingNumber:
           type: string
           description: The institution's routing number
           example: 231380104
-        TelegraphicName:
+        telegraphicName:
           type: string
           description: Short name of financial institution
           example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
-        CustomerName:
+        customerName:
           type: string
           description: Financial Institution Name
           example: FEDERAL RESERVE BANK OF BOSTON
-        WIRELocation:
+        wireLocation:
           type: object
           description: FEDWIRE Delivery Address
           items:
             $ref: '#/components/schemas/WIRELocation'
-        FundsTransferStatus:
+        fundsTransferStatus:
           type: string
-          description: Designates funds transfer status (Eligible / Ineligible)
-          example: Y - Eligible N - Ineligible
-        FundsSettlementOnlyStatus:
+          description: Designates funds transfer status
+            Y = Eligible
+            N = Ineligible
+          example: Y, N
+        fundsSettlementOnlyStatus:
           type: string
           description: Designates funds settlement only status
-          example: S - Settlement-Only
-        BookEntrySecuritiesTransferStatus:
+            S = Settlement-Only
+          example: S
+        bookEntrySecuritiesTransferStatus:
           type: string
           description: Designates book entry securities transfer status
-          example: N - Ineligible
-        Date:
+            N = Ineligible
+          example: N
+        date:
           type: string
           description: Date of last revision
           example: YYYYMMDD, or blank
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       properties:
-        City:
+        city:
           type: string
           description: City
           example: BOSTON
-        State:
+        state:
           type: string
           description: State
           example: MA
