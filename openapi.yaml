@@ -1,0 +1,87 @@
+openapi: 3.0.2
+info:
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
+  version: v1
+  title: FED API
+  contact:
+    url: https://github.com/moov-io/fed
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8086
+    description: Local development
+
+tags:
+  - name: FED
+    description: FEDACH and FEDWIRE Dictionary
+
+paths:
+  # Search Endpoints
+  /searchFEDACH:
+    get:
+      tags:
+        - FEDACH
+      summary: Search FEDACH names and metadata
+      operationId: searchFEDACH
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: Farmers State Bank
+          description: Financial Institution Name
+        - name: Routing Number
+          in: query
+          schema:
+            type: string
+            example: 325183657
+          description: ACH Routing Number for a Financial Institution
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDACH Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Search'
+  /searchFEDWIRE:
+    get:
+      tags:
+        - FEDWIRE
+      summary: Search FEDWIRE names and metadata
+      operationId: searchFEDWIRE
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: First Bank
+          description: Financial Institution Name
+        - name: Routing Number
+          in: query
+          schema:
+            type: string
+            example: 324172465
+          description: WIRE Routing Number for a Financial Institution
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDWIRE Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Search'
