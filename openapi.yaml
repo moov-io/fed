@@ -10,7 +10,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: http://localhost:8084
+  - url: http://localhost:8086
     description: Local development
 
 tags:
@@ -19,7 +19,7 @@ tags:
 
 paths:
   # Search Endpoints
-  /search/FEDACH:
+  /searchFEDACH:
     get:
       tags:
         - FEDACH
@@ -52,7 +52,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Search'
-  /search/FEDWIRE:
+  /searchFEDWIRE:
     get:
       tags:
         - FEDWIRE
