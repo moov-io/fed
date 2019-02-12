@@ -14,8 +14,8 @@ servers:
     description: Local development
 
 tags:
-  - name: FED
-    description: FEDACH and FEDWIRE Dictionary
+  - name: FED Dictionary
+    description: FEDACH Dictionary and FEDWIRE Dictionary
 
 paths:
   # Search Endpoints
