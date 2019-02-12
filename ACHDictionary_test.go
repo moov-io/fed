@@ -38,8 +38,8 @@ func TestACHParseParticipant(t *testing.T) {
 		if fi.OfficeCode != "O" {
 			t.Errorf("OfficeCode Expected 'O' got: %v", fi.OfficeCode)
 		}
-		if fi.ServicingFrbNumber != "071000301" {
-			t.Errorf("ServicingFrbNumber Expected '071000301' got: %v", fi.ServicingFrbNumber)
+		if fi.ServicingFRBNumber != "071000301" {
+			t.Errorf("ServicingFrbNumber Expected '071000301' got: %v", fi.ServicingFRBNumber)
 		}
 		if fi.RecordTypeCode != "1" {
 			t.Errorf("RecordTypeCode Expected '1' got: %v", fi.RecordTypeCode)

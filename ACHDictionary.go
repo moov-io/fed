@@ -57,13 +57,13 @@ type ACHParticipant struct {
 	RoutingNumber string `json:"routingNumber"`
 	// OfficeCode Main/Head Office or Branch. O=main B=branch
 	OfficeCode string `json:"officeCode"`
-	// ServicingFrbNumber Servicing Fed's main office routing number
-	ServicingFrbNumber string `json:"servicingFrbNumber"`
+	// ServicingFRBNumber Servicing Fed's main office routing number
+	ServicingFRBNumber string `json:"servicingFRBNumber"`
 	// RecordTypeCode The code indicating the ABA number to be used to route or send ACH items to the RDFI
 	// 0 = Institution is a Federal Reserve Bank
 	// 1 = Send items to customer routing number
 	// 2 = Send items to customer using new routing number field
-	RecordTypeCode string `json:"recordTypeCod"`
+	RecordTypeCode string `json:"recordTypeCode"`
 	// Revised Date of last revision: YYYYMMDD, or blank
 	Revised string `json:"revised"`
 	// NewRoutingNumber Institution's new routing number resulting from a merger or renumber
@@ -71,11 +71,11 @@ type ACHParticipant struct {
 	// CustomerName (36): FEDERAL RESERVE BANK
 	CustomerName string `json:"customerName"`
 	// Location is the delivery address
-	ACHLocation `json:"achlocation"`
+	ACHLocation `json:"achLocation"`
 	// PhoneNumber The institution's phone number
 	PhoneNumber string `json:"phoneNumber"`
 	// StatusCode Code is based on the customers receiver code
-	// 1=Receives Gov/Comm
+	// 1 = Receives Gov/Comm
 	StatusCode string `json:"statusCode"`
 	// ViewCode is current view
 	// 1 = Current view
@@ -125,7 +125,7 @@ func (f *ACHDictionary) parseACHParticipant() error {
 	// OfficeCode (1): O
 	p.OfficeCode = f.line[9:10]
 	// ServicingFrbNumber (9): 011000015
-	p.ServicingFrbNumber = f.line[10:19]
+	p.ServicingFRBNumber = f.line[10:19]
 	// RecordTypeCode (1): 0
 	p.RecordTypeCode = f.line[19:20]
 	// ChangeDate (6): 122415
