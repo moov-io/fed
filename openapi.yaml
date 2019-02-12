@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  description: FED API is designed to create FEDACH and FEDWIRE Dictionaries for FED ACH Participants and FED WIRE Particpants. This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
   version: v1
   title: FED API
   contact:
@@ -14,8 +14,8 @@ servers:
     description: Local development
 
 tags:
-  - name: FEDACH
-    description: FED ACH Directory
+  - name: FED
+    description: FEDACH and FEDWIRE Dictionary
 
 paths:
   # Search Endpoints
@@ -47,7 +47,7 @@ paths:
           description: Maximum results returned by a search
       responses:
         '200':
-          description: SDNs returned from a search
+          description: FEDACH Participants returned from a search
           content:
             application/json:
               schema:
@@ -80,7 +80,7 @@ paths:
           description: Maximum results returned by a search
       responses:
         '200':
-          description: SDNs returned from a search
+          description: FEDWIRE Participants returned from a search
           content:
             application/json:
               schema:
