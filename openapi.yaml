@@ -1,0 +1,230 @@
+openapi: 3.0.2
+info:
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
+  version: v1
+  title: FED API
+  contact:
+    url: https://github.com/moov-io/fed
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8086
+    description: Local development
+
+tags:
+  - name: FED Dictionary
+    description: FEDACH Dictionary and FEDWIRE Dictionary
+
+paths:
+  # Search Endpoints
+  /searchFEDACH:
+    get:
+      tags:
+        - FEDACH
+      summary: Search FEDACH names and metadata
+      operationId: searchFEDACH
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: Farmers State Bank
+          description: Financial Institution Name
+        - name: routingNumber
+          in: query
+          schema:
+            type: string
+            example: 325183657
+          description: ACH Routing Number for a Financial Institution
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDACH Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACHDictionary'
+  /searchFEDWIRE:
+    get:
+      tags:
+        - FEDWIRE
+      summary: Search FEDWIRE names and metadata
+      operationId: searchFEDWIRE
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: First Bank
+          description: Financial Institution Name
+        - name: routingNumber
+          in: query
+          schema:
+            type: string
+            example: 324172465
+          description: WIRE Routing Number for a Financial Institution
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDWIRE Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WIREDictionary'
+
+components:
+  schemas:
+    ACHDictionary:
+      description: Search results containing ACHDictionary of Participants
+      properties:
+        ACHPartcipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACHParticipant'
+    ACHParticipant:
+      description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
+      properties:
+        RoutingNumber:
+          type: string
+          description: The institution's routing number
+          example: 231380104
+        OfficeCode:
+          type: string
+          description: Main/Head Office or Branch. O=main B=branch
+          example: O=main B=branch
+        ServicingFrbNumber:
+          type: string
+          description: Servicing Fed's main office routing number
+          example: 101000048
+        RecordTypeCode:
+          type: string
+          description: The code indicating the ABA number to be used to route or send ACH items to the RDFI
+          example: 0 = Institution is a Federal Reserve Bank, 1 = Send items to customer routing number, 2 = Send items to customer using new routing number field
+        Revised:
+          type: string
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+        NewRoutingNumber:
+          type: string
+          description: Financial Institution's new routing number resulting from a merger or renumber
+          example: 000000000 or valid routing number (e.g. 122203950)
+        CustomerName:
+          type: string
+          description: Financial Institution Name
+          example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+        ACHLocation:
+          type: object
+          description: FEDACH delivery address
+          items:
+            $ref: '#/components/schemas/ACHLocation'
+        PhoneNumber:
+          type: string
+          description: The Financial Institution's phone number
+          example: 8004460135
+        StatusCode:
+          type: string
+          description: Code is based on the customers receiver code
+          example: 1=Receives Gov/Comm
+        ViewCode:
+          type: string
+          description: Code is current view
+          example: 1 = Current view
+    ACHLocation:
+      description: ACHLocation is the FEDACH delivery address
+      properties:
+        Address:
+          type: string
+          description: Street Address
+          example: PO BOX 27025
+        City:
+          type: string
+          description: City
+          example: RICHMOND
+        State:
+          type: string
+          description: State
+          example: VA
+        PostalCode:
+          type: string
+          description: Postal Code
+          example: 23261
+        PostalExtension:
+          type: string
+          description: Postal Code Extension
+          example: 7025
+    WIREDictionary:
+      description: Search results containing WIREDictionary of Participants
+      properties:
+        WIREPartcipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/WIREParticipant'
+    WIREParticipant:
+      description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+      properties:
+        RoutingNumber:
+          type: string
+          description: The institution's routing number
+          example: 231380104
+        TelegraphicName:
+          type: string
+          description: Short name of financial institution
+          example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+        CustomerName:
+          type: string
+          description: Financial Institution Name
+          example: FEDERAL RESERVE BANK OF BOSTON
+        WIRELocation:
+          type: object
+          description: FEDWIRE Delivery Address
+          items:
+            $ref: '#/components/schemas/WIRELocation'
+        FundsTransferStatus:
+          type: string
+          description: Designates funds transfer status (Eligible / Ineligible)
+          example: Y - Eligible N - Ineligible
+        FundsSettlementOnlyStatus:
+          type: string
+          description: Designates funds settlement only status
+          example: S - Settlement-Only
+        BookEntrySecuritiesTransferStatus:
+          type: string
+          description: Designates book entry securities transfer status
+          example: N - Ineligible
+        Date:
+          type: string
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+    WIRELocation:
+      description: WIRELocation is the FEDWIRE delivery address
+      properties:
+        City:
+          type: string
+          description: City
+          example: BOSTON
+        State:
+          type: string
+          description: State
+          example: MA
+  parameters:
+    requestId:
+      in: header
+      name: X-Request-Id
+      description: Optional Request ID allows application developer to trace requests through the systems logs
+      schema:
+        type: string
+        example: 94c825ee

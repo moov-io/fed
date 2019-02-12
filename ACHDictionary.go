@@ -59,7 +59,7 @@ type ACHParticipant struct {
 	OfficeCode string `json:"officeCode"`
 	// ServicingFrbNumber Servicing Fed's main office routing number
 	ServicingFrbNumber string `json:"servicingFrbNumber"`
-	// RecordTypeCode The code indicating the ABA number to be used to route or send ACH items to the RFI
+	// RecordTypeCode The code indicating the ABA number to be used to route or send ACH items to the RDFI
 	// 0 = Institution is a Federal Reserve Bank
 	// 1 = Send items to customer routing number
 	// 2 = Send items to customer using new routing number field
@@ -77,7 +77,8 @@ type ACHParticipant struct {
 	// StatusCode Code is based on the customers receiver code
 	// 1=Receives Gov/Comm
 	StatusCode string `json:"statusCode"`
-	// ViewCode
+	// ViewCode is current view
+	// 1 = Current view
 	ViewCode string `json:"viewCode"`
 }
 
@@ -292,6 +293,20 @@ func ACHParticipantPostalCodeFilter(achParticipants []*ACHParticipant, s string)
 	}
 	return nsl
 }
+
+// ToDo:  Use for filtering by Routing Number after a search is returned
+
+/*// ACHParticipantRoutingNumberFilter filters ACHParticipant by Routing Number
+func ACHParticipantRoutingNumberFilter(achParticipants []*ACHParticipant, s string) []*ACHParticipant {
+	s = strings.TrimSpace(s)
+	nsl := make([]*ACHParticipant, 0)
+	for _, achP := range achParticipants {
+		if strings.HasPrefix(achP.RoutingNumber, s) {
+			nsl = append(nsl, achP)
+		}
+	}
+	return nsl
+}*/
 
 // ACHDictionaryStateFilter filters ACHDictionary.ACHParticipant by state
 func (f *ACHDictionary) ACHDictionaryStateFilter(s string) []*ACHParticipant {
