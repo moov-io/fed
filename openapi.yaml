@@ -136,7 +136,7 @@ components:
           type: string
           description: Main/Head Office or Branch. O=main B=branch
           example: O, B
-        servicingFrbNumber:
+        servicingFRBNumber:
           type: string
           description: Servicing Fed's main office routing number
           example: 101000048
