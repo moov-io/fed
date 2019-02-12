@@ -228,17 +228,19 @@ components:
         fundsTransferStatus:
           type: string
           description: Designates funds transfer status
-           Y -Eligible / N - Ineligible
+           Y = Eligible
+           N = Ineligible
           example: Y, N
         fundsSettlementOnlyStatus:
           type: string
           description: Designates funds settlement only status
-           S - Settlement-Only
+           S = Settlement-Only
           example: S
         bookEntrySecuritiesTransferStatus:
           type: string
           description: Designates book entry securities transfer status
-          example: N - Ineligible
+            N = Ineligible
+          example: N
         date:
           type: string
           description: Date of last revision
