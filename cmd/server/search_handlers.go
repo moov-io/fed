@@ -38,27 +38,27 @@ func readFEDACHRequest(u *url.URL) FEDACHRequest {
 	}
 }
 
-func (req FEDACHRequest) isEmpty() bool {
+func (req FEDACHRequest) empty() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) isNameOnly() bool {
+func (req FEDACHRequest) nameOnly() bool {
 	return req.Name != "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) isRoutingNumberOnly() bool {
+func (req FEDACHRequest) routingNumberOnly() bool {
 	return req.Name == "" && req.RoutingNumber != "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) isCityOnly() bool {
+func (req FEDACHRequest) cityOnly() bool {
 	return req.Name == "" && req.RoutingNumber != "" && req.City != "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) isStateOnly() bool {
+func (req FEDACHRequest) stateOnly() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State != "" && req.PostalCode == ""
 }
@@ -74,30 +74,30 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		req := readFEDACHRequest(r.URL)
 
-		if req.isEmpty() {
+		if req.empty() {
 			moovhttp.Problem(w, errNoSearchParams)
 		}
 
 		// Search by Name Only
-		if req.isNameOnly() {
+		if req.nameOnly() {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by name only %s", req.Name))
 			}
 			req.searchNameOnly(logger, searcher)(w, r)
 			return
-		} else if req.isRoutingNumberOnly() {
+		} else if req.routingNumberOnly() {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber))
 			}
 			req.searchRoutingNumberOnly(logger, searcher)(w, r)
 			return
-		} else if req.isStateOnly() {
+		} else if req.stateOnly() {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by state only %s", req.State))
 			}
 			req.searchStateOnly(logger, searcher)(w, r)
 			return
-		} else if req.isCityOnly() {
+		} else if req.cityOnly() {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by city only %s", req.City))
 			}

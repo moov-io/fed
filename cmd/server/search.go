@@ -6,7 +6,6 @@ package main
 
 import (
 	"errors"
-	"github.com/moov-io/base"
 	"github.com/moov-io/fed"
 	"sync"
 
@@ -25,8 +24,6 @@ type searcher struct {
 	WIREDictionary *fed.WIREDictionary
 	sync.RWMutex   // protects all above fields
 
-	// errors holds each error encountered when attempting to parse the file
-	errors base.ErrorList
 	logger log.Logger
 }
 
