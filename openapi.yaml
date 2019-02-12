@@ -51,7 +51,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Search'
+                $ref: '#/components/schemas/ACHDictionary'
   /searchFEDWIRE:
     get:
       tags:
@@ -84,4 +84,92 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Search'
+                $ref: ''
+
+components:
+  schemas:
+    ACHDictionary:
+      description: Search results containing ACHDictionary of Participants
+      properties:
+        ACHPartcipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACHParticipant'
+    ACHParticipant:
+      description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
+      properties:
+        RoutingNumber:
+          type: string
+          description: The institution's routing number
+          example: 231380104
+        OfficeCode:
+          type: string
+          description: Main/Head Office or Branch. O=main B=branch
+          example: O=main B=branch
+        ServicingFrbNumber:
+          type: string
+          description: Servicing Fed's main office routing number
+          example: 101000048
+        RecordTypeCode:
+          type: string
+          description: The code indicating the ABA number to be used to route or send ACH items to the RDFI
+          example: 0 = Institution is a Federal Reserve Bank, 1 = Send items to customer routing number, 2 = Send items to customer using new routing number field
+        Revised:
+          type: string
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+        NewRoutingNumber:
+          type: string
+          description: Financial Institution's new routing number resulting from a merger or renumber
+          example: 000000000 or valid routing number (e.g. 122203950)
+        CustomerName:
+          type: string
+          description: Financial Institution Name
+          example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+        ACHLocation:
+          type: object
+          items:
+            $ref: '#/components/schemas/ACHLocation'
+        PhoneNumber:
+          type: string
+          description: The Financial Institution's phone number
+          example: 8004460135
+        StatusCode:
+          type: string
+          description: Code is based on the customers receiver code
+          example: 1=Receives Gov/Comm
+        ViewCode:
+          type: string
+          description: Code is current view
+          example: 1 = Current view
+    ACHLocation:
+      description: ACHLocation is the institution's delivery address
+      properties:
+        Address:
+          type: string
+          description: Street Address
+          example: PO BOX 27025
+        City:
+          type: string
+          description: City
+          example: RICHMOND
+        State:
+          type: string
+          description: State
+          example: VA
+        PostalCode:
+          type: string
+          description: Postal Code
+          example: 23261
+        PostalExtension:
+          type: string
+          description: Postal Code Extension
+          example: 7025
+  parameters:
+    requestId:
+      in: header
+      name: X-Request-Id
+      description: Optional Request ID allows application developer to trace requests through the systems logs
+      schema:
+        type: string
+        example: 94c825ee
