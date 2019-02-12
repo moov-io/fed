@@ -84,7 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ''
+                $ref: '#/components/schemas/WIREDictionary'
 
 components:
   schemas:
@@ -128,6 +128,7 @@ components:
           example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
         ACHLocation:
           type: object
+          description: FEDACH delivery address
           items:
             $ref: '#/components/schemas/ACHLocation'
         PhoneNumber:
@@ -143,7 +144,7 @@ components:
           description: Code is current view
           example: 1 = Current view
     ACHLocation:
-      description: ACHLocation is the institution's delivery address
+      description: ACHLocation is the FEDACH delivery address
       properties:
         Address:
           type: string
@@ -165,6 +166,60 @@ components:
           type: string
           description: Postal Code Extension
           example: 7025
+    WIREDictionary:
+      description: Search results containing WIREDictionary of Participants
+      properties:
+        WIREPartcipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/WIREParticipant'
+    WIREParticipant:
+      description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+      properties:
+        RoutingNumber:
+          type: string
+          description: The institution's routing number
+          example: 231380104
+        TelegraphicName:
+          type: string
+          description: Short name of financial institution
+          example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+        CustomerName:
+          type: string
+          description: Financial Institution Name
+          example: FEDERAL RESERVE BANK OF BOSTON
+        WIRELocation:
+          type: object
+          description: FEDWIRE Delivery Address
+          items:
+            $ref: '#/components/schemas/WIRELocation'
+        FundsTransferStatus:
+          type: string
+          description: Designates funds transfer status (Eligible / Ineligible)
+          example: Y - Eligible N - Ineligible
+        FundsSettlementOnlyStatus:
+          type: string
+          description: Designates funds settlement only status
+          example: S - Settlement-Only
+        BookEntrySecuritiesTransferStatus:
+          type: string
+          description: Designates book entry securities transfer status
+          example: N - Ineligible
+        Date:
+          type: string
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+    WIRELocation:
+      description: WIRELocation is the FEDWIREdelivery address
+      properties:
+        City:
+          type: string
+          description: City
+          example: BOSTON
+        State:
+          type: string
+          description: State
+          example: MA
   parameters:
     requestId:
       in: header
