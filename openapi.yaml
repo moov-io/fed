@@ -19,7 +19,7 @@ tags:
 
 paths:
   # Search Endpoints
-  /searchFEDACH:
+  /search/FEDACH:
     get:
       tags:
         - FEDACH
@@ -32,13 +32,31 @@ paths:
           schema:
             type: string
             example: Farmers State Bank
-          description: Financial Institution Name
+          description: FEDACH Financial Institution Name
         - name: routingNumber
           in: query
           schema:
             type: string
             example: 325183657
-          description: ACH Routing Number for a Financial Institution
+          description: FEDACH Routing Number for a Financial Institution
+        - name: state
+          in: query
+          schema:
+            type: string
+            example: PA
+          description: FEDACH Financial Institution State
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: 325183657
+          description: FEDACH Financial Institution City
+        - name: postalCode
+          in: query
+          schema:
+            type: string
+            example: 19753
+          description: FEDACH Financial Institution Postal Code
         - name: limit
           in: query
           schema:
@@ -52,7 +70,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACHDictionary'
-  /searchFEDWIRE:
+  /search/FEDWIRE:
     get:
       tags:
         - FEDWIRE
@@ -65,13 +83,25 @@ paths:
           schema:
             type: string
             example: First Bank
-          description: Financial Institution Name
+          description: FEDWIRE Financial Institution Name
         - name: routingNumber
           in: query
           schema:
             type: string
             example: 324172465
-          description: WIRE Routing Number for a Financial Institution
+          description: FEDWIRE Routing Number for a Financial Institution
+        - name: state
+          in: query
+          schema:
+            type: string
+            example: PA
+          description: FEDWIRE Financial Institution State
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: 325183657
+          description: FEDWIRE Financial Institution City
         - name: limit
           in: query
           schema:
@@ -137,12 +167,14 @@ components:
           example: 8004460135
         statusCode:
           type: string
-          description: Code is based on the customers receiver code, 1 = Receives Gov/Comm
+          description: Code is based on the customers receiver code
+           1 = Receives Gov/Comm
           example: 1
         viewCode:
           type: string
-          description: Code is current view, 1 = Current view
-          example:
+          description: Code is current view
+           1 = Current view
+          example: 1
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
@@ -195,11 +227,13 @@ components:
             $ref: '#/components/schemas/WIRELocation'
         fundsTransferStatus:
           type: string
-          description: Designates funds transfer status, Y -Eligible / N - Ineligible
+          description: Designates funds transfer status
+           Y -Eligible / N - Ineligible
           example: Y, N
         fundsSettlementOnlyStatus:
           type: string
-          description: Designates funds settlement only status, S - Settlement-Only
+          description: Designates funds settlement only status
+           S - Settlement-Only
           example: S
         bookEntrySecuritiesTransferStatus:
           type: string

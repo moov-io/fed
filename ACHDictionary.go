@@ -6,12 +6,13 @@ package fed
 
 import (
 	"bufio"
-	"github.com/moov-io/base"
-	"github.com/moov-io/fed/pkg/strcmp"
 	"io"
 	"sort"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/strcmp"
 )
 
 var (
