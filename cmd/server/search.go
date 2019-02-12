@@ -6,6 +6,7 @@ package main
 
 import (
 	"errors"
+	"github.com/moov-io/base"
 	"github.com/moov-io/fed"
 	"sync"
 
@@ -24,6 +25,8 @@ type searcher struct {
 	WIREDictionary *fed.WIREDictionary
 	sync.RWMutex   // protects all above fields
 
+	// errors holds each error encountered when attempting to parse the file
+	errors base.ErrorList
 	logger log.Logger
 }
 
@@ -32,7 +35,7 @@ type searchResponse struct {
 	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 }
 
-func (s *searcher) FindACHFinancialInstitution(participantName string) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFindNameOnly(participantName string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.ACHDictionary.FinancialInstitutionSearch(participantName)
@@ -42,7 +45,7 @@ func (s *searcher) FindACHFinancialInstitution(participantName string) ([]*fed.A
 	return fi, nil
 }
 
-func (s *searcher) FindACHRoutingNumber(routingNumber string) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFindRoutingNumberOnly(routingNumber string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.ACHDictionary.RoutingNumberSearch(routingNumber)
@@ -52,22 +55,53 @@ func (s *searcher) FindACHRoutingNumber(routingNumber string) ([]*fed.ACHPartici
 	return fi, nil
 }
 
-func (s *searcher) FindWIREFinancialInstitution(participantName string) ([]*fed.WIREParticipant, error) {
+func (s *searcher) ACHFindStateOnly(state string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi, err := s.WIREDictionary.FinancialInstitutionSearch(participantName)
+	fi := s.ACHDictionary.StateFilter(state)
+	return fi
+}
+
+func (s *searcher) ACHFindCityOnly(city string) []*fed.ACHParticipant {
+	s.RLock()
+	defer s.RUnlock()
+	fi := s.ACHDictionary.CityFilter(city)
+	return fi
+}
+
+func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipant {
+	s.RLock()
+	defer s.RUnlock()
+	fi := s.ACHDictionary.PostalCodeFilter(postalCode)
+	return fi
+}
+
+func (s *searcher) FindFEDACH(req FEDACHRequest) ([]*fed.ACHParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+
+	fi, err := s.ACHDictionary.FinancialInstitutionSearch(req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return fi, nil
-}
 
-func (s *searcher) FindWIRERoutingNumber(routingNumber string) ([]*fed.WIREParticipant, error) {
-	s.RLock()
-	defer s.RUnlock()
-	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber)
-	if err != nil {
-		return nil, err
+	if req.RoutingNumber != "" {
+		fi, err = s.ACHDictionary.ACHParticipantRoutingNumberFilter(fi, req.RoutingNumber)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if req.State != "" {
+		fi = s.ACHDictionary.ACHParticipantStateFilter(fi, req.State)
+	}
+
+	if req.City != "" {
+		fi = s.ACHDictionary.ACHParticipantCityFilter(fi, req.City)
+	}
+
+	if req.PostalCode != "" {
+		fi = s.ACHDictionary.ACHParticipantPostalCodeFilter(fi, req.PostalCode)
 	}
 	return fi, nil
 }

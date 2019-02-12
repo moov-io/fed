@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-kit/kit/log"
@@ -17,49 +18,115 @@ import (
 
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
 	r.Methods("GET").Path("/searchFEDACH").HandlerFunc(searchFEDACH(logger, searcher))
-	r.Methods("GET").Path("/searchFEDWIRE").HandlerFunc(searchFEDWIRE(logger, searcher))
 }
 
-// ToDo:  Expand Searches to include RoutingNumber, State, City, (Zipcode for ACH)
+type FEDACHRequest struct {
+	Name          string `json:"name"`
+	RoutingNumber string `json:"routingNumber"`
+	City          string `json:"city"`
+	State         string `json:"state"`
+	PostalCode    string `json:"postalCode"`
+}
+
+func readFEDACHRequest(u *url.URL) FEDACHRequest {
+	return FEDACHRequest{
+		Name:          strings.ToLower(strings.TrimSpace(u.Query().Get("address"))),
+		RoutingNumber: strings.ToLower(strings.TrimSpace(u.Query().Get("routingNumber"))),
+		City:          strings.ToLower(strings.TrimSpace(u.Query().Get("city"))),
+		State:         strings.ToLower(strings.TrimSpace(u.Query().Get("state"))),
+		PostalCode:    strings.ToLower(strings.TrimSpace(u.Query().Get("postalCode"))),
+	}
+}
+
+func (req FEDACHRequest) isEmpty() bool {
+	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
+		req.State == "" && req.PostalCode == ""
+}
+
+func (req FEDACHRequest) isNameOnly() bool {
+	return req.Name != "" && req.RoutingNumber == "" && req.City == "" &&
+		req.State == "" && req.PostalCode == ""
+}
+
+func (req FEDACHRequest) isRoutingNumberOnly() bool {
+	return req.Name == "" && req.RoutingNumber != "" && req.City == "" &&
+		req.State == "" && req.PostalCode == ""
+}
+
+func (req FEDACHRequest) isCityOnly() bool {
+	return req.Name == "" && req.RoutingNumber != "" && req.City != "" &&
+		req.State == "" && req.PostalCode == ""
+}
+
+func (req FEDACHRequest) isStateOnly() bool {
+	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
+		req.State != "" && req.PostalCode == ""
+}
+
+func (req FEDACHRequest) isPostalCodeOnly() bool {
+	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
+		req.State == "" && req.PostalCode != ""
+}
 
 func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w = wrapResponseWriter(logger, w, r)
 
-		// Search by Name
-		if name := strings.TrimSpace(r.URL.Query().Get("name")); name != "" {
+		req := readFEDACHRequest(r.URL)
+
+		if req.isEmpty() {
+			moovhttp.Problem(w, errNoSearchParams)
+		}
+
+		// Search by Name Only
+		if req.isNameOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by name for %s", name))
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by name only %s", req.Name))
 			}
-			achSearchByName(logger, searcher, name)(w, r)
+			req.searchNameOnly(logger, searcher)(w, r)
+			return
+		} else if req.isRoutingNumberOnly() {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber))
+			}
+			req.searchRoutingNumberOnly(logger, searcher)(w, r)
+			return
+		} else if req.isStateOnly() {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by state only %s", req.State))
+			}
+			req.searchStateOnly(logger, searcher)(w, r)
+			return
+		} else if req.isCityOnly() {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by city only %s", req.City))
+			}
+			req.searchCityOnly(logger, searcher)(w, r)
+			return
+		} else if req.isPostalCodeOnly() {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by postal code only %s", req.PostalCode))
+			}
+			req.searchPostalCodeOnly(logger, searcher)(w, r)
+			return
+		} else {
+			if logger != nil {
+				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber))
+			}
+			req.search(logger, searcher)(w, r)
 			return
 		}
 
-		// Search By Routing Number
-		if routingNumber := strings.TrimSpace(r.URL.Query().Get("routingNumber")); routingNumber != "" {
-			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by routing number for %s", routingNumber))
-			}
-			achSearchByRoutingNumber(logger, searcher, routingNumber)(w, r)
-			return
-		}
-
-		// Fallback if no search params were found
-		moovhttp.Problem(w, errNoSearchParams)
 	}
 }
 
-func achSearchByName(logger log.Logger, searcher *searcher, name string) http.HandlerFunc {
+func (req FEDACHRequest) searchNameOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if len(name) == 0 {
-			moovhttp.Problem(w, errNoSearchParams)
-			return
-		}
 		if logger != nil {
-			logger.Log("searchFEDACH", fmt.Sprintf("search by name for %s", name))
+			logger.Log("searchFEDACH", fmt.Sprintf("search by name %s", req.Name))
 		}
 
-		achP, err := searcher.FindACHFinancialInstitution(name)
+		achP, err := searcher.ACHFindNameOnly(req.Name)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}
@@ -73,17 +140,13 @@ func achSearchByName(logger log.Logger, searcher *searcher, name string) http.Ha
 	}
 }
 
-func achSearchByRoutingNumber(logger log.Logger, searcher *searcher, routingNumber string) http.HandlerFunc {
+func (req FEDACHRequest) searchRoutingNumberOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if len(routingNumber) == 0 {
-			moovhttp.Problem(w, errNoSearchParams)
-			return
-		}
 		if logger != nil {
-			logger.Log("searchFEDACH", fmt.Sprintf("search by routing number for %s", routingNumber))
+			logger.Log("searchFEDACH", fmt.Sprintf("search by routing number %s", req.RoutingNumber))
 		}
 
-		achP, err := searcher.FindACHRoutingNumber(routingNumber)
+		achP, err := searcher.ACHFindRoutingNumberOnly(req.RoutingNumber)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}
@@ -97,75 +160,68 @@ func achSearchByRoutingNumber(logger log.Logger, searcher *searcher, routingNumb
 	}
 }
 
-func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
+func (req FEDACHRequest) searchStateOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w = wrapResponseWriter(logger, w, r)
-
-		// Search by Name
-		if name := strings.TrimSpace(r.URL.Query().Get("name")); name != "" {
-			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by name for %s", name))
-			}
-			wireSearchByName(logger, searcher, name)(w, r)
-			return
-		}
-
-		// Search By Routing Number
-		if routingNumber := strings.TrimSpace(r.URL.Query().Get("routingNumber")); routingNumber != "" {
-			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED WIRE Dictionary by routing number for %s", routingNumber))
-			}
-			wireSearchByRoutingNumber(logger, searcher, routingNumber)(w, r)
-			return
-		}
-
-		// Fallback if no search params were found
-		moovhttp.Problem(w, errNoSearchParams)
-	}
-}
-
-func wireSearchByName(logger log.Logger, searcher *searcher, name string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if len(name) == 0 {
-			moovhttp.Problem(w, errNoSearchParams)
-			return
-		}
 		if logger != nil {
-			logger.Log("searchFEDWIRE", fmt.Sprintf("search by name for %s", name))
+			logger.Log("searchFEDACH", fmt.Sprintf("search by state %s", req.State))
 		}
 
-		wireP, err := searcher.FindWIREFinancialInstitution(name)
-		if err != nil {
-			moovhttp.Problem(w, err)
-		}
+		achP := searcher.ACHFindStateOnly(req.RoutingNumber)
 
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
+		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 			moovhttp.Problem(w, err)
 			return
 		}
 	}
 }
 
-func wireSearchByRoutingNumber(logger log.Logger, searcher *searcher, routingNumber string) http.HandlerFunc {
+func (req FEDACHRequest) searchCityOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if len(routingNumber) == 0 {
-			moovhttp.Problem(w, errNoSearchParams)
-			return
-		}
 		if logger != nil {
-			logger.Log("searchFEDWIRE", fmt.Sprintf("search by routing number for %s", routingNumber))
+			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.City))
 		}
 
-		wireP, err := searcher.FindWIRERoutingNumber(routingNumber)
+		achP := searcher.ACHFindCityOnly(req.RoutingNumber)
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
+			moovhttp.Problem(w, err)
+			return
+		}
+	}
+}
+
+func (req FEDACHRequest) searchPostalCodeOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if logger != nil {
+			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.PostalCode))
+		}
+
+		achP := searcher.ACHFindPostalCodeOnly(req.RoutingNumber)
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
+			moovhttp.Problem(w, err)
+			return
+		}
+	}
+}
+
+func (req FEDACHRequest) search(logger log.Logger, searcher *searcher) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		achP, err := searcher.FindFEDACH(req)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}
 
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
+		if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 			moovhttp.Problem(w, err)
 			return
 		}
