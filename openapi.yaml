@@ -148,7 +148,7 @@ components:
             0 = Institution is a Federal Reserve Bank
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
-          example: 0, 1,  2
+          example: 0, 1, 2
         revised:
           type: string
           description: Date of last revision
