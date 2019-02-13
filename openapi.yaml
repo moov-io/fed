@@ -142,8 +142,11 @@ components:
           example: 101000048
         recordTypeCode:
           type: string
-          description: The code indicating the ABA number to be used to route or send ACH items to the RDFI, 0 = Institution is a Federal Reserve Bank, 1 = Send items to customer routing number, 2 = Send items to customer using new routing number field
-          example: 0, 1,  2
+          description: The code indicating the ABA number to be used to route or send ACH items to the RDFI
+            0 = Institution is a Federal Reserve Bank
+            1 = Send items to customer routing number
+            2 = Send items to customer using new routing number field
+          example: 0, 1, 2
         revised:
           type: string
           description: Date of last revision
