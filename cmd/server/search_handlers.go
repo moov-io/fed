@@ -17,7 +17,7 @@ import (
 )
 
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
-	r.Methods("GET").Path("/searchFEDACH").HandlerFunc(searchFEDACH(logger, searcher))
+	r.Methods("GET").Path("/FEDACH/search").HandlerFunc(searchFEDACH(logger, searcher))
 }
 
 type FEDACHRequest struct {
