@@ -144,9 +144,7 @@ components:
           example: 231380104
         officeCode:
           type: string
-          description: Main/Head Office or Branch
-            O = main
-            B = branch
+          description: Main/Head Office or Branch. O=main B=branch
           example: O, B
         servicingFRBNumber:
           type: string
@@ -183,13 +181,13 @@ components:
         statusCode:
           type: string
           description: Code is based on the customers receiver code
-            1 = Receives Gov/Comm
+           1 = Receives Gov/Comm
           example: 1
         viewCode:
           type: string
           description: Code is current view
-            1 = Current view
-          example:
+           1 = Current view
+          example: 1
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
@@ -243,13 +241,13 @@ components:
         fundsTransferStatus:
           type: string
           description: Designates funds transfer status
-            Y = Eligible
-            N = Ineligible
+           Y = Eligible
+           N = Ineligible
           example: Y, N
         fundsSettlementOnlyStatus:
           type: string
           description: Designates funds settlement only status
-            S = Settlement-Only
+           S = Settlement-Only
           example: S
         bookEntrySecuritiesTransferStatus:
           type: string

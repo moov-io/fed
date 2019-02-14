@@ -270,7 +270,7 @@ func TestACHSearchStateFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := ACHParticipantStateFilter(fi, "OH")
+	filter := achDir.ACHParticipantStateFilter(fi, "OH")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -292,7 +292,7 @@ func TestACHSearchCityFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := ACHParticipantCityFilter(fi, "ARCHBOLD")
+	filter := achDir.ACHParticipantCityFilter(fi, "ARCHBOLD")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -314,7 +314,7 @@ func TestACHSearchPostalCodeFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := ACHParticipantPostalCodeFilter(fi, "56208")
+	filter := achDir.ACHParticipantPostalCodeFilter(fi, "56208")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -329,7 +329,7 @@ func TestACHSearchPostalCodeFilter(t *testing.T) {
 func TestACHDictionaryStateFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 
-	filter := achDir.ACHDictionaryStateFilter("pa")
+	filter := achDir.StateFilter("pa")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -344,7 +344,7 @@ func TestACHDictionaryStateFilter(t *testing.T) {
 func TestACHDictionaryCityFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 
-	filter := achDir.ACHDictionaryCityFilter("Reading")
+	filter := achDir.CityFilter("Reading")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -359,7 +359,7 @@ func TestACHDictionaryCityFilter(t *testing.T) {
 func TestACHDictionaryPostalCodeFilter(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 
-	filter := achDir.ACHDictionaryPostalCodeFilter("19468")
+	filter := achDir.PostalCodeFilter("19468")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}

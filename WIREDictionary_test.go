@@ -254,7 +254,7 @@ func TestWIRESearchStateFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := WIREParticipantStateFilter(fi, "NC")
+	filter := wireDir.WIREParticipantStateFilter(fi, "NC")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -276,7 +276,7 @@ func TestWIRESearchCityFilter(t *testing.T) {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
 
-	filter := WIREParticipantCityFilter(fi, "SALISBURY")
+	filter := wireDir.WIREParticipantCityFilter(fi, "SALISBURY")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -289,9 +289,9 @@ func TestWIRESearchCityFilter(t *testing.T) {
 
 // TestWIREDictionaryStateFilter tests filtering WIREDictionary.WIREParticipants by the state of `PA`
 func TestWIREDictionaryStateFilter(t *testing.T) {
-	achDir := helperLoadFEDWIREFile(t)
+	wireDir := helperLoadFEDWIREFile(t)
 
-	filter := achDir.WIREDictionaryStateFilter("pa")
+	filter := wireDir.StateFilter("pa")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -304,9 +304,9 @@ func TestWIREDictionaryStateFilter(t *testing.T) {
 
 // TestWIREDictionaryCityFilter tests filtering WIREDictionary.WIREParticipants by the city of `Reading`
 func TestWIREDictionaryCityFilter(t *testing.T) {
-	achDir := helperLoadFEDWIREFile(t)
+	wireDir := helperLoadFEDWIREFile(t)
 
-	filter := achDir.WIREDictionaryCityFilter("Reading")
+	filter := wireDir.CityFilter("Reading")
 	if len(filter) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}

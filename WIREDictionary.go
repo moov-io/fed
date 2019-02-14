@@ -230,7 +230,7 @@ func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipan
 }
 
 // WIREParticipantStateFilter filters WIREParticipant by State.
-func WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+func (f *WIREDictionary) WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range wireParticipants {
 		if strings.EqualFold(wireP.WIRELocation.State, s) {
@@ -241,7 +241,7 @@ func WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) [
 }
 
 // WIREParticipantCityFilter filters WIREParticipant by City
-func WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+func (f *WIREDictionary) WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range wireParticipants {
 		if strings.EqualFold(wireP.WIRELocation.City, s) {
@@ -251,8 +251,8 @@ func WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []
 	return nsl
 }
 
-// WIREDictionaryStateFilter filters WIREDictionary.WIREParticipant by state
-func (f *WIREDictionary) WIREDictionaryStateFilter(s string) []*WIREParticipant {
+// StateFilter filters WIREDictionary.WIREParticipant by state
+func (f *WIREDictionary) StateFilter(s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range f.WIREParticipants {
 		if strings.EqualFold(wireP.WIRELocation.State, s) {
@@ -262,8 +262,8 @@ func (f *WIREDictionary) WIREDictionaryStateFilter(s string) []*WIREParticipant 
 	return nsl
 }
 
-// WIREDictionaryCityFilter filters WIREDictionary.WIREParticipant by city
-func (f *WIREDictionary) WIREDictionaryCityFilter(s string) []*WIREParticipant {
+// CityFilter filters WIREDictionary.WIREParticipant by city
+func (f *WIREDictionary) CityFilter(s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range f.WIREParticipants {
 		if strings.EqualFold(wireP.WIRELocation.City, s) {
