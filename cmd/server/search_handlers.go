@@ -22,7 +22,8 @@ func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
 	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
 }
 
-type FEDACHRequest struct {
+// fedachSearchRequest contains the properties for fed ach search request
+type fedachSearchRequest struct {
 	Name          string `json:"name"`
 	RoutingNumber string `json:"routingNumber"`
 	City          string `json:"city"`
@@ -30,9 +31,10 @@ type FEDACHRequest struct {
 	PostalCode    string `json:"postalCode"`
 }
 
-func readFEDACHRequest(u *url.URL) FEDACHRequest {
-	return FEDACHRequest{
-		Name:          strings.ToLower(strings.TrimSpace(u.Query().Get("address"))),
+// readFEDACHSearchRequest returns a fedachSearchRequest based on url paramters for fed ach search
+func readFEDACHSearchRequest(u *url.URL) fedachSearchRequest {
+	return fedachSearchRequest{
+		Name:          strings.ToLower(strings.TrimSpace(u.Query().Get("name"))),
 		RoutingNumber: strings.ToLower(strings.TrimSpace(u.Query().Get("routingNumber"))),
 		City:          strings.ToLower(strings.TrimSpace(u.Query().Get("city"))),
 		State:         strings.ToLower(strings.TrimSpace(u.Query().Get("state"))),
@@ -40,41 +42,48 @@ func readFEDACHRequest(u *url.URL) FEDACHRequest {
 	}
 }
 
-func (req FEDACHRequest) empty() bool {
+// empty returns true if all of the properties in fedachSearchRequest are empty
+func (req fedachSearchRequest) empty() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) nameOnly() bool {
+// nameOnly returns true if only Name is not ""
+func (req fedachSearchRequest) nameOnly() bool {
 	return req.Name != "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) routingNumberOnly() bool {
+// routingNumberOnly returns true if only routingNumber is not ""
+func (req fedachSearchRequest) routingNumberOnly() bool {
 	return req.Name == "" && req.RoutingNumber != "" && req.City == "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) cityOnly() bool {
-	return req.Name == "" && req.RoutingNumber != "" && req.City != "" &&
+// cityOnly returns true if only city is not ""
+func (req fedachSearchRequest) cityOnly() bool {
+	return req.Name == "" && req.RoutingNumber == "" && req.City != "" &&
 		req.State == "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) stateOnly() bool {
+// stateOnly returns true if only state is not ""
+func (req fedachSearchRequest) stateOnly() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State != "" && req.PostalCode == ""
 }
 
-func (req FEDACHRequest) isPostalCodeOnly() bool {
+// postalCodeOnly returns true if only postal code is not ""
+func (req fedachSearchRequest) postalCodeOnly() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode != ""
 }
 
+// searchFEDACH calls search functions based on the fed ach search request url parameters
 func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w = wrapResponseWriter(logger, w, r)
 
-		req := readFEDACHRequest(r.URL)
+		req := readFEDACHSearchRequest(r.URL)
 
 		if req.empty() {
 			moovhttp.Problem(w, errNoSearchParams)
@@ -105,7 +114,7 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 			}
 			req.searchCityOnly(logger, searcher)(w, r)
 			return
-		} else if req.isPostalCodeOnly() {
+		} else if req.postalCodeOnly() {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by postal code only %s", req.PostalCode))
 			}
@@ -115,14 +124,15 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 			if logger != nil {
 				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber))
 			}
-			req.search(logger, searcher)(w, r)
+			req.searchACH(logger, searcher)(w, r)
 			return
 		}
 
 	}
 }
 
-func (req FEDACHRequest) searchNameOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchNameOnly searches FEDACH by name only
+func (req fedachSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			logger.Log("searchFEDACH", fmt.Sprintf("search by name %s", req.Name))
@@ -142,7 +152,8 @@ func (req FEDACHRequest) searchNameOnly(logger log.Logger, searcher *searcher) h
 	}
 }
 
-func (req FEDACHRequest) searchRoutingNumberOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchRoutingNumberOnly searches FEDACH by routing number only
+func (req fedachSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			logger.Log("searchFEDACH", fmt.Sprintf("search by routing number %s", req.RoutingNumber))
@@ -162,7 +173,8 @@ func (req FEDACHRequest) searchRoutingNumberOnly(logger log.Logger, searcher *se
 	}
 }
 
-func (req FEDACHRequest) searchStateOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchStateOnly searches FEDACH by state only
+func (req fedachSearchRequest) searchStateOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			logger.Log("searchFEDACH", fmt.Sprintf("search by state %s", req.State))
@@ -179,7 +191,8 @@ func (req FEDACHRequest) searchStateOnly(logger log.Logger, searcher *searcher) 
 	}
 }
 
-func (req FEDACHRequest) searchCityOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchCityOnly searches FEDACH by city only
+func (req fedachSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.City))
@@ -196,7 +209,8 @@ func (req FEDACHRequest) searchCityOnly(logger log.Logger, searcher *searcher) h
 	}
 }
 
-func (req FEDACHRequest) searchPostalCodeOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchPostalCodeOnly searches FEDACH by postal code only
+func (req fedachSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.PostalCode))
@@ -213,7 +227,8 @@ func (req FEDACHRequest) searchPostalCodeOnly(logger log.Logger, searcher *searc
 	}
 }
 
-func (req FEDACHRequest) search(logger log.Logger, searcher *searcher) http.HandlerFunc {
+// searchACH searches FEDACH by more than one url parameter
+func (req fedachSearchRequest) searchACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		achP, err := searcher.FindFEDACH(req)

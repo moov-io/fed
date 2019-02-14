@@ -15,23 +15,25 @@ import (
 var (
 	errNoSearchParams = errors.New("missing search parameter(s)")
 
-	// ToDo: ?
-	//softResultsLimit, hardResultsLimit = 10, 100
+	// ToDo: softResultsLimit, hardResultsLimit = 10, 499
 )
 
+// searcher defines a searcher struct
 type searcher struct {
-	ACHDictionary  *fed.ACHDictionary
-	WIREDictionary *fed.WIREDictionary
-	sync.RWMutex   // protects all above fields
+	ACHDictionary *fed.ACHDictionary
+	// ToDo: WIREDictionary *fed.WIREDictionary
+	sync.RWMutex // protects all above fields
 
 	logger log.Logger
 }
 
+// searchResponse defines a FEDACH search response
 type searchResponse struct {
-	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
-	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
+	ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+	//ToDo: WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 }
 
+// ACHFindNameOnly finds ACH Participants by name only
 func (s *searcher) ACHFindNameOnly(participantName string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
@@ -42,6 +44,7 @@ func (s *searcher) ACHFindNameOnly(participantName string) ([]*fed.ACHParticipan
 	return fi, nil
 }
 
+// ACHFindRoutingNumberOnly finds ACH Participants by routing number only
 func (s *searcher) ACHFindRoutingNumberOnly(routingNumber string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
@@ -52,13 +55,7 @@ func (s *searcher) ACHFindRoutingNumberOnly(routingNumber string) ([]*fed.ACHPar
 	return fi, nil
 }
 
-func (s *searcher) ACHFindStateOnly(state string) []*fed.ACHParticipant {
-	s.RLock()
-	defer s.RUnlock()
-	fi := s.ACHDictionary.StateFilter(state)
-	return fi
-}
-
+// ACHFindCityOnly finds ACH Participants by city only
 func (s *searcher) ACHFindCityOnly(city string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
@@ -66,6 +63,15 @@ func (s *searcher) ACHFindCityOnly(city string) []*fed.ACHParticipant {
 	return fi
 }
 
+// ACHFindSateOnly finds ACH Participants by state only
+func (s *searcher) ACHFindStateOnly(state string) []*fed.ACHParticipant {
+	s.RLock()
+	defer s.RUnlock()
+	fi := s.ACHDictionary.StateFilter(state)
+	return fi
+}
+
+// ACHFindPostalCodeOnly finds ACH Participants by postal code only
 func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
@@ -73,7 +79,8 @@ func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipan
 	return fi
 }
 
-func (s *searcher) FindFEDACH(req FEDACHRequest) ([]*fed.ACHParticipant, error) {
+// FindFEDACH finds ACH Participants based on multiple parameters
+func (s *searcher) FindFEDACH(req fedachSearchRequest) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 
