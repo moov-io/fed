@@ -31,7 +31,7 @@ type fedachSearchRequest struct {
 	PostalCode    string `json:"postalCode"`
 }
 
-// readFEDACHSearchRequest returns a fedachSearchRequest based on url paramters for fed ach search
+// readFEDACHSearchRequest returns a fedachSearchRequest based on url parameters for fed ach search
 func readFEDACHSearchRequest(u *url.URL) fedachSearchRequest {
 	return fedachSearchRequest{
 		Name:          strings.ToLower(strings.TrimSpace(u.Query().Get("name"))),
