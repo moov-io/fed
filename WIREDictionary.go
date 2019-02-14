@@ -230,7 +230,7 @@ func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipan
 }
 
 // WIREParticipantStateFilter filters WIREParticipant by State.
-func (f WIREDictionary) WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+func (f *WIREDictionary) WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range wireParticipants {
 		if strings.EqualFold(wireP.WIRELocation.State, s) {
@@ -241,7 +241,7 @@ func (f WIREDictionary) WIREParticipantStateFilter(wireParticipants []*WIREParti
 }
 
 // WIREParticipantCityFilter filters WIREParticipant by City
-func (f WIREDictionary) WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
+func (f *WIREDictionary) WIREParticipantCityFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range wireParticipants {
 		if strings.EqualFold(wireP.WIRELocation.City, s) {
@@ -252,7 +252,7 @@ func (f WIREDictionary) WIREParticipantCityFilter(wireParticipants []*WIREPartic
 }
 
 // StateFilter filters WIREDictionary.WIREParticipant by state
-func (f WIREDictionary) StateFilter(s string) []*WIREParticipant {
+func (f *WIREDictionary) StateFilter(s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range f.WIREParticipants {
 		if strings.EqualFold(wireP.WIRELocation.State, s) {
@@ -263,7 +263,7 @@ func (f WIREDictionary) StateFilter(s string) []*WIREParticipant {
 }
 
 // CityFilter filters WIREDictionary.WIREParticipant by city
-func (f WIREDictionary) CityFilter(s string) []*WIREParticipant {
+func (f *WIREDictionary) CityFilter(s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
 	for _, wireP := range f.WIREParticipants {
 		if strings.EqualFold(wireP.WIRELocation.City, s) {
