@@ -33,7 +33,7 @@ script:
   # Just check gofmt on linux, it's the fastest builder
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
   - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-  - misspell -error -locale US $GOFILES
+  #- misspell -error -locale US $GOFILES
   - gocyclo -over 25 $GOFILES
   - golint -set_exit_status $GOFILES
   - staticcheck ./...
