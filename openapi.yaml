@@ -14,15 +14,25 @@ servers:
     description: Local development
 
 tags:
-  - name: FED Dictionary
+  - name: FED
     description: FEDACH Dictionary and FEDWIRE Dictionary
 
 paths:
+  /ping:
+    get:
+      tags:
+        - FED
+      summary: Ping the FED service to check if running
+      operationId: ping
+      responses:
+        '200':
+          description: Service is running properly
+          
   # Search Endpoints
   /fed/ach/search:
     get:
       tags:
-        - FEDACH
+        - FED
       summary: Search FEDACH names and metadata
       operationId: searchFEDACH
       parameters:
@@ -73,7 +83,7 @@ paths:
   /fed/wire/search:
     get:
       tags:
-        - FEDWIRE
+        - FED
       summary: Search FEDWIRE names and metadata
       operationId: searchFEDWIRE
       parameters:
