@@ -16,8 +16,10 @@ import (
 	moovhttp "github.com/moov-io/base/http"
 )
 
+// ToDo:  FED WIRE (write FED ACH tests first)
+
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
-	r.Methods("GET").Path("/FEDACH/search").HandlerFunc(searchFEDACH(logger, searcher))
+	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
 }
 
 type FEDACHRequest struct {
