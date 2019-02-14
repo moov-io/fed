@@ -27,8 +27,7 @@ paths:
       responses:
         '200':
           description: Service is running properly
-
-
+          
   # Search Endpoints
   /fed/ach/search:
     get:
