@@ -19,7 +19,7 @@ tags:
 
 paths:
   # Search Endpoints
-  /fed/ach/search:
+  /search/FEDACH:
     get:
       tags:
         - FEDACH
@@ -70,7 +70,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACHDictionary'
-  /fed/wire/search:
+  /search/FEDWIRE:
     get:
       tags:
         - FEDWIRE
