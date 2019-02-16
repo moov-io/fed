@@ -92,6 +92,12 @@ func main() {
 		logger: logger,
 	}
 
+	if err := searcher.readFEDACHData(); err != nil {
+		err = fmt.Errorf("error reading FEDACHdir.txt: %v", err)
+		logger.Log("read", err)
+		errs <- err
+	}
+
 	// Add searcher for HTTP routes
 	addSearchRoutes(logger, router, searcher)
 
