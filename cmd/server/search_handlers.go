@@ -34,11 +34,11 @@ type fedachSearchRequest struct {
 // readFEDACHSearchRequest returns a fedachSearchRequest based on url parameters for fed ach search
 func readFEDACHSearchRequest(u *url.URL) fedachSearchRequest {
 	return fedachSearchRequest{
-		Name:          strings.ToLower(strings.TrimSpace(u.Query().Get("name"))),
-		RoutingNumber: strings.ToLower(strings.TrimSpace(u.Query().Get("routingNumber"))),
-		City:          strings.ToLower(strings.TrimSpace(u.Query().Get("city"))),
-		State:         strings.ToLower(strings.TrimSpace(u.Query().Get("state"))),
-		PostalCode:    strings.ToLower(strings.TrimSpace(u.Query().Get("postalCode"))),
+		Name:          strings.ToUpper(strings.TrimSpace(u.Query().Get("name"))),
+		RoutingNumber: strings.ToUpper(strings.TrimSpace(u.Query().Get("routingNumber"))),
+		City:          strings.ToUpper(strings.TrimSpace(u.Query().Get("city"))),
+		State:         strings.ToUpper(strings.TrimSpace(u.Query().Get("state"))),
+		PostalCode:    strings.ToUpper(strings.TrimSpace(u.Query().Get("postalCode"))),
 	}
 }
 
