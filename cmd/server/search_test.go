@@ -5,9 +5,28 @@
 package main
 
 import (
+	"fmt"
+	"github.com/moov-io/fed"
 	"net/url"
+	"os"
+	"strings"
 	"testing"
 )
+
+func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
+
+	f, err := os.Open("../.././data/FedACHdir.txt")
+	if err != nil {
+		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
+	}
+	defer f.Close()
+
+	s.ACHDictionary = fed.NewACHDictionary(f)
+	if err := s.ACHDictionary.Read(); err != nil {
+		return fmt.Errorf("ERROR: reading FedACHdir.txt %v", err)
+	}
+	return nil
+}
 
 // TestSearch__fedachSearchRequest
 func TestSearch__fedachSearchRequest(t *testing.T) {
@@ -99,5 +118,152 @@ func TestSearch__fedachPostalCodeOnlySearchRequest(t *testing.T) {
 	}
 	if !req.postalCodeOnly() {
 		t.Errorf("req is not postal code only")
+	}
+}
+
+func TestSearcher_ACHFindNameOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	achP, err := s.ACHFindNameOnly("Farmers")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for name")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("Farmer")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+	}
+}
+
+func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	achP, err := s.ACHFindRoutingNumberOnly("044112187")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for routing number")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.RoutingNumber, "044112187") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+	}
+}
+
+func TestSearcher_ACHFindCityOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	achP := s.ACHFindCityOnly("CALDWELL")
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for city")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.City, strings.ToUpper("CALDWELL")) {
+			t.Errorf("City=%s", p.City)
+		}
+	}
+}
+
+func TestSearcher_ACHFindStateOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	achP := s.ACHFindStateOnly("OH")
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for state")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.State, "OH") {
+			t.Errorf("State=%s", p.State)
+		}
+	}
+}
+
+func TestSearcher_ACHFindPostalCodeOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	achP := s.ACHFindPostalCodeOnly("43724")
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for postal code")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.PostalCode, "43724") {
+			t.Errorf("Postal Code=%s", p.PostalCode)
+		}
+	}
+}
+
+func TestSearcher_ACHFind(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	req := fedachSearchRequest{
+		Name:          "Farmers",
+		RoutingNumber: "044112187",
+		City:          "Caldwell",
+		State:         "OH",
+		PostalCode:    "43724",
+	}
+
+	achP, err := s.ACHFind(req)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(achP) == 0 {
+		t.Fatalf("%s", "No matches found for postal code")
+	}
+
+	for _, p := range achP {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("Farmer")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+
+		if !strings.Contains(p.RoutingNumber, "044112187") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+
+		if !strings.Contains(p.City, strings.ToUpper("CALDWELL")) {
+			t.Errorf("City=%s", p.City)
+		}
+		if !strings.Contains(p.State, "OH") {
+			t.Errorf("State=%s", p.State)
+		}
+
+		if !strings.Contains(p.PostalCode, "43724") {
+			t.Errorf("Postal Code=%s", p.PostalCode)
+		}
 	}
 }

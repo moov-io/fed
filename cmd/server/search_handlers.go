@@ -231,7 +231,7 @@ func (req fedachSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher 
 func (req fedachSearchRequest) searchACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		achP, err := searcher.FindFEDACH(req)
+		achP, err := searcher.ACHFind(req)
 		if err != nil {
 			moovhttp.Problem(w, err)
 		}
