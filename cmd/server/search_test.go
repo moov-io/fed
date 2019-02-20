@@ -32,7 +32,7 @@ func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
 // TestSearch__fedachSearchRequest
 func TestSearch__fedachSearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?name=Farmers&routingNumber=044112187&city=CALDWELL&state=OH&postalCode=43724")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.Name != "FARMERS" {
 		t.Errorf("req.Name=%s", req.Name)
 	}
@@ -52,7 +52,7 @@ func TestSearch__fedachSearchRequest(t *testing.T) {
 	if req.empty() {
 		t.Error("req is not empty")
 	}
-	req = fedachSearchRequest{}
+	req = fedSearchRequest{}
 	if !req.empty() {
 		t.Error("req is empty now")
 	}
@@ -65,7 +65,7 @@ func TestSearch__fedachSearchRequest(t *testing.T) {
 // TestSearch__fedachNameOnlySearchRequest by name only
 func TestSearch__fedachNameOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?name=Farmers")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.Name != "FARMERS" {
 		t.Errorf("req.Name=%s", req.Name)
 	}
@@ -77,7 +77,7 @@ func TestSearch__fedachNameOnlySearchRequest(t *testing.T) {
 // TestSearch__fedachRoutingNumberOnlySearchRequest by Routing Number Only
 func TestSearch__fedachRoutingNumberOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?routingNumber=044112187")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.RoutingNumber != "044112187" {
 		t.Errorf("req.RoutingNUmber=%s", req.RoutingNumber)
 	}
@@ -89,7 +89,7 @@ func TestSearch__fedachRoutingNumberOnlySearchRequest(t *testing.T) {
 // TestSearch__fedachSearchStateOnlyRequest by state only
 func TestSearch__fedachSearchStateOnlyRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?state=OH")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.State != "OH" {
 		t.Errorf("req.State=%s", req.State)
 	}
@@ -101,7 +101,7 @@ func TestSearch__fedachSearchStateOnlyRequest(t *testing.T) {
 // TestSearch__fedachCityOnlySearchRequest by city only
 func TestSearch__fedachCityOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?city=CALDWELL")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.City != "CALDWELL" {
 		t.Errorf("req.City=%s", req.City)
 	}
@@ -113,7 +113,7 @@ func TestSearch__fedachCityOnlySearchRequest(t *testing.T) {
 // TestSearch__fedachPostalCodeOnlySearchRequest by postal code only
 func TestSearch__fedachPostalCodeOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?postalCode=43724")
-	req := readFEDACHSearchRequest(u)
+	req := readFEDSearchRequest(u)
 	if req.PostalCode != "43724" {
 		t.Errorf("req.Zip=%s", req.PostalCode)
 	}
@@ -229,7 +229,7 @@ func TestSearcher_ACHFind(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := fedachSearchRequest{
+	req := fedSearchRequest{
 		Name:          "Farmers",
 		RoutingNumber: "044112187",
 		City:          "Caldwell",

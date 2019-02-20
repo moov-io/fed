@@ -20,17 +20,17 @@ var (
 
 // searcher defines a searcher struct
 type searcher struct {
-	ACHDictionary *fed.ACHDictionary
-	// ToDo: WIREDictionary *fed.WIREDictionary
-	sync.RWMutex // protects all above fields
+	ACHDictionary  *fed.ACHDictionary
+	WIREDictionary *fed.WIREDictionary
+	sync.RWMutex   // protects all above fields
 
 	logger log.Logger
 }
 
 // searchResponse defines a FEDACH search response
 type searchResponse struct {
-	ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
-	//ToDo: WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
+	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 }
 
 // ACHFindNameOnly finds ACH Participants by name only
@@ -80,7 +80,7 @@ func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipan
 }
 
 // ACHFind finds ACH Participants based on multiple parameters
-func (s *searcher) ACHFind(req fedachSearchRequest) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFind(req fedSearchRequest) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -106,6 +106,73 @@ func (s *searcher) ACHFind(req fedachSearchRequest) ([]*fed.ACHParticipant, erro
 
 	if req.PostalCode != "" {
 		fi = s.ACHDictionary.ACHParticipantPostalCodeFilter(fi, req.PostalCode)
+	}
+	return fi, nil
+}
+
+// WIRE Searches
+
+// WIREFindNameOnly finds WIRE Participants by name only
+func (s *searcher) WIREFindNameOnly(participantName string) ([]*fed.WIREParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+	fi, err := s.WIREDictionary.FinancialInstitutionSearch(participantName)
+	if err != nil {
+		return nil, err
+	}
+	return fi, nil
+}
+
+// WIREFindRoutingNumberOnly finds WIRE Participants by routing number only
+func (s *searcher) WIREFindRoutingNumberOnly(routingNumber string) ([]*fed.WIREParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber)
+	if err != nil {
+		return nil, err
+	}
+	return fi, nil
+}
+
+// WIREFindCityOnly finds WIRE Participants by city only
+func (s *searcher) WIREFindCityOnly(city string) []*fed.WIREParticipant {
+	s.RLock()
+	defer s.RUnlock()
+	fi := s.WIREDictionary.CityFilter(city)
+	return fi
+}
+
+// WIREFindSateOnly finds WIRE Participants by state only
+func (s *searcher) WIREFindStateOnly(state string) []*fed.WIREParticipant {
+	s.RLock()
+	defer s.RUnlock()
+	fi := s.WIREDictionary.StateFilter(state)
+	return fi
+}
+
+// WIRE Find finds WIRE Participants based on multiple parameters
+func (s *searcher) WIREFind(req fedSearchRequest) ([]*fed.WIREParticipant, error) {
+	s.RLock()
+	defer s.RUnlock()
+
+	fi, err := s.WIREDictionary.FinancialInstitutionSearch(req.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.RoutingNumber != "" {
+		fi, err = s.WIREDictionary.WIREParticipantRoutingNumberFilter(fi, req.RoutingNumber)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if req.State != "" {
+		fi = s.WIREDictionary.WIREParticipantStateFilter(fi, req.State)
+	}
+
+	if req.City != "" {
+		fi = s.WIREDictionary.WIREParticipantCityFilter(fi, req.City)
 	}
 	return fi, nil
 }
