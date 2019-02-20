@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/moov-io/fed"
 	"os"
+
+	"github.com/moov-io/fed"
 )
 
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to

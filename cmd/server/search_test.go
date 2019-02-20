@@ -6,11 +6,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/moov-io/fed"
 	"net/url"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/moov-io/fed"
 )
 
 func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
@@ -32,17 +33,17 @@ func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
 func TestSearch__fedachSearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?name=Farmers&routingNumber=044112187&city=CALDWELL&state=OH&postalCode=43724")
 	req := readFEDACHSearchRequest(u)
-	if req.Name != "farmers" {
+	if req.Name != "FARMERS" {
 		t.Errorf("req.Name=%s", req.Name)
 	}
 	if req.RoutingNumber != "044112187" {
 		t.Errorf("req.RoutingNUmber=%s", req.RoutingNumber)
 	}
 
-	if req.City != "caldwell" {
+	if req.City != "CALDWELL" {
 		t.Errorf("req.City=%s", req.City)
 	}
-	if req.State != "oh" {
+	if req.State != "OH" {
 		t.Errorf("req.State=%s", req.State)
 	}
 	if req.PostalCode != "43724" {
@@ -55,7 +56,7 @@ func TestSearch__fedachSearchRequest(t *testing.T) {
 	if !req.empty() {
 		t.Error("req is empty now")
 	}
-	req.Name = "farmers"
+	req.Name = "FARMERS"
 	if req.empty() {
 		t.Error("req is not empty now")
 	}
@@ -65,7 +66,7 @@ func TestSearch__fedachSearchRequest(t *testing.T) {
 func TestSearch__fedachNameOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?name=Farmers")
 	req := readFEDACHSearchRequest(u)
-	if req.Name != "farmers" {
+	if req.Name != "FARMERS" {
 		t.Errorf("req.Name=%s", req.Name)
 	}
 	if !req.nameOnly() {
@@ -89,7 +90,7 @@ func TestSearch__fedachRoutingNumberOnlySearchRequest(t *testing.T) {
 func TestSearch__fedachSearchStateOnlyRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?state=OH")
 	req := readFEDACHSearchRequest(u)
-	if req.State != "oh" {
+	if req.State != "OH" {
 		t.Errorf("req.State=%s", req.State)
 	}
 	if !req.stateOnly() {
@@ -101,7 +102,7 @@ func TestSearch__fedachSearchStateOnlyRequest(t *testing.T) {
 func TestSearch__fedachCityOnlySearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?city=CALDWELL")
 	req := readFEDACHSearchRequest(u)
-	if req.City != "caldwell" {
+	if req.City != "CALDWELL" {
 		t.Errorf("req.City=%s", req.City)
 	}
 	if !req.cityOnly() {
