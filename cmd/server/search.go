@@ -79,8 +79,8 @@ func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipan
 	return fi
 }
 
-// FindFEDACH finds ACH Participants based on multiple parameters
-func (s *searcher) FindFEDACH(req fedachSearchRequest) ([]*fed.ACHParticipant, error) {
+// ACHFind finds ACH Participants based on multiple parameters
+func (s *searcher) ACHFind(req fedachSearchRequest) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 

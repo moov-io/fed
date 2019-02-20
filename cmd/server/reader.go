@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/moov-io/fed"
 	"os"
+
+	"github.com/moov-io/fed"
 )
 
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to
@@ -13,8 +14,7 @@ func (s *searcher) readFEDACHData() error {
 		s.logger.Log("read", "Read of FED data")
 	}
 
-	// ToDo: Path for main.go
-	f, err := os.Open("../.././data/FedACHdir.txt")
+	f, err := os.Open("./data/FedACHdir.txt")
 	if err != nil {
 		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
 	}

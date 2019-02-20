@@ -5,10 +5,29 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
+
+	"github.com/moov-io/fed"
 )
+
+func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
+
+	f, err := os.Open("../.././data/FedACHdir.txt")
+	if err != nil {
+		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
+	}
+	defer f.Close()
+
+	s.ACHDictionary = fed.NewACHDictionary(f)
+	if err := s.ACHDictionary.Read(); err != nil {
+		return fmt.Errorf("ERROR: reading FedACHdir.txt %v", err)
+	}
+	return nil
+}
 
 // TestSearch__fedachSearchRequest
 func TestSearch__fedachSearchRequest(t *testing.T) {
@@ -105,7 +124,7 @@ func TestSearch__fedachPostalCodeOnlySearchRequest(t *testing.T) {
 
 func TestSearcher_ACHFindNameOnly(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -127,7 +146,7 @@ func TestSearcher_ACHFindNameOnly(t *testing.T) {
 
 func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -149,7 +168,7 @@ func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
 
 func TestSearcher_ACHFindCityOnly(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -168,7 +187,7 @@ func TestSearcher_ACHFindCityOnly(t *testing.T) {
 
 func TestSearcher_ACHFindStateOnly(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -187,7 +206,7 @@ func TestSearcher_ACHFindStateOnly(t *testing.T) {
 
 func TestSearcher_ACHFindPostalCodeOnly(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -206,7 +225,7 @@ func TestSearcher_ACHFindPostalCodeOnly(t *testing.T) {
 
 func TestSearcher_ACHFind(t *testing.T) {
 	s := searcher{}
-	if err := s.readFEDACHData(); err != nil {
+	if err := s.helperLoadFEDACHFile(t); err != nil {
 		t.Fatal(err)
 	}
 
@@ -218,7 +237,7 @@ func TestSearcher_ACHFind(t *testing.T) {
 		PostalCode:    "43724",
 	}
 
-	achP, err := s.FindFEDACH(req)
+	achP, err := s.ACHFind(req)
 
 	if err != nil {
 		t.Fatal(err)

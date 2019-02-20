@@ -10,17 +10,6 @@ moov-io/fed
 
 Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System.
 
-### Configuration
-
-**Search Similarity Metrics**
-
-FED computes string similarity using the JaroWinkler and Levenshtein algorithm and can match sensitivity can be configured with environment variables.
-
-| Environmental Variable | Description | Default |
-|-----|-----|-----|
-| `ACHJaroWinklerSimilarity` | Ratio of boosting the score of exact matches at the beginning of the strings. | 0.85 |
-| `ACHLevenshteinSimilarity` | Ratio of Levenshtein distance for two strings to be considered equal. | 0.85 |
-
 ### Usage
 
 Go library
