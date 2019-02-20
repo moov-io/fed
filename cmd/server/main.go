@@ -98,6 +98,12 @@ func main() {
 		errs <- err
 	}
 
+	if err := searcher.readFEDWIREData(); err != nil {
+		err = fmt.Errorf("error reading FEDWIREdir.txt: %v", err)
+		logger.Log("read", err)
+		errs <- err
+	}
+
 	// Add searcher for HTTP routes
 	addSearchRoutes(logger, router, searcher)
 
