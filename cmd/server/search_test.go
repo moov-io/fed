@@ -29,6 +29,21 @@ func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
 	return nil
 }
 
+func (s *searcher) helperLoadFEDWIREFile(t *testing.T) error {
+
+	f, err := os.Open("../.././data/fpddir.txt")
+	if err != nil {
+		return fmt.Errorf("ERROR: opening fpddir.txt %v", err)
+	}
+	defer f.Close()
+
+	s.WIREDictionary = fed.NewWIREDictionary(f)
+	if err := s.WIREDictionary.Read(); err != nil {
+		return fmt.Errorf("ERROR: reading fpddir.txt %v", err)
+	}
+	return nil
+}
+
 // TestSearch__fedachSearchRequest
 func TestSearch__fedachSearchRequest(t *testing.T) {
 	u, _ := url.Parse("https://moov.io/fed/ach/search?name=Farmers&routingNumber=044112187&city=CALDWELL&state=OH&postalCode=43724")
@@ -244,7 +259,7 @@ func TestSearcher_ACHFind(t *testing.T) {
 	}
 
 	if len(achP) == 0 {
-		t.Fatalf("%s", "No matches found for postal code")
+		t.Fatalf("%s", "No matches found for search")
 	}
 
 	for _, p := range achP {
@@ -265,6 +280,128 @@ func TestSearcher_ACHFind(t *testing.T) {
 
 		if !strings.Contains(p.PostalCode, "43724") {
 			t.Errorf("Postal Code=%s", p.PostalCode)
+		}
+	}
+}
+
+func TestSearcher_WIREFindNameOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	wireP, err := s.WIREFindNameOnly("MIDWEST")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(wireP) == 0 {
+		t.Fatalf("%s", "No matches found for name")
+	}
+
+	for _, p := range wireP {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("MIDWEST")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+	}
+}
+
+func TestSearcher_WIREFindRoutingNumberOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	wireP, err := s.WIREFindRoutingNumberOnly("091905114")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(wireP) == 0 {
+		t.Fatalf("%s", "No matches found for routing number")
+	}
+
+	for _, p := range wireP {
+		if !strings.Contains(p.RoutingNumber, "091905114") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+	}
+}
+
+func TestSearcher_WIREFindCityOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	wireP := s.WIREFindCityOnly("IOWA CITY")
+
+	if len(wireP) == 0 {
+		t.Fatalf("%s", "No matches found for city")
+	}
+
+	for _, p := range wireP {
+		if !strings.Contains(p.City, strings.ToUpper("IOWA CITY")) {
+			t.Errorf("City=%s", p.City)
+		}
+	}
+}
+
+func TestSearcher_WIREFindStateOnly(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+	wireP := s.WIREFindStateOnly("IA")
+
+	if len(wireP) == 0 {
+		t.Fatalf("%s", "No matches found for state")
+	}
+
+	for _, p := range wireP {
+		if !strings.Contains(p.State, "IA") {
+			t.Errorf("State=%s", p.State)
+		}
+	}
+}
+
+func TestSearcher_WIREFind(t *testing.T) {
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	req := fedSearchRequest{
+		Name:          "MIDWest",
+		RoutingNumber: "091905114",
+		City:          "IOWA CITY",
+		State:         "IA",
+	}
+
+	wireP, err := s.WIREFind(req)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(wireP) == 0 {
+		t.Fatalf("%s", "No matches found for search")
+	}
+
+	for _, p := range wireP {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("MIDWest")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+
+		if !strings.Contains(p.RoutingNumber, "091905114") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+
+		if !strings.Contains(p.City, strings.ToUpper("IOWA City")) {
+			t.Errorf("City=%s", p.City)
+		}
+		if !strings.Contains(p.State, "IA") {
+			t.Errorf("State=%s", p.State)
 		}
 	}
 }
