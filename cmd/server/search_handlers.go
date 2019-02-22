@@ -211,7 +211,7 @@ func (req fedSearchRequest) searchStateOnly(logger log.Logger, searcher *searche
 
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindStateOnly(req.RoutingNumber)
+			achP := searcher.ACHFindStateOnly(req.State)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
@@ -219,7 +219,7 @@ func (req fedSearchRequest) searchStateOnly(logger log.Logger, searcher *searche
 				return
 			}
 		case WIRE:
-			wireP := searcher.WIREFindStateOnly(req.RoutingNumber)
+			wireP := searcher.WIREFindStateOnly(req.State)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
@@ -240,7 +240,7 @@ func (req fedSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher
 
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindCityOnly(req.RoutingNumber)
+			achP := searcher.ACHFindCityOnly(req.City)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
@@ -248,7 +248,7 @@ func (req fedSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher
 				return
 			}
 		case WIRE:
-			wireP := searcher.WIREFindCityOnly(req.RoutingNumber)
+			wireP := searcher.WIREFindCityOnly(req.City)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
@@ -267,7 +267,7 @@ func (req fedSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *se
 		}
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindPostalCodeOnly(req.RoutingNumber)
+			achP := searcher.ACHFindPostalCodeOnly(req.PostalCode)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {

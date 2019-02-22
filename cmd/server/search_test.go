@@ -15,6 +15,10 @@ import (
 )
 
 func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
+	//logger := log.NewLogfmtLogger(os.Stderr)
+	//logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+	//logger = log.With(logger, "caller", log.DefaultCaller)
+	//s.logger = logger
 
 	f, err := os.Open("../.././data/FedACHdir.txt")
 	if err != nil {
@@ -30,7 +34,6 @@ func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
 }
 
 func (s *searcher) helperLoadFEDWIREFile(t *testing.T) error {
-
 	f, err := os.Open("../.././data/fpddir.txt")
 	if err != nil {
 		return fmt.Errorf("ERROR: opening fpddir.txt %v", err)
@@ -213,7 +216,7 @@ func TestSearcher_ACHFindStateOnly(t *testing.T) {
 	}
 
 	for _, p := range achP {
-		if !strings.Contains(p.State, "OH") {
+		if !strings.Contains(p.State, strings.ToUpper("OH")) {
 			t.Errorf("State=%s", p.State)
 		}
 	}
@@ -437,7 +440,7 @@ func TestSearcher_WIREFindStateOnly(t *testing.T) {
 	}
 
 	for _, p := range wireP {
-		if !strings.Contains(p.State, "IA") {
+		if !strings.Contains(p.State, strings.ToUpper("IA")) {
 			t.Errorf("State=%s", p.State)
 		}
 	}
