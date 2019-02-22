@@ -284,6 +284,84 @@ func TestSearcher_ACHFind(t *testing.T) {
 	}
 }
 
+// TestSearch__fedwireSearchRequest
+func TestSearch__fedwireSearchRequest(t *testing.T) {
+	u, _ := url.Parse("https://moov.io/fed/wire/search?name=MIDWest&routingNumber=091905114&state=IA&city=IOWA City")
+	req := readFEDSearchRequest(u)
+	if req.Name != "MIDWEST" {
+		t.Errorf("req.Name=%s", req.Name)
+	}
+	if req.RoutingNumber != "091905114" {
+		t.Errorf("req.RoutingNUmber=%s", req.RoutingNumber)
+	}
+
+	if req.City != "IOWA CITY" {
+		t.Errorf("req.City=%s", req.City)
+	}
+	if req.State != "IA" {
+		t.Errorf("req.State=%s", req.State)
+	}
+	if req.empty() {
+		t.Error("req is not empty")
+	}
+	req = fedSearchRequest{}
+	if !req.empty() {
+		t.Error("req is empty now")
+	}
+	req.Name = "MIDWEST"
+	if req.empty() {
+		t.Error("req is not empty now")
+	}
+}
+
+// TestSearch__fedwireNameOnlySearchRequest by name only
+func TestSearch__fedwireNameOnlySearchRequest(t *testing.T) {
+	u, _ := url.Parse("https://moov.io/fed/wire/search?name=MIDWest")
+	req := readFEDSearchRequest(u)
+	if req.Name != "MIDWEST" {
+		t.Errorf("req.Name=%s", req.Name)
+	}
+	if !req.nameOnly() {
+		t.Error("req is not name only")
+	}
+}
+
+// TestSearch__fedwireRoutingNumberOnlySearchRequest by Routing Number Only
+func TestSearch__fedwireRoutingNumberOnlySearchRequest(t *testing.T) {
+	u, _ := url.Parse("https://moov.io/fed/wire/search?routingNumber=091905114")
+	req := readFEDSearchRequest(u)
+	if req.RoutingNumber != "091905114" {
+		t.Errorf("req.RoutingNUmber=%s", req.RoutingNumber)
+	}
+	if !req.routingNumberOnly() {
+		t.Errorf("req is not routing number only")
+	}
+}
+
+// TestSearch__fedwireSearchStateOnlyRequest by state only
+func TestSearch__fedwireSearchStateOnlyRequest(t *testing.T) {
+	u, _ := url.Parse("https://moov.io/fed/wire/search?state=IA")
+	req := readFEDSearchRequest(u)
+	if req.State != "IA" {
+		t.Errorf("req.State=%s", req.State)
+	}
+	if !req.stateOnly() {
+		t.Errorf("req is not state only")
+	}
+}
+
+// TestSearch__fedwireCityOnlySearchRequest by city only
+func TestSearch__fedwireCityOnlySearchRequest(t *testing.T) {
+	u, _ := url.Parse("https://moov.io/fed/wire/search?city=IOWA City")
+	req := readFEDSearchRequest(u)
+	if req.City != "IOWA CITY" {
+		t.Errorf("req.City=%s", req.City)
+	}
+	if !req.cityOnly() {
+		t.Errorf("req is not city only")
+	}
+}
+
 func TestSearcher_WIREFindNameOnly(t *testing.T) {
 	s := searcher{}
 	if err := s.helperLoadFEDWIREFile(t); err != nil {
