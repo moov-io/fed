@@ -14,9 +14,6 @@ import (
 	"testing"
 )
 
-func (s *searcher) helperLogger(t *testing.T) {
-}
-
 func TestSearch__ACHName(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/fed/ach/search?name=Farmers", nil)
@@ -184,6 +181,53 @@ func TestSearch__ACHPostalCode(t *testing.T) {
 	}
 }
 
+func TestSearch__ACH(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/fed/ach/search?name=Farmers&routingNumber=044112187&city=CALDWELL&state=OH&postalCode=43724", nil)
+
+	s := searcher{}
+	if err := s.helperLoadFEDACHFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	router := mux.NewRouter()
+	addSearchRoutes(nil, router, &s)
+	router.ServeHTTP(w, req)
+	w.Flush()
+
+	if w.Code != http.StatusOK {
+		t.Errorf("incorrect status code: %d", w.Code)
+	}
+
+	var wrapper struct {
+		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+	}
+
+	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, p := range wrapper.ACHParticipants {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("Farmer")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+
+		if !strings.Contains(p.RoutingNumber, "044112187") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+
+		if !strings.Contains(p.City, strings.ToUpper("CALDWELL")) {
+			t.Errorf("City=%s", p.City)
+		}
+		if !strings.Contains(p.State, "OH") {
+			t.Errorf("State=%s", p.State)
+		}
+		if !strings.Contains(p.PostalCode, "43724") {
+			t.Errorf("PostalCode=%s", p.PostalCode)
+		}
+	}
+}
+
 func TestSearch__Empty(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/fed/ach/search", nil)
@@ -333,6 +377,50 @@ func TestSearch__WIRECity(t *testing.T) {
 	for _, p := range wrapper.WIREParticipants {
 		if !strings.Contains(p.City, strings.ToUpper("IOWA CITY")) {
 			t.Errorf("City=%s", p.City)
+		}
+	}
+}
+
+func TestSearch__WIRE(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/fed/wire/search?name=MIDWEST&routingNumber=091905114&state=IA&city=IOWA+CITY", nil)
+
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	router := mux.NewRouter()
+	addSearchRoutes(nil, router, &s)
+	router.ServeHTTP(w, req)
+	w.Flush()
+
+	if w.Code != http.StatusOK {
+		t.Errorf("incorrect status code: %d", w.Code)
+	}
+
+	var wrapper struct {
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
+	}
+
+	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, p := range wrapper.WIREParticipants {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("Midwest")) {
+			t.Errorf("Name=%s", p.CustomerName)
+		}
+
+		if !strings.Contains(p.RoutingNumber, "091905114") {
+			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		}
+
+		if !strings.Contains(p.City, strings.ToUpper("IOWA City")) {
+			t.Errorf("City=%s", p.City)
+		}
+		if !strings.Contains(p.State, "IA") {
+			t.Errorf("State=%s", p.State)
 		}
 	}
 }

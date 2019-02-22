@@ -15,11 +15,6 @@ import (
 )
 
 func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
-	//logger := log.NewLogfmtLogger(os.Stderr)
-	//logger = log.With(logger, "ts", log.DefaultTimestampUTC)
-	//logger = log.With(logger, "caller", log.DefaultCaller)
-	//s.logger = logger
-
 	f, err := os.Open("../.././data/FedACHdir.txt")
 	if err != nil {
 		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
@@ -473,7 +468,6 @@ func TestSearcher_WIREFind(t *testing.T) {
 		if !strings.Contains(p.CustomerName, strings.ToUpper("MIDWest")) {
 			t.Errorf("Name=%s", p.CustomerName)
 		}
-
 		if !strings.Contains(p.RoutingNumber, "091905114") {
 			t.Errorf("Routing Number=%s", p.RoutingNumber)
 		}
