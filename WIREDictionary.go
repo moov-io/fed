@@ -229,6 +229,24 @@ func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipan
 	return Participants, nil
 }
 
+// WIREParticipantRoutingNumberFilter filters WIREParticipant by Routing Number
+func (f *WIREDictionary) WIREParticipantRoutingNumberFilter(wireParticipants []*WIREParticipant, s string) ([]*WIREParticipant, error) {
+	s = strings.TrimSpace(s)
+
+	if len(s) < MinimumRoutingNumberDigits {
+		// The first 2 digits (characters) are required
+		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
+		return nil, f.errors
+	}
+	nsl := make([]*WIREParticipant, 0)
+	for _, wireP := range wireParticipants {
+		if strings.HasPrefix(wireP.RoutingNumber, s) {
+			nsl = append(nsl, wireP)
+		}
+	}
+	return nsl, nil
+}
+
 // WIREParticipantStateFilter filters WIREParticipant by State.
 func (f *WIREDictionary) WIREParticipantStateFilter(wireParticipants []*WIREParticipant, s string) []*WIREParticipant {
 	nsl := make([]*WIREParticipant, 0)
