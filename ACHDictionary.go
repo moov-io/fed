@@ -220,6 +220,7 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 	return Participants, nil
 }
 
+// ToDo: Remove error return?
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
 	s = strings.ToLower(s)

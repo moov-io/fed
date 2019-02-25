@@ -7,15 +7,16 @@ package main
 import (
 	"errors"
 	"github.com/moov-io/fed"
+	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/go-kit/kit/log"
 )
 
 var (
-	errNoSearchParams = errors.New("missing search parameter(s)")
-
-	// ToDo: softResultsLimit, hardResultsLimit = 10, 499
+	errNoSearchParams                  = errors.New("missing search parameter(s)")
+	softResultsLimit, hardResultsLimit = 100, 500
 )
 
 // searcher defines a searcher struct
@@ -34,53 +35,63 @@ type searchResponse struct {
 }
 
 // ACHFindNameOnly finds ACH Participants by name only
-func (s *searcher) ACHFindNameOnly(participantName string) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFindNameOnly(limit int, participantName string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.ACHDictionary.FinancialInstitutionSearch(participantName)
 	if err != nil {
 		return nil, err
 	}
-	return fi, nil
+
+	out := achLimit(fi, limit)
+	return out, nil
 }
 
 // ACHFindRoutingNumberOnly finds ACH Participants by routing number only
-func (s *searcher) ACHFindRoutingNumberOnly(routingNumber string) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFindRoutingNumberOnly(limit int, routingNumber string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.ACHDictionary.RoutingNumberSearch(routingNumber)
 	if err != nil {
 		return nil, err
 	}
-	return fi, nil
+
+	out := achLimit(fi, limit)
+	return out, nil
 }
 
 // ACHFindCityOnly finds ACH Participants by city only
-func (s *searcher) ACHFindCityOnly(city string) []*fed.ACHParticipant {
+func (s *searcher) ACHFindCityOnly(limit int, city string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.CityFilter(city)
-	return fi
+
+	out := achLimit(fi, limit)
+	return out
 }
 
 // ACHFindSateOnly finds ACH Participants by state only
-func (s *searcher) ACHFindStateOnly(state string) []*fed.ACHParticipant {
+func (s *searcher) ACHFindStateOnly(limit int, state string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.StateFilter(state)
-	return fi
+
+	out := achLimit(fi, limit)
+	return out
 }
 
 // ACHFindPostalCodeOnly finds ACH Participants by postal code only
-func (s *searcher) ACHFindPostalCodeOnly(postalCode string) []*fed.ACHParticipant {
+func (s *searcher) ACHFindPostalCodeOnly(limit int, postalCode string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.PostalCodeFilter(postalCode)
-	return fi
+
+	out := achLimit(fi, limit)
+	return out
 }
 
 // ACHFind finds ACH Participants based on multiple parameters
-func (s *searcher) ACHFind(req fedSearchRequest) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -107,51 +118,60 @@ func (s *searcher) ACHFind(req fedSearchRequest) ([]*fed.ACHParticipant, error) 
 	if req.PostalCode != "" {
 		fi = s.ACHDictionary.ACHParticipantPostalCodeFilter(fi, req.PostalCode)
 	}
-	return fi, nil
+	out := achLimit(fi, limit)
+	return out, nil
 }
 
 // WIRE Searches
 
 // WIREFindNameOnly finds WIRE Participants by name only
-func (s *searcher) WIREFindNameOnly(participantName string) ([]*fed.WIREParticipant, error) {
+func (s *searcher) WIREFindNameOnly(limit int, participantName string) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.WIREDictionary.FinancialInstitutionSearch(participantName)
 	if err != nil {
 		return nil, err
 	}
-	return fi, nil
+
+	out := wireLimit(fi, limit)
+	return out, nil
 }
 
 // WIREFindRoutingNumberOnly finds WIRE Participants by routing number only
-func (s *searcher) WIREFindRoutingNumberOnly(routingNumber string) ([]*fed.WIREParticipant, error) {
+func (s *searcher) WIREFindRoutingNumberOnly(limit int, routingNumber string) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber)
 	if err != nil {
 		return nil, err
 	}
-	return fi, nil
+
+	out := wireLimit(fi, limit)
+	return out, nil
 }
 
 // WIREFindCityOnly finds WIRE Participants by city only
-func (s *searcher) WIREFindCityOnly(city string) []*fed.WIREParticipant {
+func (s *searcher) WIREFindCityOnly(limit int, city string) []*fed.WIREParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.WIREDictionary.CityFilter(city)
-	return fi
+
+	out := wireLimit(fi, limit)
+	return out
 }
 
 // WIREFindSateOnly finds WIRE Participants by state only
-func (s *searcher) WIREFindStateOnly(state string) []*fed.WIREParticipant {
+func (s *searcher) WIREFindStateOnly(limit int, state string) []*fed.WIREParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.WIREDictionary.StateFilter(state)
-	return fi
+
+	out := wireLimit(fi, limit)
+	return out
 }
 
 // WIRE Find finds WIRE Participants based on multiple parameters
-func (s *searcher) WIREFind(req fedSearchRequest) ([]*fed.WIREParticipant, error) {
+func (s *searcher) WIREFind(limit int, req fedSearchRequest) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
 
@@ -174,5 +194,46 @@ func (s *searcher) WIREFind(req fedSearchRequest) ([]*fed.WIREParticipant, error
 	if req.City != "" {
 		fi = s.WIREDictionary.WIREParticipantCityFilter(fi, req.City)
 	}
-	return fi, nil
+
+	out := wireLimit(fi, limit)
+	return out, nil
+}
+
+// extractSearchLimit extracts the search limit from url query parameters
+func extractSearchLimit(r *http.Request) int {
+	limit := softResultsLimit
+	if v := r.URL.Query().Get("limit"); v != "" {
+		n, _ := strconv.Atoi(v)
+		if n > 0 {
+			limit = n
+		}
+	}
+	if limit > hardResultsLimit {
+		limit = hardResultsLimit
+	}
+	return limit
+}
+
+// achLimit returns an FEDACH search result based on the search limit
+func achLimit(fi []*fed.ACHParticipant, limit int) []*fed.ACHParticipant {
+	var out []*fed.ACHParticipant
+	for _, p := range fi {
+		if len(out) == limit {
+			break
+		}
+		out = append(out, p)
+	}
+	return out
+}
+
+// wireLimit returns a FEDWIRE search result based on the search limit
+func wireLimit(fi []*fed.WIREParticipant, limit int) []*fed.WIREParticipant {
+	var out []*fed.WIREParticipant
+	for _, p := range fi {
+		if len(out) == limit {
+			break
+		}
+		out = append(out, p)
+	}
+	return out
 }

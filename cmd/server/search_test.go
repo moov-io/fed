@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"strings"
@@ -141,7 +142,7 @@ func TestSearcher_ACHFindNameOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP, err := s.ACHFindNameOnly("Farmers")
+	achP, err := s.ACHFindNameOnly(hardResultsLimit, "Farmers")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -163,7 +164,7 @@ func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP, err := s.ACHFindRoutingNumberOnly("044112187")
+	achP, err := s.ACHFindRoutingNumberOnly(hardResultsLimit, "044112187")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,7 +186,7 @@ func TestSearcher_ACHFindCityOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP := s.ACHFindCityOnly("CALDWELL")
+	achP := s.ACHFindCityOnly(hardResultsLimit, "CALDWELL")
 
 	if len(achP) == 0 {
 		t.Fatalf("%s", "No matches found for city")
@@ -204,7 +205,7 @@ func TestSearcher_ACHFindStateOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP := s.ACHFindStateOnly("OH")
+	achP := s.ACHFindStateOnly(hardResultsLimit, "OH")
 
 	if len(achP) == 0 {
 		t.Fatalf("%s", "No matches found for state")
@@ -223,7 +224,7 @@ func TestSearcher_ACHFindPostalCodeOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP := s.ACHFindPostalCodeOnly("43724")
+	achP := s.ACHFindPostalCodeOnly(hardResultsLimit, "43724")
 
 	if len(achP) == 0 {
 		t.Fatalf("%s", "No matches found for postal code")
@@ -250,7 +251,7 @@ func TestSearcher_ACHFind(t *testing.T) {
 		PostalCode:    "43724",
 	}
 
-	achP, err := s.ACHFind(req)
+	achP, err := s.ACHFind(hardResultsLimit, req)
 
 	if err != nil {
 		t.Fatal(err)
@@ -366,7 +367,7 @@ func TestSearcher_WIREFindNameOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wireP, err := s.WIREFindNameOnly("MIDWEST")
+	wireP, err := s.WIREFindNameOnly(hardResultsLimit, "MIDWEST")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,7 +389,7 @@ func TestSearcher_WIREFindRoutingNumberOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wireP, err := s.WIREFindRoutingNumberOnly("091905114")
+	wireP, err := s.WIREFindRoutingNumberOnly(hardResultsLimit, "091905114")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -410,7 +411,7 @@ func TestSearcher_WIREFindCityOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wireP := s.WIREFindCityOnly("IOWA CITY")
+	wireP := s.WIREFindCityOnly(hardResultsLimit, "IOWA CITY")
 
 	if len(wireP) == 0 {
 		t.Fatalf("%s", "No matches found for city")
@@ -428,7 +429,7 @@ func TestSearcher_WIREFindStateOnly(t *testing.T) {
 	if err := s.helperLoadFEDWIREFile(t); err != nil {
 		t.Fatal(err)
 	}
-	wireP := s.WIREFindStateOnly("IA")
+	wireP := s.WIREFindStateOnly(hardResultsLimit, "IA")
 
 	if len(wireP) == 0 {
 		t.Fatalf("%s", "No matches found for state")
@@ -454,7 +455,7 @@ func TestSearcher_WIREFind(t *testing.T) {
 		State:         "IA",
 	}
 
-	wireP, err := s.WIREFind(req)
+	wireP, err := s.WIREFind(hardResultsLimit, req)
 
 	if err != nil {
 		t.Fatal(err)
@@ -478,5 +479,31 @@ func TestSearcher_WIREFind(t *testing.T) {
 		if !strings.Contains(p.State, "IA") {
 			t.Errorf("State=%s", p.State)
 		}
+	}
+}
+
+func TestSearch__extractSearchLimit(t *testing.T) {
+	// Too high, fallback to hard max
+	req := httptest.NewRequest("GET", "/?limit=1000", nil)
+	if limit := extractSearchLimit(req); limit != hardResultsLimit {
+		t.Errorf("got limit of %d", limit)
+	}
+
+	// No limit, use default
+	req = httptest.NewRequest("GET", "/", nil)
+	if limit := extractSearchLimit(req); limit != softResultsLimit {
+		t.Errorf("got limit of %d", limit)
+	}
+
+	// Between soft and hard max
+	req = httptest.NewRequest("GET", "/?limit=25", nil)
+	if limit := extractSearchLimit(req); limit != 25 {
+		t.Errorf("got limit of %d", limit)
+	}
+
+	// Lower than soft max
+	req = httptest.NewRequest("GET", "/?limit=1", nil)
+	if limit := extractSearchLimit(req); limit != 1 {
+		t.Errorf("got limit of %d", limit)
 	}
 }
