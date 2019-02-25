@@ -188,7 +188,7 @@ func (f *WIREDictionary) RoutingNumberSearch(s string) ([]*WIREParticipant, erro
 }
 
 // FinancialInstitutionSearch returns a FEDWIRE participant based on a WIREParticipant.CustomerName
-func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipant, error) {
+func (f *WIREDictionary) FinancialInstitutionSearch(s string) []*WIREParticipant {
 	s = strings.ToLower(s)
 
 	// Participants is a subset WIREDictionary.WIREParticipants that match the search based on JaroWinkler similarity
@@ -226,7 +226,7 @@ func (f *WIREDictionary) FinancialInstitutionSearch(s string) ([]*WIREParticipan
 	// Sort the result
 	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
-	return Participants, nil
+	return Participants
 }
 
 // WIREParticipantRoutingNumberFilter filters WIREParticipant by Routing Number

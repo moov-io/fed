@@ -38,11 +38,7 @@ type searchResponse struct {
 func (s *searcher) ACHFindNameOnly(limit int, participantName string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-	fi, err := s.ACHDictionary.FinancialInstitutionSearch(participantName)
-	if err != nil {
-		return nil, err
-	}
-
+	fi := s.ACHDictionary.FinancialInstitutionSearch(participantName)
 	out := achLimit(fi, limit)
 	return out, nil
 }
@@ -55,7 +51,6 @@ func (s *searcher) ACHFindRoutingNumberOnly(limit int, routingNumber string) ([]
 	if err != nil {
 		return nil, err
 	}
-
 	out := achLimit(fi, limit)
 	return out, nil
 }
@@ -65,7 +60,6 @@ func (s *searcher) ACHFindCityOnly(limit int, city string) []*fed.ACHParticipant
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.CityFilter(city)
-
 	out := achLimit(fi, limit)
 	return out
 }
@@ -75,7 +69,6 @@ func (s *searcher) ACHFindStateOnly(limit int, state string) []*fed.ACHParticipa
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.StateFilter(state)
-
 	out := achLimit(fi, limit)
 	return out
 }
@@ -85,7 +78,6 @@ func (s *searcher) ACHFindPostalCodeOnly(limit int, postalCode string) []*fed.AC
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.PostalCodeFilter(postalCode)
-
 	out := achLimit(fi, limit)
 	return out
 }
@@ -94,11 +86,9 @@ func (s *searcher) ACHFindPostalCodeOnly(limit int, postalCode string) []*fed.AC
 func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
+	var err error
 
-	fi, err := s.ACHDictionary.FinancialInstitutionSearch(req.Name)
-	if err != nil {
-		return nil, err
-	}
+	fi := s.ACHDictionary.FinancialInstitutionSearch(req.Name)
 
 	if req.RoutingNumber != "" {
 		fi, err = s.ACHDictionary.ACHParticipantRoutingNumberFilter(fi, req.RoutingNumber)
@@ -128,11 +118,7 @@ func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipa
 func (s *searcher) WIREFindNameOnly(limit int, participantName string) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-	fi, err := s.WIREDictionary.FinancialInstitutionSearch(participantName)
-	if err != nil {
-		return nil, err
-	}
-
+	fi := s.WIREDictionary.FinancialInstitutionSearch(participantName)
 	out := wireLimit(fi, limit)
 	return out, nil
 }
@@ -145,7 +131,6 @@ func (s *searcher) WIREFindRoutingNumberOnly(limit int, routingNumber string) ([
 	if err != nil {
 		return nil, err
 	}
-
 	out := wireLimit(fi, limit)
 	return out, nil
 }
@@ -155,7 +140,6 @@ func (s *searcher) WIREFindCityOnly(limit int, city string) []*fed.WIREParticipa
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.WIREDictionary.CityFilter(city)
-
 	out := wireLimit(fi, limit)
 	return out
 }
@@ -165,7 +149,6 @@ func (s *searcher) WIREFindStateOnly(limit int, state string) []*fed.WIREPartici
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.WIREDictionary.StateFilter(state)
-
 	out := wireLimit(fi, limit)
 	return out
 }
@@ -174,11 +157,8 @@ func (s *searcher) WIREFindStateOnly(limit int, state string) []*fed.WIREPartici
 func (s *searcher) WIREFind(limit int, req fedSearchRequest) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-
-	fi, err := s.WIREDictionary.FinancialInstitutionSearch(req.Name)
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	fi := s.WIREDictionary.FinancialInstitutionSearch(req.Name)
 
 	if req.RoutingNumber != "" {
 		fi, err = s.WIREDictionary.WIREParticipantRoutingNumberFilter(fi, req.RoutingNumber)

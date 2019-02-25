@@ -222,10 +222,8 @@ func TestWIREParsingError(t *testing.T) {
 // TestWIREFinancialInstitutionSearch tests search string `First Bank`
 func TestWIREFinancialInstitutionSearch(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.FinancialInstitutionSearch("First Bank")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
+	fi := wireDir.FinancialInstitutionSearch("First Bank")
+
 	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -234,10 +232,8 @@ func TestWIREFinancialInstitutionSearch(t *testing.T) {
 // TestWIREFinancialInstitutionFarmers tests search string `FaRmerS`
 func TestWIREFinancialInstitutionFarmers(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.FinancialInstitutionSearch("FaRmerS")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
+	fi := wireDir.FinancialInstitutionSearch("FaRmerS")
+
 	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -246,10 +242,8 @@ func TestWIREFinancialInstitutionFarmers(t *testing.T) {
 // TestWIRESearchStateFilter tests search string `Farmers State Bank` and filters by the state of North Carolina, `NC`
 func TestWIRESearchStateFilter(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.FinancialInstitutionSearch("Farmers State Bank")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
+	fi := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+
 	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
@@ -268,10 +262,8 @@ func TestWIRESearchStateFilter(t *testing.T) {
 // TestWIRESearchCityFilter tests search string `Farmers State Bank` and filters by the city of `SALISBURY`
 func TestWIRESearchCityFilter(t *testing.T) {
 	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.FinancialInstitutionSearch("Farmers State Bank")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
+	fi := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+
 	if len(fi) == 0 {
 		t.Fatalf("No Financial Institutions matched your search query")
 	}
