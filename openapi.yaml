@@ -4,13 +4,13 @@ info:
   version: v1
   title: FED API
   contact:
-    url: https://github.com/moov-io/fed
+    url: 'https://github.com/moov-io/fed'
   license:
     name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
 servers:
-  - url: http://localhost:8086
+  - url: 'http://localhost:8086'
     description: Local development
 
 tags:
