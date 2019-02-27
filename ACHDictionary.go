@@ -221,7 +221,7 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 }
 
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant, error) {
+func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
 	s = strings.ToLower(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
@@ -259,7 +259,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) ([]*ACHParticipant,
 	// Sort the result
 	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
-	return Participants, nil
+	return Participants
 }
 
 // ACHParticipantStateFilter filters ACHParticipant by State.

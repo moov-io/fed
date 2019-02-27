@@ -21,8 +21,6 @@ const (
 	WIRE = "WIRE"
 )
 
-// ToDo:  FED WIRE (write FED ACH tests first)
-
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
 	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
 	r.Methods("GET").Path("/fed/wire/search").HandlerFunc(searchFEDWIRE(logger, searcher))
@@ -82,6 +80,13 @@ func (req fedSearchRequest) stateOnly() bool {
 func (req fedSearchRequest) postalCodeOnly() bool {
 	return req.Name == "" && req.RoutingNumber == "" && req.City == "" &&
 		req.State == "" && req.PostalCode != ""
+}
+
+// setResponseHeader returns w with Content-Type and StatusOK
+func setResponseHeader(w http.ResponseWriter) http.ResponseWriter {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	return w
 }
 
 // searchFEDACH calls search functions based on the fed ach search request url parameters
@@ -144,23 +149,21 @@ func (req fedSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher
 
 		switch searchType {
 		case ACH:
-			achP, err := searcher.ACHFindNameOnly(req.Name)
+			achP, err := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP, err := searcher.WIREFindNameOnly(req.Name)
+			wireP, err := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
@@ -177,23 +180,21 @@ func (req fedSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher 
 		}
 		switch searchType {
 		case ACH:
-			achP, err := searcher.ACHFindRoutingNumberOnly(req.RoutingNumber)
+			achP, err := searcher.ACHFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP, err := searcher.WIREFindRoutingNumberOnly(req.RoutingNumber)
+			wireP, err := searcher.WIREFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
@@ -211,17 +212,15 @@ func (req fedSearchRequest) searchStateOnly(logger log.Logger, searcher *searche
 
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindStateOnly(req.State)
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			achP := searcher.ACHFindStateOnly(extractSearchLimit(r), req.State)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP := searcher.WIREFindStateOnly(req.State)
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			wireP := searcher.WIREFindStateOnly(extractSearchLimit(r), req.State)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
@@ -240,17 +239,15 @@ func (req fedSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher
 
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindCityOnly(req.City)
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			achP := searcher.ACHFindCityOnly(extractSearchLimit(r), req.City)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP := searcher.WIREFindCityOnly(req.City)
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			wireP := searcher.WIREFindCityOnly(extractSearchLimit(r), req.City)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
@@ -267,9 +264,8 @@ func (req fedSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *se
 		}
 		switch searchType {
 		case ACH:
-			achP := searcher.ACHFindPostalCodeOnly(req.PostalCode)
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			achP := searcher.ACHFindPostalCodeOnly(extractSearchLimit(r), req.PostalCode)
+			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
@@ -281,31 +277,30 @@ func (req fedSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *se
 // search searches FEDACH / FEDWIRE by more than one url parameter
 func (req fedSearchRequest) search(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		switch searchType {
 		case ACH:
-			achP, err := searcher.ACHFind(req)
+			achP, err := searcher.ACHFind(extractSearchLimit(r), req)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w = setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP, err := searcher.WIREFind(req)
+			wireP, err := searcher.WIREFind(extractSearchLimit(r), req)
 			if err != nil {
 				moovhttp.Problem(w, err)
 			}
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			w = setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
+
 		}
+
 	}
 }
 

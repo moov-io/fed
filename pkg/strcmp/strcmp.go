@@ -7,6 +7,9 @@
 // for use as percentages.
 //
 // Any value outside of the normalized range represents a bug and should be fixed.
+
+// ToDo:  Move to internal directory
+
 package strcmp
 
 import (
