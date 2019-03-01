@@ -1,0 +1,448 @@
+openapi: 3.0.2
+info:
+  contact:
+    name: FED API Support
+    url: https://github.com/moov-io/fed
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: FED API
+  version: v1
+servers:
+- description: Local development
+  url: http://localhost:8086
+tags:
+- description: FEDACH Dictionary and FEDWIRE Dictionary
+  name: FED
+paths:
+  /ping:
+    get:
+      operationId: ping
+      responses:
+        200:
+          description: Service is running properly
+      summary: Ping the FED service to check if running
+      tags:
+      - FED
+  /fed/ach/search:
+    get:
+      operationId: searchFEDACH
+      parameters:
+      - description: Optional Request ID allows application developer to trace requests through the systems logs
+        explode: false
+        in: header
+        name: X-Request-Id
+        required: false
+        schema:
+          example: 94c825ee
+          type: string
+        style: simple
+      - description: FEDACH Financial Institution Name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          example: Farmers State Bank
+          type: string
+        style: form
+      - description: FEDACH Routing Number for a Financial Institution
+        explode: true
+        in: query
+        name: routingNumber
+        required: false
+        schema:
+          example: "325183657"
+          type: string
+        style: form
+      - description: FEDACH Financial Institution State
+        explode: true
+        in: query
+        name: state
+        required: false
+        schema:
+          example: PA
+          type: string
+        style: form
+      - description: FEDACH Financial Institution City
+        explode: true
+        in: query
+        name: city
+        required: false
+        schema:
+          example: "325183657"
+          type: string
+        style: form
+      - description: FEDACH Financial Institution Postal Code
+        explode: true
+        in: query
+        name: postalCode
+        required: false
+        schema:
+          example: "19753"
+          type: string
+        style: form
+      - description: Maximum results returned by a search
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          example: 499
+          format: int32
+          type: integer
+        style: form
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACHDictionary'
+          description: FEDACH Participants returned from a search
+      summary: Search FEDACH names and metadata
+      tags:
+      - FED
+  /fed/wire/search:
+    get:
+      operationId: searchFEDWIRE
+      parameters:
+      - description: Optional Request ID allows application developer to trace requests through the systems logs
+        explode: false
+        in: header
+        name: X-Request-Id
+        required: false
+        schema:
+          example: 94c825ee
+          type: string
+        style: simple
+      - description: FEDWIRE Financial Institution Name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          example: First Bank
+          type: string
+        style: form
+      - description: FEDWIRE Routing Number for a Financial Institution
+        explode: true
+        in: query
+        name: routingNumber
+        required: false
+        schema:
+          example: "324172465"
+          type: string
+        style: form
+      - description: FEDWIRE Financial Institution State
+        explode: true
+        in: query
+        name: state
+        required: false
+        schema:
+          example: PA
+          type: string
+        style: form
+      - description: FEDWIRE Financial Institution City
+        explode: true
+        in: query
+        name: city
+        required: false
+        schema:
+          example: "325183657"
+          type: string
+        style: form
+      - description: Maximum results returned by a search
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          example: 499
+          format: int32
+          type: integer
+        style: form
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WIREDictionary'
+          description: FEDWIRE Participants returned from a search
+      summary: Search FEDWIRE names and metadata
+      tags:
+      - FED
+components:
+  parameters:
+    requestId:
+      description: Optional Request ID allows application developer to trace requests through the systems logs
+      explode: false
+      in: header
+      name: X-Request-Id
+      required: false
+      schema:
+        example: 94c825ee
+        type: string
+      style: simple
+  schemas:
+    ACHDictionary:
+      description: Search results containing ACHDictionary of Participants
+      example:
+        ACHParticipants:
+        - routingNumber: "231380104"
+          phoneNumber: "8004460135"
+          officeCode: O, B
+          newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+          servicingFRBNumber: "101000048"
+          recordTypeCode: 0, 1, 2
+          revised: YYYYMMDD, or blank
+          viewCode: "1"
+          customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          achLocation:
+          - postalExtension: "7025"
+            address: PO BOX 27025
+            city: RICHMOND
+            postalCode: "23261"
+            state: VA
+          - postalExtension: "7025"
+            address: PO BOX 27025
+            city: RICHMOND
+            postalCode: "23261"
+            state: VA
+          statusCode: "1"
+        - routingNumber: "231380104"
+          phoneNumber: "8004460135"
+          officeCode: O, B
+          newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+          servicingFRBNumber: "101000048"
+          recordTypeCode: 0, 1, 2
+          revised: YYYYMMDD, or blank
+          viewCode: "1"
+          customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          achLocation:
+          - postalExtension: "7025"
+            address: PO BOX 27025
+            city: RICHMOND
+            postalCode: "23261"
+            state: VA
+          - postalExtension: "7025"
+            address: PO BOX 27025
+            city: RICHMOND
+            postalCode: "23261"
+            state: VA
+          statusCode: "1"
+      properties:
+        ACHParticipants:
+          items:
+            $ref: '#/components/schemas/ACHParticipant'
+          type: array
+    ACHParticipant:
+      description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
+      example:
+        routingNumber: "231380104"
+        phoneNumber: "8004460135"
+        officeCode: O, B
+        newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+        servicingFRBNumber: "101000048"
+        recordTypeCode: 0, 1, 2
+        revised: YYYYMMDD, or blank
+        viewCode: "1"
+        customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+        achLocation:
+        - postalExtension: "7025"
+          address: PO BOX 27025
+          city: RICHMOND
+          postalCode: "23261"
+          state: VA
+        - postalExtension: "7025"
+          address: PO BOX 27025
+          city: RICHMOND
+          postalCode: "23261"
+          state: VA
+        statusCode: "1"
+      properties:
+        routingNumber:
+          description: The institution's routing number
+          example: "231380104"
+          type: string
+        officeCode:
+          description: Main/Head Office or Branch. O=main B=branch
+          example: O, B
+          type: string
+        servicingFRBNumber:
+          description: Servicing Fed's main office routing number
+          example: "101000048"
+          type: string
+        recordTypeCode:
+          description: |-
+            The code indicating the ABA number to be used to route or send ACH items to the RDFI
+            0 = Institution is a Federal Reserve Bank
+            1 = Send items to customer routing number
+            2 = Send items to customer using new routing number field
+          example: 0, 1, 2
+          type: string
+        revised:
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+          type: string
+        newRoutingNumber:
+          description: Financial Institution's new routing number resulting from a merger or renumber
+          example: 000000000 or valid routing number (e.g. 122203950)
+          type: string
+        customerName:
+          description: Financial Institution Name
+          example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          type: string
+        achLocation:
+          description: FEDACH delivery address
+          items:
+            $ref: '#/components/schemas/ACHLocation'
+          type: object
+        phoneNumber:
+          description: The Financial Institution's phone number
+          example: "8004460135"
+          type: string
+        statusCode:
+          description: |-
+            Code is based on the customers receiver code
+            1 = Receives Gov/Comm
+          example: "1"
+          type: string
+        viewCode:
+          description: |-
+            Code is current view
+            1 = Current view
+          example: "1"
+          type: string
+    ACHLocation:
+      description: ACHLocation is the FEDACH delivery address
+      example:
+        postalExtension: "7025"
+        address: PO BOX 27025
+        city: RICHMOND
+        postalCode: "23261"
+        state: VA
+      properties:
+        address:
+          description: Street Address
+          example: PO BOX 27025
+          type: string
+        city:
+          description: City
+          example: RICHMOND
+          type: string
+        state:
+          description: State
+          example: VA
+          type: string
+        postalCode:
+          description: Postal Code
+          example: "23261"
+          type: string
+        postalExtension:
+          description: Postal Code Extension
+          example: "7025"
+          type: string
+    WIREDictionary:
+      description: Search results containing WIREDictionary of Participants
+      example:
+        WIREParticipants:
+        - date: YYYYMMDD, or blank
+          routingNumber: "231380104"
+          wireLocation:
+          - city: BOSTON
+            state: MA
+          - city: BOSTON
+            state: MA
+          fundsTransferStatus: Y, N
+          fundsSettlementOnlyStatus: S
+          telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          customerName: FEDERAL RESERVE BANK OF BOSTON
+          bookEntrySecuritiesTransferStatus: N
+        - date: YYYYMMDD, or blank
+          routingNumber: "231380104"
+          wireLocation:
+          - city: BOSTON
+            state: MA
+          - city: BOSTON
+            state: MA
+          fundsTransferStatus: Y, N
+          fundsSettlementOnlyStatus: S
+          telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          customerName: FEDERAL RESERVE BANK OF BOSTON
+          bookEntrySecuritiesTransferStatus: N
+      properties:
+        WIREParticipants:
+          items:
+            $ref: '#/components/schemas/WIREParticipant'
+          type: array
+    WIREParticipant:
+      description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+      example:
+        date: YYYYMMDD, or blank
+        routingNumber: "231380104"
+        wireLocation:
+        - city: BOSTON
+          state: MA
+        - city: BOSTON
+          state: MA
+        fundsTransferStatus: Y, N
+        fundsSettlementOnlyStatus: S
+        telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+        customerName: FEDERAL RESERVE BANK OF BOSTON
+        bookEntrySecuritiesTransferStatus: N
+      properties:
+        routingNumber:
+          description: The institution's routing number
+          example: "231380104"
+          type: string
+        telegraphicName:
+          description: Short name of financial institution
+          example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          type: string
+        customerName:
+          description: Financial Institution Name
+          example: FEDERAL RESERVE BANK OF BOSTON
+          type: string
+        wireLocation:
+          description: FEDWIRE Delivery Address
+          items:
+            $ref: '#/components/schemas/WIRELocation'
+          type: object
+        fundsTransferStatus:
+          description: |-
+            Designates funds transfer status
+            Y = Eligible
+            N = Ineligible
+          example: Y, N
+          type: string
+        fundsSettlementOnlyStatus:
+          description: |-
+            Designates funds settlement only status
+            S = Settlement-Only
+          example: S
+          type: string
+        bookEntrySecuritiesTransferStatus:
+          description: |-
+            Designates book entry securities transfer status
+            N = Ineligible
+          example: N
+          type: string
+        date:
+          description: Date of last revision
+          example: YYYYMMDD, or blank
+          type: string
+    WIRELocation:
+      description: WIRELocation is the FEDWIRE delivery address
+      example:
+        city: BOSTON
+        state: MA
+      properties:
+        city:
+          description: City
+          example: BOSTON
+          type: string
+        state:
+          description: State
+          example: MA
+          type: string
