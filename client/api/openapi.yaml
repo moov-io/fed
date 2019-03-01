@@ -54,6 +54,8 @@ paths:
         required: false
         schema:
           example: "325183657"
+          maximum: 9
+          minimum: 2
           type: string
         style: form
       - description: FEDACH Financial Institution State
@@ -63,6 +65,8 @@ paths:
         required: false
         schema:
           example: PA
+          maximum: 2
+          minimum: 2
           type: string
         style: form
       - description: FEDACH Financial Institution City
@@ -81,6 +85,8 @@ paths:
         required: false
         schema:
           example: "19753"
+          maximum: 5
+          minimum: 5
           type: string
         style: form
       - description: Maximum results returned by a search
@@ -132,6 +138,8 @@ paths:
         required: false
         schema:
           example: "324172465"
+          maximum: 9
+          minimum: 2
           type: string
         style: form
       - description: FEDWIRE Financial Institution State
@@ -141,6 +149,8 @@ paths:
         required: false
         schema:
           example: PA
+          maximum: 2
+          minimum: 2
           type: string
         style: form
       - description: FEDWIRE Financial Institution City

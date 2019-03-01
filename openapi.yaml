@@ -43,12 +43,16 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 9
             example: 325183657
           description: FEDACH Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 2
             example: PA
           description: FEDACH Financial Institution State
         - name: city
@@ -61,6 +65,8 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 5
+            maximum: 5
             example: 19753
           description: FEDACH Financial Institution Postal Code
         - name: limit
@@ -94,12 +100,16 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 9
             example: 324172465
           description: FEDWIRE Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 2
             example: PA
           description: FEDWIRE Financial Institution State
         - name: city
