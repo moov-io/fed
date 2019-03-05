@@ -21,9 +21,9 @@ type WireParticipant struct {
 	WireLocation []WireLocation `json:"wireLocation,omitempty"`
 	// Designates funds transfer status Y = Eligible N = Ineligible
 	FundsTransferStatus string `json:"fundsTransferStatus,omitempty"`
-	// Designates funds settlement only status S = Settlement-Only
+	// Designates funds settlement only status S = Settlement-Only or blank
 	FundsSettlementOnlyStatus string `json:"fundsSettlementOnlyStatus,omitempty"`
-	// Designates book entry securities transfer status N = Ineligible
+	// Designates book entry securities transfer status Y = Eligible N = Ineligible
 	BookEntrySecuritiesTransferStatus string `json:"bookEntrySecuritiesTransferStatus,omitempty"`
 	// Date of last revision
 	Date string `json:"date,omitempty"`

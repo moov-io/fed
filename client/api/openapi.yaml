@@ -225,12 +225,12 @@ components:
           viewCode: "1"
           customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
           achLocation:
-          - postalExtension: "7025"
+          - postalExtension: 0000, 7025
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
             state: VA
-          - postalExtension: "7025"
+          - postalExtension: 0000, 7025
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
@@ -246,12 +246,12 @@ components:
           viewCode: "1"
           customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
           achLocation:
-          - postalExtension: "7025"
+          - postalExtension: 0000, 7025
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
             state: VA
-          - postalExtension: "7025"
+          - postalExtension: 0000, 7025
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
@@ -275,12 +275,12 @@ components:
         viewCode: "1"
         customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
         achLocation:
-        - postalExtension: "7025"
+        - postalExtension: 0000, 7025
           address: PO BOX 27025
           city: RICHMOND
           postalCode: "23261"
           state: VA
-        - postalExtension: "7025"
+        - postalExtension: 0000, 7025
           address: PO BOX 27025
           city: RICHMOND
           postalCode: "23261"
@@ -290,14 +290,20 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "231380104"
+          maximum: 9
+          minimum: 9
           type: string
         officeCode:
           description: Main/Head Office or Branch. O=main B=branch
           example: O, B
+          maximum: 1
+          minimum: 1
           type: string
         servicingFRBNumber:
           description: Servicing Fed's main office routing number
           example: "101000048"
+          maximum: 9
+          minimum: 9
           type: string
         recordTypeCode:
           description: |-
@@ -306,18 +312,24 @@ components:
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
           example: 0, 1, 2
+          maximum: 1
+          minimum: 1
           type: string
         revised:
           description: Date of last revision
           example: YYYYMMDD, or blank
+          maximum: 8
           type: string
         newRoutingNumber:
           description: Financial Institution's new routing number resulting from a merger or renumber
           example: 000000000 or valid routing number (e.g. 122203950)
+          maximum: 9
+          minimum: 9
           type: string
         customerName:
           description: Financial Institution Name
           example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          maximum: 36
           type: string
         achLocation:
           description: FEDACH delivery address
@@ -327,23 +339,29 @@ components:
         phoneNumber:
           description: The Financial Institution's phone number
           example: "8004460135"
+          maximum: 10
+          minimum: 10
           type: string
         statusCode:
           description: |-
             Code is based on the customers receiver code
             1 = Receives Gov/Comm
           example: "1"
+          maximum: 1
+          minimum: 1
           type: string
         viewCode:
           description: |-
             Code is current view
             1 = Current view
           example: "1"
+          maximum: 1
+          minimum: 1
           type: string
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       example:
-        postalExtension: "7025"
+        postalExtension: 0000, 7025
         address: PO BOX 27025
         city: RICHMOND
         postalCode: "23261"
@@ -352,22 +370,30 @@ components:
         address:
           description: Street Address
           example: PO BOX 27025
+          maximum: 36
           type: string
         city:
           description: City
           example: RICHMOND
+          maximum: 20
           type: string
         state:
           description: State
           example: VA
+          maximum: 2
+          minimum: 2
           type: string
         postalCode:
           description: Postal Code
           example: "23261"
+          maximum: 5
+          minimum: 5
           type: string
         postalExtension:
           description: Postal Code Extension
-          example: "7025"
+          example: 0000, 7025
+          maximum: 4
+          minimum: 4
           type: string
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
@@ -421,14 +447,18 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "231380104"
+          maximum: 9
+          minimum: 9
           type: string
         telegraphicName:
           description: Short name of financial institution
           example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          maximum: 18
           type: string
         customerName:
           description: Financial Institution Name
           example: FEDERAL RESERVE BANK OF BOSTON
+          maximum: 36
           type: string
         wireLocation:
           description: FEDWIRE Delivery Address
@@ -441,22 +471,29 @@ components:
             Y = Eligible
             N = Ineligible
           example: Y, N
+          maximum: 1
+          minimum: 1
           type: string
         fundsSettlementOnlyStatus:
           description: |-
             Designates funds settlement only status
-            S = Settlement-Only
+            S = Settlement-Only or blank
           example: S
+          maximum: 1
           type: string
         bookEntrySecuritiesTransferStatus:
           description: |-
             Designates book entry securities transfer status
+            Y = Eligible
             N = Ineligible
           example: N
+          maximum: 1
+          minimum: 1
           type: string
         date:
           description: Date of last revision
           example: YYYYMMDD, or blank
+          maximum: 8
           type: string
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
@@ -467,10 +504,13 @@ components:
         city:
           description: City
           example: BOSTON
+          maximum: 25
           type: string
         state:
           description: State
           example: MA
+          maximum: 2
+          minimum: 2
           type: string
     Error:
       properties:
