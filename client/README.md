@@ -41,6 +41,7 @@ Class | Method | HTTP request | Description
  - [AchDictionary](docs/AchDictionary.md)
  - [AchLocation](docs/AchLocation.md)
  - [AchParticipant](docs/AchParticipant.md)
+ - [Error](docs/Error.md)
  - [WireDictionary](docs/WireDictionary.md)
  - [WireLocation](docs/WireLocation.md)
  - [WireParticipant](docs/WireParticipant.md)

@@ -82,6 +82,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACHDictionary'
+        '400':
+          description: Invalid user information, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
   /fed/wire/search:
     get:
       tags:
@@ -131,6 +139,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WIREDictionary'
+        '400':
+          description: Invalid user information, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
 components:
   schemas:
     ACHDictionary:
@@ -280,6 +296,14 @@ components:
           type: string
           description: State
           example: MA
+    Error:
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: An error message describing the problem intended for humans.
+          example: Validation error(s) present.
   parameters:
     requestId:
       in: header
