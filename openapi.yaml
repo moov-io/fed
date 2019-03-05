@@ -190,7 +190,10 @@ components:
         revised:
           type: string
           maximum: 8
-          description: Date of last revision
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
           example: YYYYMMDD, or blank
         newRoutingNumber:
           type: string
@@ -307,6 +310,7 @@ components:
           description: |-
             Designates funds settlement only status
             S = Settlement-Only or blank
+            Blank
           example: S
         bookEntrySecuritiesTransferStatus:
           type: string
@@ -320,7 +324,10 @@ components:
         date:
           type: string
           maximum: 8
-          description: Date of last revision
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
           example: YYYYMMDD
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
