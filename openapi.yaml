@@ -4,19 +4,17 @@ info:
   version: v1
   title: FED API
   contact:
+    name: FED API Support
     url: 'https://github.com/moov-io/fed'
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-
 servers:
   - url: 'http://localhost:8086'
     description: Local development
-
 tags:
   - name: FED
     description: FEDACH Dictionary and FEDWIRE Dictionary
-
 paths:
   /ping:
     get:
@@ -27,8 +25,6 @@ paths:
       responses:
         '200':
           description: Service is running properly
-          
-  # Search Endpoints
   /fed/ach/search:
     get:
       tags:
@@ -47,12 +43,16 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 9
             example: 325183657
           description: FEDACH Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 2
             example: PA
           description: FEDACH Financial Institution State
         - name: city
@@ -65,6 +65,8 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 5
+            maximum: 5
             example: 19753
           description: FEDACH Financial Institution Postal Code
         - name: limit
@@ -80,6 +82,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACHDictionary'
+        '400':
+          description: Invalid user information, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
   /fed/wire/search:
     get:
       tags:
@@ -98,12 +108,16 @@ paths:
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 9
             example: 324172465
           description: FEDWIRE Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
+            minimum: 2
+            maximum: 2
             example: PA
           description: FEDWIRE Financial Institution State
         - name: city
@@ -125,13 +139,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WIREDictionary'
-
+        '400':
+          description: Invalid user information, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
 components:
   schemas:
     ACHDictionary:
       description: Search results containing ACHDictionary of Participants
       properties:
-        ACHPartcipants:
+        ACHParticipants:
           type: array
           items:
             $ref: '#/components/schemas/ACHParticipant'
@@ -140,33 +161,49 @@ components:
       properties:
         routingNumber:
           type: string
+          minimum: 9
+          maximum: 9
           description: The institution's routing number
           example: 231380104
         officeCode:
           type: string
+          minimum: 1
+          maximum: 1
           description: Main/Head Office or Branch. O=main B=branch
-          example: O, B
+          example: O
         servicingFRBNumber:
           type: string
+          minimum: 9
+          maximum: 9
           description: Servicing Fed's main office routing number
           example: 101000048
         recordTypeCode:
           type: string
-          description: The code indicating the ABA number to be used to route or send ACH items to the RDFI
+          minimum: 1
+          maximum: 1
+          description: |-
+            The code indicating the ABA number to be used to route or send ACH items to the RDFI
             0 = Institution is a Federal Reserve Bank
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
-          example: 0, 1, 2
+          example: 1
         revised:
           type: string
-          description: Date of last revision
+          maximum: 8
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
           example: YYYYMMDD, or blank
         newRoutingNumber:
           type: string
+          minimum: 9
+          maximum: 9
           description: Financial Institution's new routing number resulting from a merger or renumber
-          example: 000000000 or valid routing number (e.g. 122203950)
+          example: 122203950
         customerName:
           type: string
+          maximum: 36
           description: Financial Institution Name
           example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
         achLocation:
@@ -176,45 +213,61 @@ components:
             $ref: '#/components/schemas/ACHLocation'
         phoneNumber:
           type: string
+          minimum: 10
+          maximum: 10
           description: The Financial Institution's phone number
           example: 8004460135
         statusCode:
           type: string
-          description: Code is based on the customers receiver code
-           1 = Receives Gov/Comm
+          minimum: 1
+          maximum: 1
+          description: |-
+            Code is based on the customers receiver code
+            1 = Receives Gov/Comm
           example: 1
         viewCode:
           type: string
-          description: Code is current view
-           1 = Current view
+          minimum: 1
+          maximum: 1
+          description: |-
+            Code is current view
+            1 = Current view
           example: 1
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
         address:
           type: string
+          maximum: 36
           description: Street Address
           example: PO BOX 27025
         city:
           type: string
+          maximum: 20
           description: City
           example: RICHMOND
         state:
           type: string
+          minimum: 2
+          maximum: 2
           description: State
           example: VA
         postalCode:
           type: string
+          minimum: 5
+          maximum: 5
           description: Postal Code
           example: 23261
         postalExtension:
           type: string
+          minimum: 4
+          maximum: 4
           description: Postal Code Extension
           example: 7025
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
       properties:
-        WIREPartcipants:
+        WIREParticipants:
           type: array
           items:
             $ref: '#/components/schemas/WIREParticipant'
@@ -223,14 +276,18 @@ components:
       properties:
         routingNumber:
           type: string
+          minimum: 9
+          maximum: 9
           description: The institution's routing number
           example: 231380104
         telegraphicName:
           type: string
+          maximum: 18
           description: Short name of financial institution
           example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
         customerName:
           type: string
+          maximum: 36
           description: Financial Institution Name
           example: FEDERAL RESERVE BANK OF BOSTON
         wireLocation:
@@ -240,35 +297,60 @@ components:
             $ref: '#/components/schemas/WIRELocation'
         fundsTransferStatus:
           type: string
-          description: Designates funds transfer status
-           Y = Eligible
-           N = Ineligible
-          example: Y, N
+          minimum: 1
+          maximum: 1
+          description: |-
+            Designates funds transfer status
+            Y = Eligible
+            N = Ineligible
+          example: Y
         fundsSettlementOnlyStatus:
           type: string
-          description: Designates funds settlement only status
-           S = Settlement-Only
+          maximum: 1
+          description: |-
+            Designates funds settlement only status
+            S = Settlement-Only or blank
+            Blank
           example: S
         bookEntrySecuritiesTransferStatus:
           type: string
-          description: Designates book entry securities transfer status
+          minimum: 1
+          maximum: 1
+          description: |-
+            Designates book entry securities transfer status
+            Y = Eligible
             N = Ineligible
           example: N
         date:
           type: string
-          description: Date of last revision
-          example: YYYYMMDD, or blank
+          maximum: 8
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
+          example: YYYYMMDD
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       properties:
         city:
           type: string
+          maximum: 25
           description: City
           example: BOSTON
         state:
           type: string
+          minimum: 2
+          maximum: 2
           description: State
           example: MA
+    Error:
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: An error message describing the problem intended for humans.
+          example: Validation error(s) present.
   parameters:
     requestId:
       in: header

@@ -35,12 +35,12 @@ type searchResponse struct {
 }
 
 // ACHFindNameOnly finds ACH Participants by name only
-func (s *searcher) ACHFindNameOnly(limit int, participantName string) ([]*fed.ACHParticipant, error) {
+func (s *searcher) ACHFindNameOnly(limit int, participantName string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.ACHDictionary.FinancialInstitutionSearch(participantName)
 	out := achLimit(fi, limit)
-	return out, nil
+	return out
 }
 
 // ACHFindRoutingNumberOnly finds ACH Participants by routing number only
@@ -115,12 +115,12 @@ func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipa
 // WIRE Searches
 
 // WIREFindNameOnly finds WIRE Participants by name only
-func (s *searcher) WIREFindNameOnly(limit int, participantName string) ([]*fed.WIREParticipant, error) {
+func (s *searcher) WIREFindNameOnly(limit int, participantName string) []*fed.WIREParticipant {
 	s.RLock()
 	defer s.RUnlock()
 	fi := s.WIREDictionary.FinancialInstitutionSearch(participantName)
 	out := wireLimit(fi, limit)
-	return out, nil
+	return out
 }
 
 // WIREFindRoutingNumberOnly finds WIRE Participants by routing number only

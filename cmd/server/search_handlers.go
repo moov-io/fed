@@ -149,20 +149,14 @@ func (req fedSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher
 
 		switch searchType {
 		case ACH:
-			achP, err := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
+			achP := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP, err := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
+			wireP := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
