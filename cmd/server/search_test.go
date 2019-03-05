@@ -142,10 +142,7 @@ func TestSearcher_ACHFindNameOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP, err := s.ACHFindNameOnly(hardResultsLimit, "Farmers")
-	if err != nil {
-		t.Fatal(err)
-	}
+	achP := s.ACHFindNameOnly(hardResultsLimit, "Farmers")
 
 	if len(achP) == 0 {
 		t.Fatalf("%s", "No matches found for name")
@@ -367,10 +364,7 @@ func TestSearcher_WIREFindNameOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wireP, err := s.WIREFindNameOnly(hardResultsLimit, "MIDWEST")
-	if err != nil {
-		t.Fatal(err)
-	}
+	wireP := s.WIREFindNameOnly(hardResultsLimit, "MIDWEST")
 
 	if len(wireP) == 0 {
 		t.Fatalf("%s", "No matches found for name")

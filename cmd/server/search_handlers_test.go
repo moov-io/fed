@@ -439,7 +439,7 @@ func TestSearch__ACHRoutingNumber1Digit(t *testing.T) {
 	router.ServeHTTP(w, req)
 	w.Flush()
 
-	if w.Code != http.StatusBadRequest {
+	if w.Code != http.StatusInternalServerError {
 		t.Errorf("incorrect status code: %d", w.Code)
 	}
 }
@@ -458,7 +458,7 @@ func TestSearch__ACHRoutingNumberOnly1Digit(t *testing.T) {
 	router.ServeHTTP(w, req)
 	w.Flush()
 
-	if w.Code != http.StatusBadRequest {
+	if w.Code != http.StatusInternalServerError {
 		t.Errorf("incorrect status code: %d", w.Code)
 	}
 }
@@ -477,7 +477,7 @@ func TestSearch__WIRERoutingNumber1Digit(t *testing.T) {
 	router.ServeHTTP(w, req)
 	w.Flush()
 
-	if w.Code != http.StatusBadRequest {
+	if w.Code != http.StatusInternalServerError {
 		t.Errorf("incorrect status code: %d", w.Code)
 	}
 }
@@ -496,7 +496,7 @@ func TestSearch__WIRERoutingNumberOnly1Digit(t *testing.T) {
 	router.ServeHTTP(w, req)
 	w.Flush()
 
-	if w.Code != http.StatusBadRequest {
+	if w.Code != http.StatusInternalServerError {
 		t.Errorf("incorrect status code: %d", w.Code)
 	}
 }

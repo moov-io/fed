@@ -149,20 +149,14 @@ func (req fedSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher
 
 		switch searchType {
 		case ACH:
-			achP, err := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
+			achP := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
 				moovhttp.Problem(w, err)
 				return
 			}
 		case WIRE:
-			wireP, err := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
+			wireP := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
 				moovhttp.Problem(w, err)
@@ -182,7 +176,7 @@ func (req fedSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher 
 		case ACH:
 			achP, err := searcher.ACHFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
 			if err != nil {
-				moovhttp.Problem(w, err)
+				moovhttp.InternalError(w, err)
 			}
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
@@ -192,7 +186,7 @@ func (req fedSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher 
 		case WIRE:
 			wireP, err := searcher.WIREFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
 			if err != nil {
-				moovhttp.Problem(w, err)
+				moovhttp.InternalError(w, err)
 			}
 			w := setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
@@ -281,7 +275,7 @@ func (req fedSearchRequest) search(logger log.Logger, searcher *searcher, search
 		case ACH:
 			achP, err := searcher.ACHFind(extractSearchLimit(r), req)
 			if err != nil {
-				moovhttp.Problem(w, err)
+				moovhttp.InternalError(w, err)
 			}
 			w = setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
@@ -291,7 +285,7 @@ func (req fedSearchRequest) search(logger log.Logger, searcher *searcher, search
 		case WIRE:
 			wireP, err := searcher.WIREFind(extractSearchLimit(r), req)
 			if err != nil {
-				moovhttp.Problem(w, err)
+				moovhttp.InternalError(w, err)
 			}
 			w = setResponseHeader(w)
 			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
