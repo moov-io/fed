@@ -16,7 +16,7 @@ tags:
   - name: FED
     description: FEDACH Dictionary and FEDWIRE Dictionary
 paths:
-  /ping:
+  /fed/ping:
     get:
       tags:
         - FED
@@ -37,37 +37,31 @@ paths:
           in: query
           schema:
             type: string
-            example: Farmers State Bank
+            example: Farmers
           description: FEDACH Financial Institution Name
         - name: routingNumber
           in: query
           schema:
             type: string
-            minimum: 2
-            maximum: 9
-            example: 325183657
+            example: 044112187
           description: FEDACH Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
-            minimum: 2
-            maximum: 2
-            example: PA
+            example: OH
           description: FEDACH Financial Institution State
         - name: city
           in: query
           schema:
             type: string
-            example: 325183657
+            example: CALDWELL
           description: FEDACH Financial Institution City
         - name: postalCode
           in: query
           schema:
             type: string
-            minimum: 5
-            maximum: 5
-            example: 19753
+            example: 43724
           description: FEDACH Financial Institution Postal Code
         - name: limit
           in: query
@@ -83,7 +77,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ACHDictionary'
         '400':
-          description: Invalid user information, check error(s).
+          description: Invalid, check error(s).
           content:
             application/json:
               schema:
@@ -102,29 +96,25 @@ paths:
           in: query
           schema:
             type: string
-            example: First Bank
+            example: MIDWEST
           description: FEDWIRE Financial Institution Name
         - name: routingNumber
           in: query
           schema:
             type: string
-            minimum: 2
-            maximum: 9
-            example: 324172465
+            example: 091905114
           description: FEDWIRE Routing Number for a Financial Institution
         - name: state
           in: query
           schema:
             type: string
-            minimum: 2
-            maximum: 2
-            example: PA
+            example: IA
           description: FEDWIRE Financial Institution State
         - name: city
           in: query
           schema:
             type: string
-            example: 325183657
+            example: IOWA CITY
           description: FEDWIRE Financial Institution City
         - name: limit
           in: query
@@ -140,7 +130,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WIREDictionary'
         '400':
-          description: Invalid user information, check error(s).
+          description: Invalid, check error(s).
           content:
             application/json:
               schema:
@@ -164,19 +154,19 @@ components:
           minimum: 9
           maximum: 9
           description: The institution's routing number
-          example: 231380104
+          example: '044112187'
         officeCode:
           type: string
           minimum: 1
           maximum: 1
           description: Main/Head Office or Branch. O=main B=branch
-          example: O
+          example: 'O'
         servicingFRBNumber:
           type: string
           minimum: 9
           maximum: 9
           description: Servicing Fed's main office routing number
-          example: 101000048
+          example: '041000014'
         recordTypeCode:
           type: string
           minimum: 1
@@ -186,7 +176,7 @@ components:
             0 = Institution is a Federal Reserve Bank
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
-          example: 1
+          example: '1'
         revised:
           type: string
           maximum: 8
@@ -194,20 +184,19 @@ components:
             Date of last revision
             YYYYMMDD
             Blank
-          example: YYYYMMDD, or blank
+          example: '031699'
         newRoutingNumber:
           type: string
           minimum: 9
           maximum: 9
           description: Financial Institution's new routing number resulting from a merger or renumber
-          example: 122203950
+          example: '000000000'
         customerName:
           type: string
           maximum: 36
           description: Financial Institution Name
-          example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          example: FARMERS & MERCHANTS BANK
         achLocation:
-          type: object
           description: FEDACH delivery address
           items:
             $ref: '#/components/schemas/ACHLocation'
@@ -216,7 +205,7 @@ components:
           minimum: 10
           maximum: 10
           description: The Financial Institution's phone number
-          example: 8004460135
+          example: '7407325621'
         statusCode:
           type: string
           minimum: 1
@@ -224,7 +213,7 @@ components:
           description: |-
             Code is based on the customers receiver code
             1 = Receives Gov/Comm
-          example: 1
+          example: '1'
         viewCode:
           type: string
           minimum: 1
@@ -232,7 +221,7 @@ components:
           description: |-
             Code is current view
             1 = Current view
-          example: 1
+          example: '1'
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
@@ -240,30 +229,30 @@ components:
           type: string
           maximum: 36
           description: Street Address
-          example: PO BOX 27025
+          example: '430 NORTH ST'
         city:
           type: string
           maximum: 20
           description: City
-          example: RICHMOND
+          example: 'CALDWELL'
         state:
           type: string
           minimum: 2
           maximum: 2
           description: State
-          example: VA
+          example: 'OH'
         postalCode:
           type: string
           minimum: 5
           maximum: 5
           description: Postal Code
-          example: 23261
+          example: '43724'
         postalExtension:
           type: string
           minimum: 4
           maximum: 4
           description: Postal Code Extension
-          example: 7025
+          example: '0000'
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
       properties:
@@ -279,19 +268,18 @@ components:
           minimum: 9
           maximum: 9
           description: The institution's routing number
-          example: 231380104
+          example: '091905114'
         telegraphicName:
           type: string
           maximum: 18
           description: Short name of financial institution
-          example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          example: 'MIDWESTONE B&T'
         customerName:
           type: string
           maximum: 36
           description: Financial Institution Name
-          example: FEDERAL RESERVE BANK OF BOSTON
+          example: 'MIDWESTONE BK'
         wireLocation:
-          type: object
           description: FEDWIRE Delivery Address
           items:
             $ref: '#/components/schemas/WIRELocation'
@@ -303,7 +291,7 @@ components:
             Designates funds transfer status
             Y = Eligible
             N = Ineligible
-          example: Y
+          example: 'Y'
         fundsSettlementOnlyStatus:
           type: string
           maximum: 1
@@ -311,7 +299,7 @@ components:
             Designates funds settlement only status
             S = Settlement-Only or blank
             Blank
-          example: S
+          example: ''
         bookEntrySecuritiesTransferStatus:
           type: string
           minimum: 1
@@ -320,7 +308,7 @@ components:
             Designates book entry securities transfer status
             Y = Eligible
             N = Ineligible
-          example: N
+          example: 'N'
         date:
           type: string
           maximum: 8
@@ -328,7 +316,7 @@ components:
             Date of last revision
             YYYYMMDD
             Blank
-          example: YYYYMMDD
+          example: '20160401'
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       properties:
@@ -336,13 +324,13 @@ components:
           type: string
           maximum: 25
           description: City
-          example: BOSTON
+          example: 'IOWA CITY'
         state:
           type: string
           minimum: 2
           maximum: 2
           description: State
-          example: MA
+          example: 'IA'
     Error:
       required:
         - error
