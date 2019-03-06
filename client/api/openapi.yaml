@@ -217,20 +217,20 @@ components:
         ACHParticipants:
         - routingNumber: "231380104"
           phoneNumber: "8004460135"
-          officeCode: O, B
-          newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+          officeCode: O
+          newRoutingNumber: "122203950"
           servicingFRBNumber: "101000048"
-          recordTypeCode: 0, 1, 2
+          recordTypeCode: "1"
           revised: YYYYMMDD, or blank
           viewCode: "1"
           customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
           achLocation:
-          - postalExtension: 0000, 7025
+          - postalExtension: "7025"
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
             state: VA
-          - postalExtension: 0000, 7025
+          - postalExtension: "7025"
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
@@ -238,20 +238,20 @@ components:
           statusCode: "1"
         - routingNumber: "231380104"
           phoneNumber: "8004460135"
-          officeCode: O, B
-          newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+          officeCode: O
+          newRoutingNumber: "122203950"
           servicingFRBNumber: "101000048"
-          recordTypeCode: 0, 1, 2
+          recordTypeCode: "1"
           revised: YYYYMMDD, or blank
           viewCode: "1"
           customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
           achLocation:
-          - postalExtension: 0000, 7025
+          - postalExtension: "7025"
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
             state: VA
-          - postalExtension: 0000, 7025
+          - postalExtension: "7025"
             address: PO BOX 27025
             city: RICHMOND
             postalCode: "23261"
@@ -267,20 +267,20 @@ components:
       example:
         routingNumber: "231380104"
         phoneNumber: "8004460135"
-        officeCode: O, B
-        newRoutingNumber: 000000000 or valid routing number (e.g. 122203950)
+        officeCode: O
+        newRoutingNumber: "122203950"
         servicingFRBNumber: "101000048"
-        recordTypeCode: 0, 1, 2
+        recordTypeCode: "1"
         revised: YYYYMMDD, or blank
         viewCode: "1"
         customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
         achLocation:
-        - postalExtension: 0000, 7025
+        - postalExtension: "7025"
           address: PO BOX 27025
           city: RICHMOND
           postalCode: "23261"
           state: VA
-        - postalExtension: 0000, 7025
+        - postalExtension: "7025"
           address: PO BOX 27025
           city: RICHMOND
           postalCode: "23261"
@@ -295,7 +295,7 @@ components:
           type: string
         officeCode:
           description: Main/Head Office or Branch. O=main B=branch
-          example: O, B
+          example: O
           maximum: 1
           minimum: 1
           type: string
@@ -311,18 +311,21 @@ components:
             0 = Institution is a Federal Reserve Bank
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
-          example: 0, 1, 2
+          example: "1"
           maximum: 1
           minimum: 1
           type: string
         revised:
-          description: Date of last revision
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
           example: YYYYMMDD, or blank
           maximum: 8
           type: string
         newRoutingNumber:
           description: Financial Institution's new routing number resulting from a merger or renumber
-          example: 000000000 or valid routing number (e.g. 122203950)
+          example: "122203950"
           maximum: 9
           minimum: 9
           type: string
@@ -361,7 +364,7 @@ components:
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       example:
-        postalExtension: 0000, 7025
+        postalExtension: "7025"
         address: PO BOX 27025
         city: RICHMOND
         postalCode: "23261"
@@ -391,7 +394,7 @@ components:
           type: string
         postalExtension:
           description: Postal Code Extension
-          example: 0000, 7025
+          example: "7025"
           maximum: 4
           minimum: 4
           type: string
@@ -399,26 +402,26 @@ components:
       description: Search results containing WIREDictionary of Participants
       example:
         WIREParticipants:
-        - date: YYYYMMDD, or blank
+        - date: YYYYMMDD
           routingNumber: "231380104"
           wireLocation:
           - city: BOSTON
             state: MA
           - city: BOSTON
             state: MA
-          fundsTransferStatus: Y, N
+          fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
           telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
           customerName: FEDERAL RESERVE BANK OF BOSTON
           bookEntrySecuritiesTransferStatus: N
-        - date: YYYYMMDD, or blank
+        - date: YYYYMMDD
           routingNumber: "231380104"
           wireLocation:
           - city: BOSTON
             state: MA
           - city: BOSTON
             state: MA
-          fundsTransferStatus: Y, N
+          fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
           telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
           customerName: FEDERAL RESERVE BANK OF BOSTON
@@ -431,14 +434,14 @@ components:
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
-        date: YYYYMMDD, or blank
+        date: YYYYMMDD
         routingNumber: "231380104"
         wireLocation:
         - city: BOSTON
           state: MA
         - city: BOSTON
           state: MA
-        fundsTransferStatus: Y, N
+        fundsTransferStatus: Y
         fundsSettlementOnlyStatus: S
         telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
         customerName: FEDERAL RESERVE BANK OF BOSTON
@@ -470,7 +473,7 @@ components:
             Designates funds transfer status
             Y = Eligible
             N = Ineligible
-          example: Y, N
+          example: Y
           maximum: 1
           minimum: 1
           type: string
@@ -478,6 +481,7 @@ components:
           description: |-
             Designates funds settlement only status
             S = Settlement-Only or blank
+            Blank
           example: S
           maximum: 1
           type: string
@@ -491,8 +495,11 @@ components:
           minimum: 1
           type: string
         date:
-          description: Date of last revision
-          example: YYYYMMDD, or blank
+          description: |-
+            Date of last revision
+            YYYYMMDD
+            Blank
+          example: YYYYMMDD
           maximum: 8
           type: string
     WIRELocation:

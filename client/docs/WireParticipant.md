@@ -8,9 +8,9 @@ Name | Type | Description | Notes
 **CustomerName** | **string** | Financial Institution Name | [optional] 
 **WireLocation** | [**[]WireLocation**](WIRELocation.md) | FEDWIRE Delivery Address | [optional] 
 **FundsTransferStatus** | **string** | Designates funds transfer status Y &#x3D; Eligible N &#x3D; Ineligible | [optional] 
-**FundsSettlementOnlyStatus** | **string** | Designates funds settlement only status S &#x3D; Settlement-Only or blank | [optional] 
+**FundsSettlementOnlyStatus** | **string** | Designates funds settlement only status S &#x3D; Settlement-Only or blank Blank | [optional] 
 **BookEntrySecuritiesTransferStatus** | **string** | Designates book entry securities transfer status Y &#x3D; Eligible N &#x3D; Ineligible | [optional] 
-**Date** | **string** | Date of last revision | [optional] 
+**Date** | **string** | Date of last revision YYYYMMDD Blank | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

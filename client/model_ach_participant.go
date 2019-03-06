@@ -19,7 +19,7 @@ type AchParticipant struct {
 	ServicingFRBNumber string `json:"servicingFRBNumber,omitempty"`
 	// The code indicating the ABA number to be used to route or send ACH items to the RDFI 0 = Institution is a Federal Reserve Bank 1 = Send items to customer routing number 2 = Send items to customer using new routing number field
 	RecordTypeCode string `json:"recordTypeCode,omitempty"`
-	// Date of last revision
+	// Date of last revision YYYYMMDD Blank
 	Revised string `json:"revised,omitempty"`
 	// Financial Institution's new routing number resulting from a merger or renumber
 	NewRoutingNumber string `json:"newRoutingNumber,omitempty"`

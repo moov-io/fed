@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **OfficeCode** | **string** | Main/Head Office or Branch. O&#x3D;main B&#x3D;branch | [optional] 
 **ServicingFRBNumber** | **string** | Servicing Fed&#39;s main office routing number | [optional] 
 **RecordTypeCode** | **string** | The code indicating the ABA number to be used to route or send ACH items to the RDFI 0 &#x3D; Institution is a Federal Reserve Bank 1 &#x3D; Send items to customer routing number 2 &#x3D; Send items to customer using new routing number field | [optional] 
-**Revised** | **string** | Date of last revision | [optional] 
+**Revised** | **string** | Date of last revision YYYYMMDD Blank | [optional] 
 **NewRoutingNumber** | **string** | Financial Institution&#39;s new routing number resulting from a merger or renumber | [optional] 
 **CustomerName** | **string** | Financial Institution Name | [optional] 
 **AchLocation** | [**[]AchLocation**](ACHLocation.md) | FEDACH delivery address | [optional] 
