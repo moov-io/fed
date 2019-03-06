@@ -1,45 +1,58 @@
 language: go
 sudo: false
 services:
-  - docker
+- docker
 env:
   matrix:
-    - GO111MODULE=auto
+  - GO111MODULE=auto
 matrix:
-  # allow_failures:
-  #   - os: windows
   include:
-    - os: linux
-      go: 1.11.x
-      cache:
-        directories:
-          - "/home/travis/.cache/go-build" # GOCACHE
-   # - os: osx
-    #  go: 1.11.x
-     # cache:
-      #  directories:
-       #   - "/Users/travis/Library/Caches/go-build" # GOCACHE
+  - os: linux
+    go: 1.12.x
+    cache:
+      directories:
+      - "/home/travis/.cache/go-build"
+  - os: osx
+    go: 1.12.x
+    cache:
+      directories:
+      - "/Users/travis/Library/Caches/go-build"
 before_install:
-  #- go get -u github.com/client9/misspell/cmd/misspell
-  - go get -u golang.org/x/lint/golint
-  - go get -u honnef.co/go/tools/cmd/staticcheck
-  - go get github.com/fzipp/gocyclo
-  - go get golang.org/x/tools/cmd/cover
-  # Install gcc, from https://travis-ci.community/t/go-cant-find-gcc-with-go1-11-1-on-windows/293/5
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y mingw; export PATH=/c/tools/mingw64/bin:"$PATH"; fi
+- go get -u github.com/client9/misspell/cmd/misspell
+- go get -u golang.org/x/lint/golint
+- go get github.com/fzipp/gocyclo
+- go get -u honnef.co/go/tools/cmd/staticcheck
+- go get golang.org/x/tools/cmd/cover
 before_script:
-  - GOFILES=$(find . -type f -name '*.go' | grep -v vendor | grep -v client)
+- GOFILES=$(find . -type f -name '*.go' | grep -v vendor | grep -v client)
 script:
   # Just check gofmt on linux, it's the fastest builder
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
-  - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-  #- misspell -error -locale US $GOFILES
-  - gocyclo -over 25 $GOFILES
-  - golint -set_exit_status $GOFILES
-  - staticcheck ./cmd/*/*.go ./pkg/*/*.go *.go
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
+- go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+- misspell -error -locale US $GOFILES
+- gocyclo -over 25 $GOFILES
+- golint -set_exit_status $GOFILES
+- staticcheck ./cmd/*/*.go ./pkg/*/*.go *.go
 after_success:
- - bash <(curl -s https://codecov.io/bash) -X fix
- - make
- - make client
- - make docker # We don't have a Dockerfile to build, yet
-
+- bash <(curl -s https://codecov.io/bash) -X fix
+- make
+- make client
+- make docker
+before_deploy:
+- make dist
+deploy:
+  provider: releases
+  api_key:
+    secure: lYQO2KgkUTGvyDm6FOU2/Ny6R06BsTMsArwkHGiM2Uc7FxvtHQm8Ko8vtflIA9f4EW/WBgbIfxTRI9w++UoGP6YmyXXln5jM07qGbf49uOq2i00iIdc2xp13MC2TQfCtqKhPUQXlAZASViYI+E7uVibxY5hZZtrs8gGbaGYO+5Tlf3qeKUVQRf61ylbGc5/CmYIjLtUOUcRNPfrhLRIXF/EReE0IV80EJb/gd/HWiszYiv2hdwfWclXAkZk8vYjG3znnGjhRjEdDjJX65Kmr7YYZnngp4qQCumyFArH3yGW3xpR8hs8ra5lWJtMNW/UdFqiq/RM6YNPuO81LCxgwPoIjS2VKqlIOUHAV+hCyrSTUjZY916VUlSuMYhwFvRddkIbS3D6oSdiWZq3XMUQjr0PjK6VOgSjMAoyd9lWlNC/NlPi9o+JtM3tHqJb4v7DJkQIz6ffBdKLmXdv/0dXpTkafFArrQyweuwluvdbwShyIlSM9B360j6p0azLYDULsC39g8RlnQMOB/lZ7xSpVqd8mT9NRfp1O8tjwtu+DqvLskjhRUpYrKF7/58g8yKZGt/yrgBhBmghXGq9rq5ce4fCVUGc5oOvswmDHHrHwNJJIp6mGlkdJUgpXaw3YDfajIma2H8Vrugx7fA1SPSWXH7lok3pe/9a3rPb/Q1Ov6Fo=
+file_glob: true
+  file:
+    - bin/fed-*
+  on:
+    repo: moov-io/fed
+    tags: true
+    go: 1.12.x
+  skip_cleanup: true
+after_deploy:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - make release-push
+>>>>>>> build: setup TravisCI auto-deploy config
