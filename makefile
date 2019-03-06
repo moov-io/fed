@@ -1,9 +1,9 @@
 PLATFORM=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 VERSION := $(shell grep -Eo '(v[0-9]+[\.][0-9]+[\.][0-9]+(-[a-zA-Z0-9]*)?)' version.go)
 
-.PHONY: build build-server build-examples docker release check
+.PHONY: build docker release check
 
-build-server:
+build: check
 	CGO_ENABLED=1 go build -o ./bin/server github.com/moov-io/fed/cmd/server
 
 check:
@@ -17,7 +17,7 @@ client:
 	@rm -rf ./client
 	OPENAPI_GENERATOR_VERSION=4.0.0-beta2 ./openapi-generator generate -i openapi.yaml -g go -o ./client
 	go fmt ./client
-	go build github.com/moov-io/fed/client
+	go build github.com/moov-io/ofac/client
 	go test ./client
 
 .PHONY: clean
@@ -32,6 +32,18 @@ else
 	CGO_ENABLED=1 GOOS=$(PLATFORM) go build -o bin/fed-$(PLATFORM)-amd64 github.com/moov-io/fed/cmd/server
 endif
 
+docker:
+	docker build --pull -t moov/fed:$(VERSION) -f Dockerfile .
+	docker tag moov/fed:$(VERSION) moov/fed:latest
+
+release: docker AUTHORS
+	go vet ./...
+	go test -coverprofile=cover-$(VERSION).out ./...
+	git tag -f $(VERSION)
+
+release-push:
+	docker push moov/fed:$(VERSION)
+
 .PHONY: cover-test cover-web
 cover-test:
 	go test -coverprofile=cover.out ./...
@@ -44,6 +56,3 @@ AUTHORS:
 	@$(file >$@,# This file lists all individuals having contributed content to the repository.)
 	@$(file >>$@,# For how it is generated, see `make AUTHORS`.)
 	@echo "$(shell git log --format='\n%aN <%aE>' | LC_ALL=C.UTF-8 sort -uf)" >> $@
-
-release-push:
-	docker push moov/fed:$(VERSION)
