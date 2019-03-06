@@ -7,6 +7,20 @@ import (
 	"github.com/moov-io/fed"
 )
 
+var (
+	fedACHDataFilepath  = os.Getenv("FEDACH_DATA_PATH")
+	fedWIREDataFilepath = os.Getenv("FEDWIRE_DATA_PATH")
+)
+
+func init() {
+	if fedACHDataFilepath == "" {
+		fedACHDataFilepath = "./data/FedACHdir.txt"
+	}
+	if fedWIREDataFilepath == "" {
+		fedWIREDataFilepath = "./data/fpddir.txt"
+	}
+}
+
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to
 // parse and define ACHDictionary properties
 func (s *searcher) readFEDACHData() error {
@@ -14,7 +28,7 @@ func (s *searcher) readFEDACHData() error {
 		s.logger.Log("read", "Read of FED data")
 	}
 
-	f, err := os.Open("./data/FedACHdir.txt")
+	f, err := os.Open(fedACHDataFilepath)
 	if err != nil {
 		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
 	}
@@ -39,7 +53,7 @@ func (s *searcher) readFEDWIREData() error {
 		s.logger.Log("read", "Read of FED data")
 	}
 
-	f, err := os.Open("./data/fpddir.txt")
+	f, err := os.Open(fedWIREDataFilepath)
 	if err != nil {
 		return fmt.Errorf("ERROR: opening fpddir.txt %v", err)
 	}

@@ -15,6 +15,13 @@ Package `github.com/moov-io/fed` implements utility services for searching the U
 Go library
 github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
 
+### Configuration
+
+| Environmental Variable | Description | Default |
+|-----|-----|-----|
+| `FEDACH_DATA_PATH` | Filepath to FEDACH data file | `./data/FedACHdir.txt` |
+| `FEDWIRE_DATA_PATH` | Filepath to FedWIRE data file | `./data/fpddir.txt` |
+
 ## FedWire and FedACH data from the Federal Reserve Bank Services
 
 The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/).
@@ -35,7 +42,7 @@ The data and formats in this repository represent a compilation of the **FedWire
 
 (c) Federal Reserve Banks
 
-By accessing the [data](./data/) in this repository you agree to the [Federal Reserve Banks' Terms of Use](https://frbservices.org/terms/index.html) and the [E-Payments Routing Directory Terms of Use Agreement](https://www.frbservices.org/EPaymentsDirectory/agreement.html).  
+By accessing the [data](./data/) in this repository you agree to the [Federal Reserve Banks' Terms of Use](https://frbservices.org/terms/index.html) and the [E-Payments Routing Directory Terms of Use Agreement](https://www.frbservices.org/EPaymentsDirectory/agreement.html).
 
 ## Disclaimer
 
