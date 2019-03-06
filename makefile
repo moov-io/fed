@@ -17,7 +17,7 @@ client:
 	@rm -rf ./client
 	OPENAPI_GENERATOR_VERSION=4.0.0-beta2 ./openapi-generator generate -i openapi.yaml -g go -o ./client
 	go fmt ./client
-	go build github.com/moov-io/ofac/client
+	go build github.com/moov-io/fed/client
 	go test ./client
 
 .PHONY: clean
