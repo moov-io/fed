@@ -16,7 +16,7 @@ tags:
   - name: FED
     description: FEDACH Dictionary and FEDWIRE Dictionary
 paths:
-  /fed/ping:
+  /ping:
     get:
       tags:
         - FED
@@ -25,6 +25,9 @@ paths:
       responses:
         '200':
           description: Service is running properly
+          content:
+            text/plain:
+              example: PONG
   /fed/ach/search:
     get:
       tags:

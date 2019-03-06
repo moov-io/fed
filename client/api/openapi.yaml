@@ -21,6 +21,9 @@ paths:
       operationId: ping
       responses:
         200:
+          content:
+            text/plain:
+              example: PONG
           description: Service is running properly
       summary: Ping the FED service to check if running
       tags:
@@ -44,7 +47,7 @@ paths:
         name: name
         required: false
         schema:
-          example: Farmers State Bank
+          example: Farmers
           type: string
         style: form
       - description: FEDACH Routing Number for a Financial Institution
@@ -53,9 +56,7 @@ paths:
         name: routingNumber
         required: false
         schema:
-          example: "325183657"
-          maximum: 9
-          minimum: 2
+          example: "44112187"
           type: string
         style: form
       - description: FEDACH Financial Institution State
@@ -64,9 +65,7 @@ paths:
         name: state
         required: false
         schema:
-          example: PA
-          maximum: 2
-          minimum: 2
+          example: OH
           type: string
         style: form
       - description: FEDACH Financial Institution City
@@ -75,7 +74,7 @@ paths:
         name: city
         required: false
         schema:
-          example: "325183657"
+          example: CALDWELL
           type: string
         style: form
       - description: FEDACH Financial Institution Postal Code
@@ -84,9 +83,7 @@ paths:
         name: postalCode
         required: false
         schema:
-          example: "19753"
-          maximum: 5
-          minimum: 5
+          example: "43724"
           type: string
         style: form
       - description: Maximum results returned by a search
@@ -111,7 +108,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Invalid user information, check error(s).
+          description: Invalid, check error(s).
         500:
           description: Internal error, check error(s) and report the issue.
       summary: Search FEDACH names and metadata
@@ -136,7 +133,7 @@ paths:
         name: name
         required: false
         schema:
-          example: First Bank
+          example: MIDWEST
           type: string
         style: form
       - description: FEDWIRE Routing Number for a Financial Institution
@@ -145,9 +142,7 @@ paths:
         name: routingNumber
         required: false
         schema:
-          example: "324172465"
-          maximum: 9
-          minimum: 2
+          example: "91905114"
           type: string
         style: form
       - description: FEDWIRE Financial Institution State
@@ -156,9 +151,7 @@ paths:
         name: state
         required: false
         schema:
-          example: PA
-          maximum: 2
-          minimum: 2
+          example: IA
           type: string
         style: form
       - description: FEDWIRE Financial Institution City
@@ -167,7 +160,7 @@ paths:
         name: city
         required: false
         schema:
-          example: "325183657"
+          example: IOWA CITY
           type: string
         style: form
       - description: Maximum results returned by a search
@@ -192,7 +185,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Invalid user information, check error(s).
+          description: Invalid, check error(s).
         500:
           description: Internal error, check error(s) and report the issue.
       summary: Search FEDWIRE names and metadata
@@ -215,47 +208,47 @@ components:
       description: Search results containing ACHDictionary of Participants
       example:
         ACHParticipants:
-        - routingNumber: "231380104"
-          phoneNumber: "8004460135"
+        - routingNumber: "044112187"
+          phoneNumber: "7407325621"
           officeCode: O
-          newRoutingNumber: "122203950"
-          servicingFRBNumber: "101000048"
+          newRoutingNumber: "000000000"
+          servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: YYYYMMDD, or blank
+          revised: "031699"
           viewCode: "1"
-          customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          customerName: FARMERS & MERCHANTS BANK
           achLocation:
-          - postalExtension: "7025"
-            address: PO BOX 27025
-            city: RICHMOND
-            postalCode: "23261"
-            state: VA
-          - postalExtension: "7025"
-            address: PO BOX 27025
-            city: RICHMOND
-            postalCode: "23261"
-            state: VA
+          - postalExtension: "0000"
+            address: 430 NORTH ST
+            city: CALDWELL
+            postalCode: "43724"
+            state: OH
+          - postalExtension: "0000"
+            address: 430 NORTH ST
+            city: CALDWELL
+            postalCode: "43724"
+            state: OH
           statusCode: "1"
-        - routingNumber: "231380104"
-          phoneNumber: "8004460135"
+        - routingNumber: "044112187"
+          phoneNumber: "7407325621"
           officeCode: O
-          newRoutingNumber: "122203950"
-          servicingFRBNumber: "101000048"
+          newRoutingNumber: "000000000"
+          servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: YYYYMMDD, or blank
+          revised: "031699"
           viewCode: "1"
-          customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          customerName: FARMERS & MERCHANTS BANK
           achLocation:
-          - postalExtension: "7025"
-            address: PO BOX 27025
-            city: RICHMOND
-            postalCode: "23261"
-            state: VA
-          - postalExtension: "7025"
-            address: PO BOX 27025
-            city: RICHMOND
-            postalCode: "23261"
-            state: VA
+          - postalExtension: "0000"
+            address: 430 NORTH ST
+            city: CALDWELL
+            postalCode: "43724"
+            state: OH
+          - postalExtension: "0000"
+            address: 430 NORTH ST
+            city: CALDWELL
+            postalCode: "43724"
+            state: OH
           statusCode: "1"
       properties:
         ACHParticipants:
@@ -265,31 +258,31 @@ components:
     ACHParticipant:
       description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       example:
-        routingNumber: "231380104"
-        phoneNumber: "8004460135"
+        routingNumber: "044112187"
+        phoneNumber: "7407325621"
         officeCode: O
-        newRoutingNumber: "122203950"
-        servicingFRBNumber: "101000048"
+        newRoutingNumber: "000000000"
+        servicingFRBNumber: "041000014"
         recordTypeCode: "1"
-        revised: YYYYMMDD, or blank
+        revised: "031699"
         viewCode: "1"
-        customerName: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+        customerName: FARMERS & MERCHANTS BANK
         achLocation:
-        - postalExtension: "7025"
-          address: PO BOX 27025
-          city: RICHMOND
-          postalCode: "23261"
-          state: VA
-        - postalExtension: "7025"
-          address: PO BOX 27025
-          city: RICHMOND
-          postalCode: "23261"
-          state: VA
+        - postalExtension: "0000"
+          address: 430 NORTH ST
+          city: CALDWELL
+          postalCode: "43724"
+          state: OH
+        - postalExtension: "0000"
+          address: 430 NORTH ST
+          city: CALDWELL
+          postalCode: "43724"
+          state: OH
         statusCode: "1"
       properties:
         routingNumber:
           description: The institution's routing number
-          example: "231380104"
+          example: "044112187"
           maximum: 9
           minimum: 9
           type: string
@@ -301,7 +294,7 @@ components:
           type: string
         servicingFRBNumber:
           description: Servicing Fed's main office routing number
-          example: "101000048"
+          example: "041000014"
           maximum: 9
           minimum: 9
           type: string
@@ -320,28 +313,28 @@ components:
             Date of last revision
             YYYYMMDD
             Blank
-          example: YYYYMMDD, or blank
+          example: "031699"
           maximum: 8
           type: string
         newRoutingNumber:
           description: Financial Institution's new routing number resulting from a merger or renumber
-          example: "122203950"
+          example: "000000000"
           maximum: 9
           minimum: 9
           type: string
         customerName:
           description: Financial Institution Name
-          example: BANK OF AMERICA, N.A., FEDERAL RESERVE BANK
+          example: FARMERS & MERCHANTS BANK
           maximum: 36
           type: string
         achLocation:
           description: FEDACH delivery address
           items:
             $ref: '#/components/schemas/ACHLocation'
-          type: object
+          type: array
         phoneNumber:
           description: The Financial Institution's phone number
-          example: "8004460135"
+          example: "7407325621"
           maximum: 10
           minimum: 10
           type: string
@@ -364,37 +357,37 @@ components:
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       example:
-        postalExtension: "7025"
-        address: PO BOX 27025
-        city: RICHMOND
-        postalCode: "23261"
-        state: VA
+        postalExtension: "0000"
+        address: 430 NORTH ST
+        city: CALDWELL
+        postalCode: "43724"
+        state: OH
       properties:
         address:
           description: Street Address
-          example: PO BOX 27025
+          example: 430 NORTH ST
           maximum: 36
           type: string
         city:
           description: City
-          example: RICHMOND
+          example: CALDWELL
           maximum: 20
           type: string
         state:
           description: State
-          example: VA
+          example: OH
           maximum: 2
           minimum: 2
           type: string
         postalCode:
           description: Postal Code
-          example: "23261"
+          example: "43724"
           maximum: 5
           minimum: 5
           type: string
         postalExtension:
           description: Postal Code Extension
-          example: "7025"
+          example: "0000"
           maximum: 4
           minimum: 4
           type: string
@@ -402,29 +395,29 @@ components:
       description: Search results containing WIREDictionary of Participants
       example:
         WIREParticipants:
-        - date: YYYYMMDD
-          routingNumber: "231380104"
+        - date: "20160401"
+          routingNumber: "091905114"
           wireLocation:
-          - city: BOSTON
-            state: MA
-          - city: BOSTON
-            state: MA
+          - city: IOWA CITY
+            state: IA
+          - city: IOWA CITY
+            state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: S
-          telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
-          customerName: FEDERAL RESERVE BANK OF BOSTON
+          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          telegraphicName: MIDWESTONE B&T
+          customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
-        - date: YYYYMMDD
-          routingNumber: "231380104"
+        - date: "20160401"
+          routingNumber: "091905114"
           wireLocation:
-          - city: BOSTON
-            state: MA
-          - city: BOSTON
-            state: MA
+          - city: IOWA CITY
+            state: IA
+          - city: IOWA CITY
+            state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: S
-          telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
-          customerName: FEDERAL RESERVE BANK OF BOSTON
+          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          telegraphicName: MIDWESTONE B&T
+          customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
       properties:
         WIREParticipants:
@@ -434,40 +427,40 @@ components:
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
-        date: YYYYMMDD
-        routingNumber: "231380104"
+        date: "20160401"
+        routingNumber: "091905114"
         wireLocation:
-        - city: BOSTON
-          state: MA
-        - city: BOSTON
-          state: MA
+        - city: IOWA CITY
+          state: IA
+        - city: IOWA CITY
+          state: IA
         fundsTransferStatus: Y
-        fundsSettlementOnlyStatus: S
-        telegraphicName: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
-        customerName: FEDERAL RESERVE BANK OF BOSTON
+        fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+        telegraphicName: MIDWESTONE B&T
+        customerName: MIDWESTONE BK
         bookEntrySecuritiesTransferStatus: N
       properties:
         routingNumber:
           description: The institution's routing number
-          example: "231380104"
+          example: "091905114"
           maximum: 9
           minimum: 9
           type: string
         telegraphicName:
           description: Short name of financial institution
-          example: FRB-BOS (FEDERAL RESERVE BANK OF BOSTON)
+          example: MIDWESTONE B&T
           maximum: 18
           type: string
         customerName:
           description: Financial Institution Name
-          example: FEDERAL RESERVE BANK OF BOSTON
+          example: MIDWESTONE BK
           maximum: 36
           type: string
         wireLocation:
           description: FEDWIRE Delivery Address
           items:
             $ref: '#/components/schemas/WIRELocation'
-          type: object
+          type: array
         fundsTransferStatus:
           description: |-
             Designates funds transfer status
@@ -482,7 +475,6 @@ components:
             Designates funds settlement only status
             S = Settlement-Only or blank
             Blank
-          example: S
           maximum: 1
           type: string
         bookEntrySecuritiesTransferStatus:
@@ -499,23 +491,23 @@ components:
             Date of last revision
             YYYYMMDD
             Blank
-          example: YYYYMMDD
+          example: "20160401"
           maximum: 8
           type: string
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       example:
-        city: BOSTON
-        state: MA
+        city: IOWA CITY
+        state: IA
       properties:
         city:
           description: City
-          example: BOSTON
+          example: IOWA CITY
           maximum: 25
           type: string
         state:
           description: State
-          example: MA
+          example: IA
           maximum: 2
           minimum: 2
           type: string

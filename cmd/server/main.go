@@ -50,6 +50,7 @@ func main() {
 	// Setup business HTTP routes
 	router := mux.NewRouter()
 	moovhttp.AddCORSHandler(router)
+	addPingRoute(router)
 
 	// Start business HTTP server
 	readTimeout, _ := time.ParseDuration("30s")
@@ -119,4 +120,13 @@ func main() {
 		shutdownServer()
 		logger.Log("exit", err)
 	}
+}
+
+func addPingRoute(r *mux.Router) {
+	r.Methods("GET").Path("/ping").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		moovhttp.SetAccessControlAllowHeaders(w, r.Header.Get("Origin"))
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("PONG"))
+	})
 }

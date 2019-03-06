@@ -24,7 +24,6 @@ const (
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
 	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
 	r.Methods("GET").Path("/fed/wire/search").HandlerFunc(searchFEDWIRE(logger, searcher))
-	r.Methods("GET").Path("/fed/ping").HandlerFunc(pingFED(logger, searcher))
 }
 
 // fedSearchRequest contains the properties for fed ach search request
@@ -340,18 +339,5 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 			req.search(logger, searcher, WIRE)(w, r)
 			return
 		}
-	}
-}
-
-// pingFED pings FED to see if it is running
-func pingFED(logger log.Logger, searcher *searcher) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w = wrapResponseWriter(logger, w, r)
-		if logger != nil {
-			logger.Log("pingFED", fmt.Sprintf("Pinging FED"))
-		}
-		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("PONG"))
 	}
 }
