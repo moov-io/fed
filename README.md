@@ -15,6 +15,8 @@ Package `github.com/moov-io/fed` implements utility services for searching the U
 Go library
 github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
 
+To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
+
 ### Configuration
 
 | Environmental Variable | Description | Default |
