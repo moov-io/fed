@@ -16,7 +16,7 @@ tags:
   - name: FED
     description: FEDACH Dictionary and FEDWIRE Dictionary
 paths:
-  /ping:
+  /fed/ping:
     get:
       tags:
         - FED
