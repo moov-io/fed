@@ -283,20 +283,20 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "044112187"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         officeCode:
           description: Main/Head Office or Branch. O=main B=branch
           example: O
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         servicingFRBNumber:
           description: Servicing Fed's main office routing number
           example: "041000014"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         recordTypeCode:
           description: |-
@@ -305,8 +305,8 @@ components:
             1 = Send items to customer routing number
             2 = Send items to customer using new routing number field
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         revised:
           description: |-
@@ -314,18 +314,18 @@ components:
             YYYYMMDD
             Blank
           example: "031699"
-          maximum: 8
+          maxLength: 8
           type: string
         newRoutingNumber:
           description: Financial Institution's new routing number resulting from a merger or renumber
           example: "000000000"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         customerName:
           description: Financial Institution Name
           example: FARMERS & MERCHANTS BANK
-          maximum: 36
+          maxLength: 36
           type: string
         achLocation:
           description: FEDACH delivery address
@@ -335,24 +335,24 @@ components:
         phoneNumber:
           description: The Financial Institution's phone number
           example: "7407325621"
-          maximum: 10
-          minimum: 10
+          maxLength: 10
+          minLength: 10
           type: string
         statusCode:
           description: |-
             Code is based on the customers receiver code
             1 = Receives Gov/Comm
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         viewCode:
           description: |-
             Code is current view
             1 = Current view
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
@@ -366,30 +366,30 @@ components:
         address:
           description: Street Address
           example: 430 NORTH ST
-          maximum: 36
+          maxLength: 36
           type: string
         city:
           description: City
           example: CALDWELL
-          maximum: 20
+          maxLength: 20
           type: string
         state:
           description: State
           example: OH
-          maximum: 2
-          minimum: 2
+          maxLength: 2
+          minLength: 2
           type: string
         postalCode:
           description: Postal Code
           example: "43724"
-          maximum: 5
-          minimum: 5
+          maxLength: 5
+          minLength: 5
           type: string
         postalExtension:
           description: Postal Code Extension
           example: "0000"
-          maximum: 4
-          minimum: 4
+          maxLength: 4
+          minLength: 4
           type: string
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
@@ -443,18 +443,18 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "091905114"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         telegraphicName:
           description: Short name of financial institution
           example: MIDWESTONE B&T
-          maximum: 18
+          maxLength: 18
           type: string
         customerName:
           description: Financial Institution Name
           example: MIDWESTONE BK
-          maximum: 36
+          maxLength: 36
           type: string
         wireLocation:
           description: FEDWIRE Delivery Address
@@ -467,15 +467,15 @@ components:
             Y = Eligible
             N = Ineligible
           example: Y
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         fundsSettlementOnlyStatus:
           description: |-
             Designates funds settlement only status
             S = Settlement-Only or blank
             Blank
-          maximum: 1
+          maxLength: 1
           type: string
         bookEntrySecuritiesTransferStatus:
           description: |-
@@ -483,8 +483,8 @@ components:
             Y = Eligible
             N = Ineligible
           example: N
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         date:
           description: |-
@@ -492,7 +492,7 @@ components:
             YYYYMMDD
             Blank
           example: "20160401"
-          maximum: 8
+          maxLength: 8
           type: string
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
@@ -503,13 +503,13 @@ components:
         city:
           description: City
           example: IOWA CITY
-          maximum: 25
+          maxLength: 25
           type: string
         state:
           description: State
           example: IA
-          maximum: 2
-          minimum: 2
+          maxLength: 2
+          minLength: 2
           type: string
     Error:
       properties:

@@ -154,26 +154,26 @@ components:
       properties:
         routingNumber:
           type: string
-          minimum: 9
-          maximum: 9
+          minLength: 9
+          maxLength: 9
           description: The institution's routing number
           example: '044112187'
         officeCode:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: Main/Head Office or Branch. O=main B=branch
           example: 'O'
         servicingFRBNumber:
           type: string
-          minimum: 9
-          maximum: 9
+          minLength: 9
+          maxLength: 9
           description: Servicing Fed's main office routing number
           example: '041000014'
         recordTypeCode:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: |-
             The code indicating the ABA number to be used to route or send ACH items to the RDFI
             0 = Institution is a Federal Reserve Bank
@@ -182,7 +182,7 @@ components:
           example: '1'
         revised:
           type: string
-          maximum: 8
+          maxLength: 8
           description: |-
             Date of last revision
             YYYYMMDD
@@ -190,13 +190,13 @@ components:
           example: '031699'
         newRoutingNumber:
           type: string
-          minimum: 9
-          maximum: 9
+          minLength: 9
+          maxLength: 9
           description: Financial Institution's new routing number resulting from a merger or renumber
           example: '000000000'
         customerName:
           type: string
-          maximum: 36
+          maxLength: 36
           description: Financial Institution Name
           example: FARMERS & MERCHANTS BANK
         achLocation:
@@ -205,22 +205,22 @@ components:
             $ref: '#/components/schemas/ACHLocation'
         phoneNumber:
           type: string
-          minimum: 10
-          maximum: 10
+          minLength: 10
+          maxLength: 10
           description: The Financial Institution's phone number
           example: '7407325621'
         statusCode:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: |-
             Code is based on the customers receiver code
             1 = Receives Gov/Comm
           example: '1'
         viewCode:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: |-
             Code is current view
             1 = Current view
@@ -230,30 +230,30 @@ components:
       properties:
         address:
           type: string
-          maximum: 36
+          maxLength: 36
           description: Street Address
           example: '430 NORTH ST'
         city:
           type: string
-          maximum: 20
+          maxLength: 20
           description: City
           example: 'CALDWELL'
         state:
           type: string
-          minimum: 2
-          maximum: 2
+          minLength: 2
+          maxLength: 2
           description: State
           example: 'OH'
         postalCode:
           type: string
-          minimum: 5
-          maximum: 5
+          minLength: 5
+          maxLength: 5
           description: Postal Code
           example: '43724'
         postalExtension:
           type: string
-          minimum: 4
-          maximum: 4
+          minLength: 4
+          maxLength: 4
           description: Postal Code Extension
           example: '0000'
     WIREDictionary:
@@ -268,18 +268,18 @@ components:
       properties:
         routingNumber:
           type: string
-          minimum: 9
-          maximum: 9
+          minLength: 9
+          maxLength: 9
           description: The institution's routing number
           example: '091905114'
         telegraphicName:
           type: string
-          maximum: 18
+          maxLength: 18
           description: Short name of financial institution
           example: 'MIDWESTONE B&T'
         customerName:
           type: string
-          maximum: 36
+          maxLength: 36
           description: Financial Institution Name
           example: 'MIDWESTONE BK'
         wireLocation:
@@ -288,8 +288,8 @@ components:
             $ref: '#/components/schemas/WIRELocation'
         fundsTransferStatus:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: |-
             Designates funds transfer status
             Y = Eligible
@@ -297,7 +297,7 @@ components:
           example: 'Y'
         fundsSettlementOnlyStatus:
           type: string
-          maximum: 1
+          maxLength: 1
           description: |-
             Designates funds settlement only status
             S = Settlement-Only or blank
@@ -305,8 +305,8 @@ components:
           example: ''
         bookEntrySecuritiesTransferStatus:
           type: string
-          minimum: 1
-          maximum: 1
+          minLength: 1
+          maxLength: 1
           description: |-
             Designates book entry securities transfer status
             Y = Eligible
@@ -314,7 +314,7 @@ components:
           example: 'N'
         date:
           type: string
-          maximum: 8
+          maxLength: 8
           description: |-
             Date of last revision
             YYYYMMDD
@@ -325,13 +325,13 @@ components:
       properties:
         city:
           type: string
-          maximum: 25
+          maxLength: 25
           description: City
           example: 'IOWA CITY'
         state:
           type: string
-          minimum: 2
-          maximum: 2
+          minLength: 2
+          maxLength: 2
           description: State
           example: 'IA'
     Error:
