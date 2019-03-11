@@ -214,7 +214,7 @@ components:
           newRoutingNumber: "000000000"
           servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: "031699"
+          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
@@ -235,7 +235,7 @@ components:
           newRoutingNumber: "000000000"
           servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: "031699"
+          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
@@ -264,7 +264,7 @@ components:
         newRoutingNumber: "000000000"
         servicingFRBNumber: "041000014"
         recordTypeCode: "1"
-        revised: "031699"
+        revised: "20190311"
         viewCode: "1"
         customerName: FARMERS & MERCHANTS BANK
         achLocation:
@@ -287,7 +287,13 @@ components:
           minLength: 9
           type: string
         officeCode:
-          description: Main/Head Office or Branch. O=main B=branch
+          description: |
+            Main/Head Office or Branch
+            * `O` - Main
+            * `B` - Branch
+          enum:
+          - O
+          - B
           example: O
           maxLength: 1
           minLength: 1
@@ -299,21 +305,25 @@ components:
           minLength: 9
           type: string
         recordTypeCode:
-          description: |-
+          description: |
             The code indicating the ABA number to be used to route or send ACH items to the RDFI
-            0 = Institution is a Federal Reserve Bank
-            1 = Send items to customer routing number
-            2 = Send items to customer using new routing number field
+            * `0` - Institution is a Federal Reserve Bank
+            * `1` - Send items to customer routing number
+            * `2` - Send items to customer using new routing number field
+          enum:
+          - "0"
+          - "1"
+          - "2"
           example: "1"
           maxLength: 1
           minLength: 1
           type: string
         revised:
-          description: |-
+          description: |
             Date of last revision
-            YYYYMMDD
-            Blank
-          example: "031699"
+            * YYYYMMDD
+            * Blank
+          example: "20190311"
           maxLength: 8
           type: string
         newRoutingNumber:
@@ -339,9 +349,11 @@ components:
           minLength: 10
           type: string
         statusCode:
-          description: |-
+          description: |
             Code is based on the customers receiver code
-            1 = Receives Gov/Comm
+            * `1` - Receives Gov/Comm
+          enum:
+          - "1"
           example: "1"
           maxLength: 1
           minLength: 1
@@ -349,7 +361,9 @@ components:
         viewCode:
           description: |-
             Code is current view
-            1 = Current view
+            * `1` - Current view
+          enum:
+          - "1"
           example: "1"
           maxLength: 1
           minLength: 1
@@ -395,7 +409,7 @@ components:
       description: Search results containing WIREDictionary of Participants
       example:
         WIREParticipants:
-        - date: "20160401"
+        - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
           - city: IOWA CITY
@@ -403,11 +417,11 @@ components:
           - city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
-        - date: "20160401"
+        - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
           - city: IOWA CITY
@@ -415,7 +429,7 @@ components:
           - city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
@@ -427,7 +441,7 @@ components:
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
-        date: "20160401"
+        date: "20190401"
         routingNumber: "091905114"
         wireLocation:
         - city: IOWA CITY
@@ -435,7 +449,7 @@ components:
         - city: IOWA CITY
           state: IA
         fundsTransferStatus: Y
-        fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+        fundsSettlementOnlyStatus: S
         telegraphicName: MIDWESTONE B&T
         customerName: MIDWESTONE BK
         bookEntrySecuritiesTransferStatus: N
@@ -462,36 +476,43 @@ components:
             $ref: '#/components/schemas/WIRELocation'
           type: array
         fundsTransferStatus:
-          description: |-
+          description: |
             Designates funds transfer status
-            Y = Eligible
-            N = Ineligible
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+          - Y
+          - N
           example: Y
           maxLength: 1
           minLength: 1
           type: string
         fundsSettlementOnlyStatus:
-          description: |-
+          description: |
             Designates funds settlement only status
-            S = Settlement-Only or blank
-            Blank
+             * `S` - Settlement-Only
+          enum:
+          - S
           maxLength: 1
           type: string
         bookEntrySecuritiesTransferStatus:
-          description: |-
+          description: |
             Designates book entry securities transfer status
-            Y = Eligible
-            N = Ineligible
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+          - Y
+          - N
           example: N
           maxLength: 1
           minLength: 1
           type: string
         date:
-          description: |-
+          description: |
             Date of last revision
             YYYYMMDD
             Blank
-          example: "20160401"
+          example: "20190401"
           maxLength: 8
           type: string
     WIRELocation:

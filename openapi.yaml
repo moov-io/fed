@@ -162,7 +162,13 @@ components:
           type: string
           minLength: 1
           maxLength: 1
-          description: Main/Head Office or Branch. O=main B=branch
+          description: |
+            Main/Head Office or Branch
+            * `O` - Main
+            * `B` - Branch
+          enum:
+            - O
+            - B
           example: 'O'
         servicingFRBNumber:
           type: string
@@ -174,20 +180,24 @@ components:
           type: string
           minLength: 1
           maxLength: 1
-          description: |-
+          description: |
             The code indicating the ABA number to be used to route or send ACH items to the RDFI
-            0 = Institution is a Federal Reserve Bank
-            1 = Send items to customer routing number
-            2 = Send items to customer using new routing number field
+            * `0` - Institution is a Federal Reserve Bank
+            * `1` - Send items to customer routing number
+            * `2` - Send items to customer using new routing number field
+          enum:
+            - 0
+            - 1
+            - 2
           example: '1'
         revised:
           type: string
           maxLength: 8
-          description: |-
+          description: |
             Date of last revision
-            YYYYMMDD
-            Blank
-          example: '031699'
+            * YYYYMMDD
+            * Blank
+          example: '20190311'
         newRoutingNumber:
           type: string
           minLength: 9
@@ -213,9 +223,11 @@ components:
           type: string
           minLength: 1
           maxLength: 1
-          description: |-
+          description: |
             Code is based on the customers receiver code
-            1 = Receives Gov/Comm
+            * `1` - Receives Gov/Comm
+          enum:
+            - 1
           example: '1'
         viewCode:
           type: string
@@ -223,7 +235,9 @@ components:
           maxLength: 1
           description: |-
             Code is current view
-            1 = Current view
+            * `1` - Current view
+          enum:
+            - 1
           example: '1'
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
@@ -290,36 +304,43 @@ components:
           type: string
           minLength: 1
           maxLength: 1
-          description: |-
+          description: |
             Designates funds transfer status
-            Y = Eligible
-            N = Ineligible
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+            - Y
+            - N
           example: 'Y'
         fundsSettlementOnlyStatus:
           type: string
           maxLength: 1
-          description: |-
+          description: |
             Designates funds settlement only status
-            S = Settlement-Only or blank
-            Blank
+             * `S` - Settlement-Only
+          enum:
+            - S
           example: ''
         bookEntrySecuritiesTransferStatus:
           type: string
           minLength: 1
           maxLength: 1
-          description: |-
+          description: |
             Designates book entry securities transfer status
-            Y = Eligible
-            N = Ineligible
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+            - Y
+            - N
           example: 'N'
         date:
           type: string
           maxLength: 8
-          description: |-
+          description: |
             Date of last revision
             YYYYMMDD
             Blank
-          example: '20160401'
+          example: '20190401'
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       properties:
