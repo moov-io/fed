@@ -7,10 +7,10 @@ Name | Type | Description | Notes
 **TelegraphicName** | **string** | Short name of financial institution | [optional] 
 **CustomerName** | **string** | Financial Institution Name | [optional] 
 **WireLocation** | [**[]WireLocation**](WIRELocation.md) | FEDWIRE Delivery Address | [optional] 
-**FundsTransferStatus** | **string** | Designates funds transfer status * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 
-**FundsSettlementOnlyStatus** | **string** | Designates funds settlement only status  * &#x60;S&#x60; - Settlement-Only  | [optional] 
-**BookEntrySecuritiesTransferStatus** | **string** | Designates book entry securities transfer status * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 
-**Date** | **string** | Date of last revision YYYYMMDD Blank  | [optional] 
+**FundsTransferStatus** | **string** | Designates funds transfer status  * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 
+**FundsSettlementOnlyStatus** | **string** | Designates funds settlement only status   * &#x60;S&#x60; - Settlement-Only  | [optional] 
+**BookEntrySecuritiesTransferStatus** | **string** | Designates book entry securities transfer status  * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 
+**Date** | **string** | Date of last revision  * YYYYMMDD * Blank  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

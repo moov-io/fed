@@ -289,6 +289,7 @@ components:
         officeCode:
           description: |
             Main/Head Office or Branch
+
             * `O` - Main
             * `B` - Branch
           enum:
@@ -307,6 +308,7 @@ components:
         recordTypeCode:
           description: |
             The code indicating the ABA number to be used to route or send ACH items to the RDFI
+
             * `0` - Institution is a Federal Reserve Bank
             * `1` - Send items to customer routing number
             * `2` - Send items to customer using new routing number field
@@ -321,6 +323,7 @@ components:
         revised:
           description: |
             Date of last revision
+
             * YYYYMMDD
             * Blank
           example: "20190311"
@@ -351,6 +354,7 @@ components:
         statusCode:
           description: |
             Code is based on the customers receiver code
+
             * `1` - Receives Gov/Comm
           enum:
           - "1"
@@ -361,6 +365,7 @@ components:
         viewCode:
           description: |-
             Code is current view
+
             * `1` - Current view
           enum:
           - "1"
@@ -478,6 +483,7 @@ components:
         fundsTransferStatus:
           description: |
             Designates funds transfer status
+
             * `Y` - Eligible
             * `N` - Ineligible
           enum:
@@ -490,6 +496,7 @@ components:
         fundsSettlementOnlyStatus:
           description: |
             Designates funds settlement only status
+
              * `S` - Settlement-Only
           enum:
           - S
@@ -498,6 +505,7 @@ components:
         bookEntrySecuritiesTransferStatus:
           description: |
             Designates book entry securities transfer status
+
             * `Y` - Eligible
             * `N` - Ineligible
           enum:
@@ -510,8 +518,9 @@ components:
         date:
           description: |
             Date of last revision
-            YYYYMMDD
-            Blank
+
+            * YYYYMMDD
+            * Blank
           example: "20190401"
           maxLength: 8
           type: string
