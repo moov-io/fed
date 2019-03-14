@@ -13,13 +13,13 @@ package openapi
 type AchParticipant struct {
 	// The institution's routing number
 	RoutingNumber string `json:"routingNumber,omitempty"`
-	// Main/Head Office or Branch. O=main B=branch
+	// Main/Head Office or Branch  * `O` - Main * `B` - Branch 
 	OfficeCode string `json:"officeCode,omitempty"`
 	// Servicing Fed's main office routing number
 	ServicingFRBNumber string `json:"servicingFRBNumber,omitempty"`
-	// The code indicating the ABA number to be used to route or send ACH items to the RDFI 0 = Institution is a Federal Reserve Bank 1 = Send items to customer routing number 2 = Send items to customer using new routing number field
+	// The code indicating the ABA number to be used to route or send ACH items to the RDFI  * `0` - Institution is a Federal Reserve Bank * `1` - Send items to customer routing number * `2` - Send items to customer using new routing number field 
 	RecordTypeCode string `json:"recordTypeCode,omitempty"`
-	// Date of last revision YYYYMMDD Blank
+	// Date of last revision  * YYYYMMDD * Blank 
 	Revised string `json:"revised,omitempty"`
 	// Financial Institution's new routing number resulting from a merger or renumber
 	NewRoutingNumber string `json:"newRoutingNumber,omitempty"`
@@ -29,8 +29,8 @@ type AchParticipant struct {
 	AchLocation []AchLocation `json:"achLocation,omitempty"`
 	// The Financial Institution's phone number
 	PhoneNumber string `json:"phoneNumber,omitempty"`
-	// Code is based on the customers receiver code 1 = Receives Gov/Comm
+	// Code is based on the customers receiver code  * `1` - Receives Gov/Comm 
 	StatusCode string `json:"statusCode,omitempty"`
-	// Code is current view 1 = Current view
+	// Code is current view  * `1` - Current view
 	ViewCode string `json:"viewCode,omitempty"`
 }

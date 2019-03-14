@@ -11,11 +11,11 @@ package openapi
 
 import (
 	"context"
-	"github.com/antihax/optional"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+	"github.com/antihax/optional"
 )
 
 // Linger please
@@ -104,13 +104,13 @@ FEDApiService Search FEDACH names and metadata
 */
 
 type SearchFEDACHOpts struct {
-	XRequestId    optional.String
-	Name          optional.String
+	XRequestId optional.String
+	Name optional.String
 	RoutingNumber optional.String
-	State         optional.String
-	City          optional.String
-	PostalCode    optional.String
-	Limit         optional.Int32
+	State optional.String
+	City optional.String
+	PostalCode optional.String
+	Limit optional.Int32
 }
 
 func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *SearchFEDACHOpts) (AchDictionary, *http.Response, error) {
@@ -238,12 +238,12 @@ FEDApiService Search FEDWIRE names and metadata
 */
 
 type SearchFEDWIREOpts struct {
-	XRequestId    optional.String
-	Name          optional.String
+	XRequestId optional.String
+	Name optional.String
 	RoutingNumber optional.String
-	State         optional.String
-	City          optional.String
-	Limit         optional.Int32
+	State optional.String
+	City optional.String
+	Limit optional.Int32
 }
 
 func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *SearchFEDWIREOpts) (WireDictionary, *http.Response, error) {

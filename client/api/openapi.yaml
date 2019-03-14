@@ -214,7 +214,7 @@ components:
           newRoutingNumber: "000000000"
           servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: "031699"
+          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
@@ -235,7 +235,7 @@ components:
           newRoutingNumber: "000000000"
           servicingFRBNumber: "041000014"
           recordTypeCode: "1"
-          revised: "031699"
+          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
@@ -264,7 +264,7 @@ components:
         newRoutingNumber: "000000000"
         servicingFRBNumber: "041000014"
         recordTypeCode: "1"
-        revised: "031699"
+        revised: "20190311"
         viewCode: "1"
         customerName: FARMERS & MERCHANTS BANK
         achLocation:
@@ -283,49 +283,62 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "044112187"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         officeCode:
-          description: Main/Head Office or Branch. O=main B=branch
+          description: |
+            Main/Head Office or Branch
+
+            * `O` - Main
+            * `B` - Branch
+          enum:
+          - O
+          - B
           example: O
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         servicingFRBNumber:
           description: Servicing Fed's main office routing number
           example: "041000014"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         recordTypeCode:
-          description: |-
+          description: |
             The code indicating the ABA number to be used to route or send ACH items to the RDFI
-            0 = Institution is a Federal Reserve Bank
-            1 = Send items to customer routing number
-            2 = Send items to customer using new routing number field
+
+            * `0` - Institution is a Federal Reserve Bank
+            * `1` - Send items to customer routing number
+            * `2` - Send items to customer using new routing number field
+          enum:
+          - "0"
+          - "1"
+          - "2"
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         revised:
-          description: |-
+          description: |
             Date of last revision
-            YYYYMMDD
-            Blank
-          example: "031699"
-          maximum: 8
+
+            * YYYYMMDD
+            * Blank
+          example: "20190311"
+          maxLength: 8
           type: string
         newRoutingNumber:
           description: Financial Institution's new routing number resulting from a merger or renumber
           example: "000000000"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         customerName:
           description: Financial Institution Name
           example: FARMERS & MERCHANTS BANK
-          maximum: 36
+          maxLength: 36
           type: string
         achLocation:
           description: FEDACH delivery address
@@ -335,24 +348,30 @@ components:
         phoneNumber:
           description: The Financial Institution's phone number
           example: "7407325621"
-          maximum: 10
-          minimum: 10
+          maxLength: 10
+          minLength: 10
           type: string
         statusCode:
-          description: |-
+          description: |
             Code is based on the customers receiver code
-            1 = Receives Gov/Comm
+
+            * `1` - Receives Gov/Comm
+          enum:
+          - "1"
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         viewCode:
           description: |-
             Code is current view
-            1 = Current view
+
+            * `1` - Current view
+          enum:
+          - "1"
           example: "1"
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
@@ -366,36 +385,36 @@ components:
         address:
           description: Street Address
           example: 430 NORTH ST
-          maximum: 36
+          maxLength: 36
           type: string
         city:
           description: City
           example: CALDWELL
-          maximum: 20
+          maxLength: 20
           type: string
         state:
           description: State
           example: OH
-          maximum: 2
-          minimum: 2
+          maxLength: 2
+          minLength: 2
           type: string
         postalCode:
           description: Postal Code
           example: "43724"
-          maximum: 5
-          minimum: 5
+          maxLength: 5
+          minLength: 5
           type: string
         postalExtension:
           description: Postal Code Extension
           example: "0000"
-          maximum: 4
-          minimum: 4
+          maxLength: 4
+          minLength: 4
           type: string
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
       example:
         WIREParticipants:
-        - date: "20160401"
+        - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
           - city: IOWA CITY
@@ -403,11 +422,11 @@ components:
           - city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
-        - date: "20160401"
+        - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
           - city: IOWA CITY
@@ -415,7 +434,7 @@ components:
           - city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
-          fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
@@ -427,7 +446,7 @@ components:
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
-        date: "20160401"
+        date: "20190401"
         routingNumber: "091905114"
         wireLocation:
         - city: IOWA CITY
@@ -435,7 +454,7 @@ components:
         - city: IOWA CITY
           state: IA
         fundsTransferStatus: Y
-        fundsSettlementOnlyStatus: fundsSettlementOnlyStatus
+        fundsSettlementOnlyStatus: S
         telegraphicName: MIDWESTONE B&T
         customerName: MIDWESTONE BK
         bookEntrySecuritiesTransferStatus: N
@@ -443,18 +462,18 @@ components:
         routingNumber:
           description: The institution's routing number
           example: "091905114"
-          maximum: 9
-          minimum: 9
+          maxLength: 9
+          minLength: 9
           type: string
         telegraphicName:
           description: Short name of financial institution
           example: MIDWESTONE B&T
-          maximum: 18
+          maxLength: 18
           type: string
         customerName:
           description: Financial Institution Name
           example: MIDWESTONE BK
-          maximum: 36
+          maxLength: 36
           type: string
         wireLocation:
           description: FEDWIRE Delivery Address
@@ -462,37 +481,48 @@ components:
             $ref: '#/components/schemas/WIRELocation'
           type: array
         fundsTransferStatus:
-          description: |-
+          description: |
             Designates funds transfer status
-            Y = Eligible
-            N = Ineligible
+
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+          - Y
+          - N
           example: Y
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         fundsSettlementOnlyStatus:
-          description: |-
+          description: |
             Designates funds settlement only status
-            S = Settlement-Only or blank
-            Blank
-          maximum: 1
+
+             * `S` - Settlement-Only
+          enum:
+          - S
+          maxLength: 1
           type: string
         bookEntrySecuritiesTransferStatus:
-          description: |-
+          description: |
             Designates book entry securities transfer status
-            Y = Eligible
-            N = Ineligible
+
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+          - Y
+          - N
           example: N
-          maximum: 1
-          minimum: 1
+          maxLength: 1
+          minLength: 1
           type: string
         date:
-          description: |-
+          description: |
             Date of last revision
-            YYYYMMDD
-            Blank
-          example: "20160401"
-          maximum: 8
+
+            * YYYYMMDD
+            * Blank
+          example: "20190401"
+          maxLength: 8
           type: string
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
@@ -503,13 +533,13 @@ components:
         city:
           description: City
           example: IOWA CITY
-          maximum: 25
+          maxLength: 25
           type: string
         state:
           description: State
           example: IA
-          maximum: 2
-          minimum: 2
+          maxLength: 2
+          minLength: 2
           type: string
     Error:
       properties:
