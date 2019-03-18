@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -27,12 +28,19 @@ import (
 var (
 	httpAddr  = flag.String("http.addr", bind.HTTP("fed"), "HTTP listen address")
 	adminAddr = flag.String("admin.addr", bind.Admin("fed"), "Admin HTTP listen address")
+
+	flagLogFormat = flag.String("log.format", "", "Format for log lines (Options: json, plain")
 )
 
 func main() {
 	flag.Parse()
 
-	logger := log.NewLogfmtLogger(os.Stderr)
+	var logger log.Logger
+	if strings.ToLower(*flagLogFormat) == "json" {
+		logger = log.NewJSONLogger(os.Stderr)
+	} else {
+		logger = log.NewLogfmtLogger(os.Stderr)
+	}
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 	logger = log.With(logger, "caller", log.DefaultCaller)
 
