@@ -1,6 +1,7 @@
 # AchParticipant
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **RoutingNumber** | **string** | The institution&#39;s routing number | [optional] 

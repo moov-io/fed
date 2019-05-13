@@ -1,6 +1,7 @@
 # AchDictionary
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ACHParticipants** | [**[]AchParticipant**](ACHParticipant.md) |  | [optional] 

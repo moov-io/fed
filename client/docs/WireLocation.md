@@ -1,6 +1,7 @@
 # WireLocation
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **City** | **string** | City | [optional] 

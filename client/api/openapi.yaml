@@ -3,7 +3,12 @@ info:
   contact:
     name: FED API Support
     url: https://github.com/moov-io/fed
-  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The
+    FEDACH dictionary contains receiving depository financial institutions (RDFI’s)
+    which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving
+    depository financial institutions (RDFI’s) which are qualified to receive WIRE
+    entries.  This project implements a modern REST HTTP API for FEDACH Dictionary
+    and FEDWIRE Dictionary.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -32,7 +37,8 @@ paths:
     get:
       operationId: searchFEDACH
       parameters:
-      - description: Optional Request ID allows application developer to trace requests through the systems logs
+      - description: Optional Request ID allows application developer to trace requests
+          through the systems logs
         explode: false
         in: header
         name: X-Request-Id
@@ -93,7 +99,6 @@ paths:
         required: false
         schema:
           example: 499
-          format: int32
           type: integer
         style: form
       responses:
@@ -118,7 +123,8 @@ paths:
     get:
       operationId: searchFEDWIRE
       parameters:
-      - description: Optional Request ID allows application developer to trace requests through the systems logs
+      - description: Optional Request ID allows application developer to trace requests
+          through the systems logs
         explode: false
         in: header
         name: X-Request-Id
@@ -170,7 +176,6 @@ paths:
         required: false
         schema:
           example: 499
-          format: int32
           type: integer
         style: form
       responses:
@@ -194,7 +199,8 @@ paths:
 components:
   parameters:
     requestId:
-      description: Optional Request ID allows application developer to trace requests through the systems logs
+      description: Optional Request ID allows application developer to trace requests
+        through the systems logs
       explode: false
       in: header
       name: X-Request-Id
@@ -256,7 +262,8 @@ components:
             $ref: '#/components/schemas/ACHParticipant'
           type: array
     ACHParticipant:
-      description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
+      description: ACHParticipant holds a FedACH dir routing record as defined by
+        Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       example:
         routingNumber: "044112187"
         phoneNumber: "7407325621"
@@ -330,7 +337,8 @@ components:
           maxLength: 8
           type: string
         newRoutingNumber:
-          description: Financial Institution's new routing number resulting from a merger or renumber
+          description: Financial Institution's new routing number resulting from a
+            merger or renumber
           example: "000000000"
           maxLength: 9
           minLength: 9
@@ -444,7 +452,8 @@ components:
             $ref: '#/components/schemas/WIREParticipant'
           type: array
     WIREParticipant:
-      description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+      description: WIREParticipant holds a FedWIRE dir routing record as defined by
+        Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
         date: "20190401"
         routingNumber: "091905114"

@@ -1,6 +1,7 @@
 # WireDictionary
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **WIREParticipants** | [**[]WireParticipant**](WIREParticipant.md) |  | [optional] 
