@@ -1,3 +1,9 @@
+## v0.2.0 (Unreleased)
+
+BUILD
+
+- Ship old example FED data files in the Docker image. Production deployments need to replace these with updated files from their Financial Institution.
+
 ## v0.1.x (Released 2019-03-06)
 
 BUG FIXES

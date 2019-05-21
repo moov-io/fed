@@ -19,6 +19,8 @@ To get started using Fed download [the latest release](https://github.com/moov-i
 
 Docs: [docs.moov.io](https://docs.moov.io/en/latest/) | [api docs](https://api.moov.io/apps/fed/)
 
+Note: The Docker image ships with old data files (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be obtained from your Financial Institution and provided to the server process.
+
 ### Configuration
 
 | Environmental Variable | Description | Default |
