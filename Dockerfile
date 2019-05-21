@@ -10,10 +10,10 @@ FROM debian:9
 RUN apt-get update && apt-get install -y ca-certificates
 
 # Bring in example data files
-COPY data/FedACHdir.txt /data/FedACHdir.txt
-COPY data/fpddir.txt /data/fpddir.txt
-ENV FEDACH_DATA_PATH=/data/FedACHdir.txt
-ENV FEDWIRE_DATA_PATH=/data/fpddir.txt
+COPY data/FedACHdir.txt /data/fed/FedACHdir.txt
+COPY data/fpddir.txt /data/fed/fpddir.txt
+ENV FEDACH_DATA_PATH=/data/fed/FedACHdir.txt
+ENV FEDWIRE_DATA_PATH=/data/fed/fpddir.txt
 
 # Copy server executable
 COPY --from=builder /go/src/github.com/moov-io/fed/bin/server /bin/server
