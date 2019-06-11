@@ -8,7 +8,7 @@ moov-io/fed
 
 *project is under active development and is not production ready*
 
-Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System.
+Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System such as [ABA routing numbers](https://en.wikipedia.org/wiki/ABA_routing_transit_number), Financial Institution name lookup and [Fed Wire](https://en.wikipedia.org/wiki/Fedwire) routing information. Moov's primary usage for this project is with ACH origination in our [paygate](https://github.com/moov-io/paygate) project.
 
 ### Usage
 
