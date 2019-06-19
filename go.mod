@@ -9,10 +9,8 @@ require (
 	github.com/gorilla/mux v1.7.1
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/moov-io/base v0.9.1-0.20190430163914-76a8e2cca72d
-	github.com/prometheus/client_golang v0.9.2
+	github.com/prometheus/client_golang v1.0.0
 	github.com/prometheus/client_model v0.0.0-20190220174349-fd36f4220a90 // indirect
-	github.com/prometheus/common v0.4.0 // indirect
-	github.com/prometheus/procfs v0.0.0-20190513003949-5867b95ac084 // indirect
 	github.com/rickar/cal v1.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9
 	golang.org/x/oauth2 v0.0.0-20190430190749-9f3314589c9a
