@@ -21,6 +21,64 @@ Docs: [docs.moov.io](https://docs.moov.io/en/latest/) | [api docs](https://api.m
 
 Note: The Docker image ships with old data files (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be obtained from your Financial Institution and provided to the server process.
 
+#### ACH Routing Number Example
+
+Fed can be used to lookup a Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`) or name (`?name=...`):
+
+```
+$ curl -s localhost:8086/fed/ach/search?routingNumber=273976369 | jq .
+{
+  "achParticipants": [
+    {
+      "routingNumber": "273976369",
+      "officeCode": "O",
+      "servicingFRBNumber": "071000301",
+      "recordTypeCode": "1",
+      "revised": "041513",
+      "newRoutingNumber": "000000000",
+      "customerName": "VERIDIAN CREDIT UNION",
+      "achLocation": {
+        "address": "1827 ANSBOROUGH",
+        "city": "WATERLOO",
+        "state": "IA",
+        "postalCode": "50702",
+        "postalCodeExtension": "0000"
+      },
+      "phoneNumber": "3192878332",
+      "statusCode": "1",
+      "viewCode": "1"
+    }
+  ],
+  "wireParticipants": null
+}
+```
+
+#### Wire Routing Number Example
+
+Fed can be used to lookup a Financial Institutions for FED Wire Messages ([FEDWire](https://en.wikipedia.org/wiki/Fedwire)) by their routing number (`?routingNumber=...`) or name (`?name=...`):
+
+```
+$ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
+{
+  "achParticipants": null,
+  "wireParticipants": [
+    {
+      "routingNumber": "273976369",
+      "telegraphicName": "VERIDIAN",
+      "customerName": "VERIDIAN CREDIT UNION",
+      "wireLocation": {
+        "city": "WATERLOO",
+        "state": "IA"
+      },
+      "fundsTransferStatus": "Y",
+      "fundsSettlementOnlyStatus": " ",
+      "bookEntrySecuritiesTransferStatus": "N",
+      "date": "20141107"
+    }
+  ]
+}
+```
+
 ### Configuration
 
 | Environmental Variable | Description | Default |
