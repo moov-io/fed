@@ -1,4 +1,4 @@
-## v0.2.0 (Unreleased)
+## v0.2.0 (Released 2019-06-19)
 
 BUILD
 
