@@ -44,6 +44,7 @@ release: docker AUTHORS
 
 release-push:
 	docker push moov/fed:$(VERSION)
+	docker push moov/fed:latest
 
 .PHONY: cover-test cover-web
 cover-test:
