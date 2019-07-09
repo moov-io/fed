@@ -15,7 +15,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 // Linger please
@@ -31,7 +30,7 @@ FEDApiService Ping the FED service to check if running
 */
 func (a *FEDApiService) Ping(ctx context.Context) (*http.Response, error) {
 	var (
-		localVarHttpMethod   = strings.ToUpper("Get")
+		localVarHttpMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
@@ -115,7 +114,7 @@ type SearchFEDACHOpts struct {
 
 func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *SearchFEDACHOpts) (AchDictionary, *http.Response, error) {
 	var (
-		localVarHttpMethod   = strings.ToUpper("Get")
+		localVarHttpMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
@@ -248,7 +247,7 @@ type SearchFEDWIREOpts struct {
 
 func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *SearchFEDWIREOpts) (WireDictionary, *http.Response, error) {
 	var (
-		localVarHttpMethod   = strings.ToUpper("Get")
+		localVarHttpMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
