@@ -10,8 +10,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/moov-io/base v0.9.1-0.20190430163914-76a8e2cca72d
 	github.com/prometheus/client_golang v1.0.0
-	github.com/prometheus/client_model v0.0.0-20190220174349-fd36f4220a90 // indirect
 	github.com/rickar/cal v1.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9
-	golang.org/x/oauth2 v0.0.0-20190619163957-0f29369cfe45
+	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 )
