@@ -13,19 +13,19 @@ import (
 
 var (
 	fedACHDataFilepath = func() string {
-		if v := os.Getenv("FEDACH_DATA_PATH"); v != "" {
-			return v
-		}
-		return "./data/FedACHdir.txt"
+		return readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
 	}()
-
 	fedWIREDataFilepath = func() string {
-		if v := os.Getenv("FEDWIRE_DATA_PATH"); v != "" {
-			return v
-		}
-		return "./data/fpddir.txt"
+		return readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
 	}()
 )
+
+func readDataFilepath(env, fallback string) string {
+	if v := os.Getenv(env); v != "" {
+		return v
+	}
+	return fallback
+}
 
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to
 // parse and define ACHDictionary properties

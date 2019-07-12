@@ -40,3 +40,12 @@ func TestReader__readFEDWIREData(t *testing.T) {
 		t.Error("expected error")
 	}
 }
+
+func TestReader__readDataFilepath(t *testing.T) {
+	if v := readDataFilepath("MISSING", "value"); v != "value" {
+		t.Errorf("got %q", v)
+	}
+	if v := readDataFilepath("PATH", "value"); v == "" || v == "value" {
+		t.Errorf("got %q", v)
+	}
+}
