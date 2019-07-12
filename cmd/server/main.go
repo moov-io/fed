@@ -36,7 +36,6 @@ func main() {
 	flag.Parse()
 
 	var logger log.Logger
-
 	if v := os.Getenv("LOG_FORMAT"); v != "" {
 		*flagLogFormat = v
 	}
@@ -110,20 +109,14 @@ func main() {
 	defer adminServer.Shutdown()
 
 	// Start our searcher
-	searcher := &searcher{
-		logger: logger,
-	}
-
+	searcher := &searcher{logger: logger}
 	if err := searcher.readFEDACHData(); err != nil {
-		err = fmt.Errorf("error reading FEDACHdir.txt: %v", err)
-		logger.Log("read", err)
-		errs <- err
+		logger.Log("read", fmt.Sprintf("error reading FEDACHdir.txt: %v", err))
+		os.Exit(1)
 	}
-
 	if err := searcher.readFEDWIREData(); err != nil {
-		err = fmt.Errorf("error reading FEDWIREdir.txt: %v", err)
-		logger.Log("read", err)
-		errs <- err
+		logger.Log("read", fmt.Sprintf("error reading FEDWIREdir.txt: %v", err))
+		os.Exit(1)
 	}
 
 	// Add searcher for HTTP routes
@@ -141,6 +134,7 @@ func main() {
 	if err := <-errs; err != nil {
 		shutdownServer()
 		logger.Log("exit", err)
+		os.Exit(1)
 	}
 }
 
