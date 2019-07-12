@@ -110,12 +110,8 @@ func main() {
 
 	// Start our searcher
 	searcher := &searcher{logger: logger}
-	if err := searcher.readFEDACHData(); err != nil {
-		logger.Log("read", fmt.Sprintf("error reading FEDACHdir.txt: %v", err))
-		os.Exit(1)
-	}
-	if err := searcher.readFEDWIREData(); err != nil {
-		logger.Log("read", fmt.Sprintf("error reading FEDWIREdir.txt: %v", err))
+	if err := setupSearcher(searcher, fedACHDataFilepath, fedWIREDataFilepath); err != nil {
+		logger.Log("read", err)
 		os.Exit(1)
 	}
 
@@ -145,4 +141,14 @@ func addPingRoute(r *mux.Router) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("PONG"))
 	})
+}
+
+func setupSearcher(s *searcher, achPath, wirePath string) error {
+	if err := s.readFEDACHData(achPath); err != nil {
+		return fmt.Errorf("error reading FEDACHdir.txt: %v", err)
+	}
+	if err := s.readFEDWIREData(wirePath); err != nil {
+		return fmt.Errorf("error reading FEDWIREdir.txt: %v", err)
+	}
+	return nil
 }
