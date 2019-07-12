@@ -1,3 +1,7 @@
+// Copyright 2019 The Moov Authors
+// Use of this source code is governed by an Apache License
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
@@ -8,27 +12,29 @@ import (
 )
 
 var (
-	fedACHDataFilepath  = os.Getenv("FEDACH_DATA_PATH")
-	fedWIREDataFilepath = os.Getenv("FEDWIRE_DATA_PATH")
+	fedACHDataFilepath = func() string {
+		return readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
+	}()
+	fedWIREDataFilepath = func() string {
+		return readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
+	}()
 )
 
-func init() {
-	if fedACHDataFilepath == "" {
-		fedACHDataFilepath = "./data/FedACHdir.txt"
+func readDataFilepath(env, fallback string) string {
+	if v := os.Getenv(env); v != "" {
+		return v
 	}
-	if fedWIREDataFilepath == "" {
-		fedWIREDataFilepath = "./data/fpddir.txt"
-	}
+	return fallback
 }
 
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to
 // parse and define ACHDictionary properties
-func (s *searcher) readFEDACHData() error {
+func (s *searcher) readFEDACHData(path string) error {
 	if s.logger != nil {
 		s.logger.Log("read", "Read of FED data")
 	}
 
-	f, err := os.Open(fedACHDataFilepath)
+	f, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("ERROR: opening FedACHdir.txt %v", err)
 	}
@@ -48,12 +54,12 @@ func (s *searcher) readFEDACHData() error {
 
 // readFEDWIREData opens and reads fpddir.txt then runs WIREDictionary.Read() to
 // parse and define WIREDictionary properties
-func (s *searcher) readFEDWIREData() error {
+func (s *searcher) readFEDWIREData(path string) error {
 	if s.logger != nil {
 		s.logger.Log("read", "Read of FED data")
 	}
 
-	f, err := os.Open(fedWIREDataFilepath)
+	f, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("ERROR: opening fpddir.txt %v", err)
 	}
