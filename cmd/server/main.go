@@ -110,7 +110,7 @@ func main() {
 
 	// Start our searcher
 	searcher := &searcher{logger: logger}
-	if err := setupSearcher(searcher, fedACHDataFilepath, fedWIREDataFilepath); err != nil {
+	if err := setupSearcher(logger, searcher, fedACHDataFilepath, fedWIREDataFilepath); err != nil {
 		logger.Log("read", err)
 		os.Exit(1)
 	}
@@ -143,12 +143,15 @@ func addPingRoute(r *mux.Router) {
 	})
 }
 
-func setupSearcher(s *searcher, achPath, wirePath string) error {
+func setupSearcher(logger log.Logger, s *searcher, achPath, wirePath string) error {
+	logger.Log("search", fmt.Sprintf("loading %s for ACH data", achPath))
 	if err := s.readFEDACHData(achPath); err != nil {
-		return fmt.Errorf("error reading FEDACHdir.txt: %v", err)
+		return fmt.Errorf("error reading ACH file at %s: %v", achPath, err)
 	}
+
+	logger.Log("search", fmt.Sprintf("loading %s for Wire data", wirePath))
 	if err := s.readFEDWIREData(wirePath); err != nil {
-		return fmt.Errorf("error reading FEDWIREdir.txt: %v", err)
+		return fmt.Errorf("error reading wire file at %s: %v", wirePath, err)
 	}
 	return nil
 }

@@ -14,13 +14,17 @@ import (
 func TestSearcher__setup(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
 
+	logger := log.NewNopLogger()
 	achPath := filepath.Join("..", "..", "data", "FedACHdir.txt")
 	wirePath := filepath.Join("..", "..", "data", "fpddir.txt")
 
-	if err := setupSearcher(s, achPath, wirePath); err != nil {
+	if err := setupSearcher(logger, s, achPath, wirePath); err != nil {
 		t.Fatal(err)
 	}
-	if err := setupSearcher(s, "empty.txt", "empty2.txt"); err == nil {
+	if err := setupSearcher(logger, s, achPath, "empty2.txt"); err == nil {
+		t.Errorf("expected error")
+	}
+	if err := setupSearcher(logger, s, "empty.txt", "empty2.txt"); err == nil {
 		t.Errorf("expected error")
 	}
 }
