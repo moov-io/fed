@@ -7,7 +7,7 @@ require (
 	github.com/go-kit/kit v0.9.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/gorilla/mux v1.7.3
-	github.com/hashicorp/golang-lru v0.5.1 // indirect
+	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/moov-io/base v0.9.1-0.20190430163914-76a8e2cca72d
 	github.com/prometheus/client_golang v1.0.0
 	github.com/rickar/cal v1.0.1 // indirect
