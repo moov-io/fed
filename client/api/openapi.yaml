@@ -41,7 +41,7 @@ paths:
           through the systems logs
         explode: false
         in: header
-        name: X-Request-Id
+        name: X-Request-ID
         required: false
         schema:
           example: 94c825ee
@@ -127,7 +127,7 @@ paths:
           through the systems logs
         explode: false
         in: header
-        name: X-Request-Id
+        name: X-Request-ID
         required: false
         schema:
           example: 94c825ee
@@ -198,12 +198,12 @@ paths:
       - FED
 components:
   parameters:
-    requestId:
+    requestID:
       description: Optional Request ID allows application developer to trace requests
         through the systems logs
       explode: false
       in: header
-      name: X-Request-Id
+      name: X-Request-ID
       required: false
       schema:
         example: 94c825ee

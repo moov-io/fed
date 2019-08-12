@@ -35,7 +35,7 @@ paths:
       summary: Search FEDACH names and metadata
       operationId: searchFEDACH
       parameters:
-        - $ref: '#/components/parameters/requestId'
+        - $ref: '#/components/parameters/requestID'
         - name: name
           in: query
           schema:
@@ -94,7 +94,7 @@ paths:
       summary: Search FEDWIRE names and metadata
       operationId: searchFEDWIRE
       parameters:
-        - $ref: '#/components/parameters/requestId'
+        - $ref: '#/components/parameters/requestID'
         - name: name
           in: query
           schema:
@@ -373,9 +373,9 @@ components:
           description: An error message describing the problem intended for humans.
           example: Validation error(s) present.
   parameters:
-    requestId:
+    requestID:
       in: header
-      name: X-Request-Id
+      name: X-Request-ID
       description: Optional Request ID allows application developer to trace requests through the systems logs
       schema:
         type: string
