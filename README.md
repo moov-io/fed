@@ -19,7 +19,7 @@ Moov FED is under active development and in production for multiple companies. P
 Go library
 github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
 
-To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
+To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
 
 Docs: [docs.moov.io](https://docs.moov.io/) | [api docs](https://api.moov.io/apps/fed/)
 
