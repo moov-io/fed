@@ -19,13 +19,26 @@ matrix:
         directories:
           - "/Users/travis/Library/Caches/go-build"
 before_install:
-  - go get -u github.com/client9/misspell/cmd/misspell
+  # Setup directory for binaries
+  - mkdir ./bin
+  - export PATH=$PATH:$PWD/bin
+  # Misspell
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_linux_64bit.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_mac_64bit.tar.gz; fi
+  - tar xf misspell.tar.gz && cp ./misspell ./bin/misspell
+  # staticcheck
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_linux_amd64.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_darwin_amd64.tar.gz; fi
+  - tar xf staticcheck.tar.gz && cp ./staticcheck/staticcheck ./bin/staticcheck
+  # golint
   - go get -u golang.org/x/lint/golint
-  - go get github.com/fzipp/gocyclo
-  - go get -u honnef.co/go/tools/cmd/staticcheck
-  - go get golang.org/x/tools/cmd/cover
+  # gocyclo
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O ./bin/gocyclo https://github.com/adamdecaf/gocyclo/releases/download/2019-08-09/gocyclo-linux-amd64; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O ./bin/gocyclo https://github.com/adamdecaf/gocyclo/releases/download/2019-08-09/gocyclo-darwin-amd64; fi
+  - chmod +x ./bin/gocyclo
 before_script:
   - GOFILES=$(find . -type f -name '*.go' | grep -v vendor | grep -v client)
+  - go mod graph
 script:
   # Just check gofmt on linux, it's the fastest builder
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
@@ -33,7 +46,9 @@ script:
   - misspell -error -locale US $GOFILES
   - gocyclo -over 25 $GOFILES
   - golint -set_exit_status $GOFILES
-  - staticcheck ./cmd/*/*.go ./pkg/*/*.go *.go
+  - staticcheck *.go
+  - staticcheck ./cmd/server/*.go
+  - staticcheck ./pkg/strcmp/*.go
 after_success:
   - bash <(curl -s https://codecov.io/bash) -X fix
   - make
