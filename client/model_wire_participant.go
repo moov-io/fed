@@ -16,9 +16,8 @@ type WireParticipant struct {
 	// Short name of financial institution
 	TelegraphicName string `json:"telegraphicName,omitempty"`
 	// Financial Institution Name
-	CustomerName string `json:"customerName,omitempty"`
-	// FEDWIRE Delivery Address
-	WireLocation []WireLocation `json:"wireLocation,omitempty"`
+	CustomerName string       `json:"customerName,omitempty"`
+	WireLocation WireLocation `json:"wireLocation,omitempty"`
 	// Designates funds transfer status  * `Y` - Eligible * `N` - Ineligible
 	FundsTransferStatus string `json:"fundsTransferStatus,omitempty"`
 	// Designates funds settlement only status   * `S` - Settlement-Only

@@ -224,12 +224,7 @@ components:
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
-          - postalExtension: "0000"
-            address: 430 NORTH ST
-            city: CALDWELL
-            postalCode: "43724"
-            state: OH
-          - postalExtension: "0000"
+            postalExtension: "0000"
             address: 430 NORTH ST
             city: CALDWELL
             postalCode: "43724"
@@ -245,12 +240,7 @@ components:
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
           achLocation:
-          - postalExtension: "0000"
-            address: 430 NORTH ST
-            city: CALDWELL
-            postalCode: "43724"
-            state: OH
-          - postalExtension: "0000"
+            postalExtension: "0000"
             address: 430 NORTH ST
             city: CALDWELL
             postalCode: "43724"
@@ -275,12 +265,7 @@ components:
         viewCode: "1"
         customerName: FARMERS & MERCHANTS BANK
         achLocation:
-        - postalExtension: "0000"
-          address: 430 NORTH ST
-          city: CALDWELL
-          postalCode: "43724"
-          state: OH
-        - postalExtension: "0000"
+          postalExtension: "0000"
           address: 430 NORTH ST
           city: CALDWELL
           postalCode: "43724"
@@ -349,10 +334,7 @@ components:
           maxLength: 36
           type: string
         achLocation:
-          description: FEDACH delivery address
-          items:
-            $ref: '#/components/schemas/ACHLocation'
-          type: array
+          $ref: '#/components/schemas/ACHLocation'
         phoneNumber:
           description: The Financial Institution's phone number
           example: "7407325621"
@@ -425,9 +407,7 @@ components:
         - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
-          - city: IOWA CITY
-            state: IA
-          - city: IOWA CITY
+            city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
@@ -437,9 +417,7 @@ components:
         - date: "20190401"
           routingNumber: "091905114"
           wireLocation:
-          - city: IOWA CITY
-            state: IA
-          - city: IOWA CITY
+            city: IOWA CITY
             state: IA
           fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
@@ -458,9 +436,7 @@ components:
         date: "20190401"
         routingNumber: "091905114"
         wireLocation:
-        - city: IOWA CITY
-          state: IA
-        - city: IOWA CITY
+          city: IOWA CITY
           state: IA
         fundsTransferStatus: Y
         fundsSettlementOnlyStatus: S
@@ -485,10 +461,7 @@ components:
           maxLength: 36
           type: string
         wireLocation:
-          description: FEDWIRE Delivery Address
-          items:
-            $ref: '#/components/schemas/WIRELocation'
-          type: array
+          $ref: '#/components/schemas/WIRELocation'
         fundsTransferStatus:
           description: |
             Designates funds transfer status

@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **RoutingNumber** | **string** | The institution&#39;s routing number | [optional] 
 **TelegraphicName** | **string** | Short name of financial institution | [optional] 
 **CustomerName** | **string** | Financial Institution Name | [optional] 
-**WireLocation** | [**[]WireLocation**](WIRELocation.md) | FEDWIRE Delivery Address | [optional] 
+**WireLocation** | [**WireLocation**](WIRELocation.md) |  | [optional] 
 **FundsTransferStatus** | **string** | Designates funds transfer status  * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 
 **FundsSettlementOnlyStatus** | **string** | Designates funds settlement only status   * &#x60;S&#x60; - Settlement-Only  | [optional] 
 **BookEntrySecuritiesTransferStatus** | **string** | Designates book entry securities transfer status  * &#x60;Y&#x60; - Eligible * &#x60;N&#x60; - Ineligible  | [optional] 

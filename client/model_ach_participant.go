@@ -24,9 +24,8 @@ type AchParticipant struct {
 	// Financial Institution's new routing number resulting from a merger or renumber
 	NewRoutingNumber string `json:"newRoutingNumber,omitempty"`
 	// Financial Institution Name
-	CustomerName string `json:"customerName,omitempty"`
-	// FEDACH delivery address
-	AchLocation []AchLocation `json:"achLocation,omitempty"`
+	CustomerName string      `json:"customerName,omitempty"`
+	AchLocation  AchLocation `json:"achLocation,omitempty"`
 	// The Financial Institution's phone number
 	PhoneNumber string `json:"phoneNumber,omitempty"`
 	// Code is based on the customers receiver code  * `1` - Receives Gov/Comm
