@@ -213,9 +213,7 @@ components:
           description: Financial Institution Name
           example: FARMERS & MERCHANTS BANK
         achLocation:
-          description: FEDACH delivery address
-          items:
-            $ref: '#/components/schemas/ACHLocation'
+          $ref: '#/components/schemas/ACHLocation'
         phoneNumber:
           type: string
           minLength: 10
@@ -302,9 +300,7 @@ components:
           description: Financial Institution Name
           example: 'MIDWESTONE BK'
         wireLocation:
-          description: FEDWIRE Delivery Address
-          items:
-            $ref: '#/components/schemas/WIRELocation'
+          $ref: '#/components/schemas/WIRELocation'
         fundsTransferStatus:
           type: string
           minLength: 1

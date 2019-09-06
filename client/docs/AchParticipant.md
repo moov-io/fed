@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **Revised** | **string** | Date of last revision  * YYYYMMDD * Blank  | [optional] 
 **NewRoutingNumber** | **string** | Financial Institution&#39;s new routing number resulting from a merger or renumber | [optional] 
 **CustomerName** | **string** | Financial Institution Name | [optional] 
-**AchLocation** | [**[]AchLocation**](ACHLocation.md) | FEDACH delivery address | [optional] 
+**AchLocation** | [**AchLocation**](ACHLocation.md) |  | [optional] 
 **PhoneNumber** | **string** | The Financial Institution&#39;s phone number | [optional] 
 **StatusCode** | **string** | Code is based on the customers receiver code  * &#x60;1&#x60; - Receives Gov/Comm  | [optional] 
 **ViewCode** | **string** | Code is current view  * &#x60;1&#x60; - Current view | [optional] 
