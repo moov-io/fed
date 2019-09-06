@@ -83,6 +83,10 @@ $ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
 }
 ```
 
+### Client Library
+
+Fed ships a client library generated from an [OpenAPI Specification](https://en.wikipedia.org/wiki/OpenAPI_Specification) (Go package [`github.com/moov-io/fed/client`](https://godoc.org/github.com/moov-io/fed/client)). We generate a Go version as Moov's primary language is Go, but other languages can be generated. To make a change edit `openapi.yaml` and run `make generate`. Commit the changes and open a pull request.
+
 ### Configuration
 
 | Environmental Variable | Description | Default |
