@@ -4,7 +4,10 @@ VERSION := $(shell grep -Eo '(v[0-9]+[\.][0-9]+[\.][0-9]+(-[a-zA-Z0-9]*)?)' vers
 .PHONY: build docker release check
 
 build: check
+# main FED binary
 	CGO_ENABLED=1 go build -o ./bin/server github.com/moov-io/fed/cmd/server
+# fedtest binary
+	CGO_ENABLED=0 go build -o bin/fedtest ./cmd/fedtest
 
 check:
 	go fmt ./...
@@ -35,8 +38,12 @@ else
 endif
 
 docker:
+# main FED image
 	docker build --pull -t moov/fed:$(VERSION) -f Dockerfile .
 	docker tag moov/fed:$(VERSION) moov/fed:latest
+# fedtest image
+	docker build --pull -t moov/fedtest:$(VERSION) -f Dockerfile-fedtest ./
+	docker tag moov/fedtest:$(VERSION) moov/fedtest:latest
 
 release: docker AUTHORS
 	go vet ./...
