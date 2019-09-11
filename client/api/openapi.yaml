@@ -39,12 +39,20 @@ paths:
       parameters:
       - description: Optional Request ID allows application developer to trace requests
           through the systems logs
+        example: rs4f9915
         explode: false
         in: header
         name: X-Request-ID
         required: false
         schema:
-          example: 94c825ee
+          type: string
+        style: simple
+      - description: Optional User ID used to perform this search
+        explode: false
+        in: header
+        name: X-User-ID
+        required: false
+        schema:
           type: string
         style: simple
       - description: FEDACH Financial Institution Name
@@ -125,12 +133,20 @@ paths:
       parameters:
       - description: Optional Request ID allows application developer to trace requests
           through the systems logs
+        example: rs4f9915
         explode: false
         in: header
         name: X-Request-ID
         required: false
         schema:
-          example: 94c825ee
+          type: string
+        style: simple
+      - description: Optional User ID used to perform this search
+        explode: false
+        in: header
+        name: X-User-ID
+        required: false
+        schema:
           type: string
         style: simple
       - description: FEDWIRE Financial Institution Name
@@ -197,18 +213,6 @@ paths:
       tags:
       - FED
 components:
-  parameters:
-    requestID:
-      description: Optional Request ID allows application developer to trace requests
-        through the systems logs
-      explode: false
-      in: header
-      name: X-Request-ID
-      required: false
-      schema:
-        example: 94c825ee
-        type: string
-      style: simple
   schemas:
     ACHDictionary:
       description: Search results containing ACHDictionary of Participants

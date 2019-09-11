@@ -93,6 +93,7 @@ FEDApiService Search FEDACH names and metadata
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param optional nil or *SearchFEDACHOpts - Optional Parameters:
  * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
+ * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
  * @param "Name" (optional.String) -  FEDACH Financial Institution Name
  * @param "RoutingNumber" (optional.String) -  FEDACH Routing Number for a Financial Institution
  * @param "State" (optional.String) -  FEDACH Financial Institution State
@@ -104,6 +105,7 @@ FEDApiService Search FEDACH names and metadata
 
 type SearchFEDACHOpts struct {
 	XRequestID    optional.String
+	XUserID       optional.String
 	Name          optional.String
 	RoutingNumber optional.String
 	State         optional.String
@@ -167,6 +169,9 @@ func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *Sea
 	if localVarOptionals != nil && localVarOptionals.XRequestID.IsSet() {
 		localVarHeaderParams["X-Request-ID"] = parameterToString(localVarOptionals.XRequestID.Value(), "")
 	}
+	if localVarOptionals != nil && localVarOptionals.XUserID.IsSet() {
+		localVarHeaderParams["X-User-ID"] = parameterToString(localVarOptionals.XUserID.Value(), "")
+	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -228,6 +233,7 @@ FEDApiService Search FEDWIRE names and metadata
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param optional nil or *SearchFEDWIREOpts - Optional Parameters:
  * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
+ * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
  * @param "Name" (optional.String) -  FEDWIRE Financial Institution Name
  * @param "RoutingNumber" (optional.String) -  FEDWIRE Routing Number for a Financial Institution
  * @param "State" (optional.String) -  FEDWIRE Financial Institution State
@@ -238,6 +244,7 @@ FEDApiService Search FEDWIRE names and metadata
 
 type SearchFEDWIREOpts struct {
 	XRequestID    optional.String
+	XUserID       optional.String
 	Name          optional.String
 	RoutingNumber optional.String
 	State         optional.String
@@ -296,6 +303,9 @@ func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *Se
 	}
 	if localVarOptionals != nil && localVarOptionals.XRequestID.IsSet() {
 		localVarHeaderParams["X-Request-ID"] = parameterToString(localVarOptionals.XRequestID.Value(), "")
+	}
+	if localVarOptionals != nil && localVarOptionals.XUserID.IsSet() {
+		localVarHeaderParams["X-User-ID"] = parameterToString(localVarOptionals.XUserID.Value(), "")
 	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
