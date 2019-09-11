@@ -231,7 +231,7 @@ func TestSearch__ACH(t *testing.T) {
 	}
 }
 
-func TestSearch__Empty(t *testing.T) {
+func TestSearch__ACHEmpty(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/fed/ach/search", nil)
 
@@ -594,5 +594,24 @@ func TestSearch__WIREStateHardLimit(t *testing.T) {
 
 	if len(wrapper.WIREParticipants) != 500 {
 		t.Errorf("exceeded the limit: %d", len(wrapper.WIREParticipants))
+	}
+}
+
+func TestSearch__WireEmpty(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/fed/wire/search", nil)
+
+	s := searcher{}
+	if err := s.helperLoadFEDWIREFile(t); err != nil {
+		t.Fatal(err)
+	}
+
+	router := mux.NewRouter()
+	addSearchRoutes(log.NewNopLogger(), router, &s)
+	router.ServeHTTP(w, req)
+	w.Flush()
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("incorrect status code: %d", w.Code)
 	}
 }

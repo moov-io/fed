@@ -102,6 +102,7 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 				logger.Log("searchFEDWIRE", errNoSearchParams, "requestID", requestID, "userID", userID)
 			}
 			moovhttp.Problem(w, errNoSearchParams)
+			return
 		}
 
 		if req.nameOnly() {
@@ -320,6 +321,7 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 				logger.Log("searchFEDWIRE", errNoSearchParams, "requestID", requestID, "userID", userID)
 			}
 			moovhttp.Problem(w, errNoSearchParams)
+			return
 		}
 
 		if req.nameOnly() {
