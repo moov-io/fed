@@ -35,7 +35,17 @@ paths:
       summary: Search FEDACH names and metadata
       operationId: searchFEDACH
       parameters:
-        - $ref: '#/components/parameters/requestID'
+        - name: X-Request-ID
+          in: header
+          description: Optional Request ID allows application developer to trace requests through the systems logs
+          example: rs4f9915
+          schema:
+            type: string
+        - name: X-User-ID
+          in: header
+          description: Optional User ID used to perform this search
+          schema:
+            type: string
         - name: name
           in: query
           schema:
@@ -94,7 +104,17 @@ paths:
       summary: Search FEDWIRE names and metadata
       operationId: searchFEDWIRE
       parameters:
-        - $ref: '#/components/parameters/requestID'
+        - name: X-Request-ID
+          in: header
+          description: Optional Request ID allows application developer to trace requests through the systems logs
+          example: rs4f9915
+          schema:
+            type: string
+        - name: X-User-ID
+          in: header
+          description: Optional User ID used to perform this search
+          schema:
+            type: string
         - name: name
           in: query
           schema:
@@ -140,6 +160,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '500':
           description: Internal error, check error(s) and report the issue.
+
 components:
   schemas:
     ACHDictionary:
@@ -368,11 +389,3 @@ components:
           type: string
           description: An error message describing the problem intended for humans.
           example: Validation error(s) present.
-  parameters:
-    requestID:
-      in: header
-      name: X-Request-ID
-      description: Optional Request ID allows application developer to trace requests through the systems logs
-      schema:
-        type: string
-        example: 94c825ee

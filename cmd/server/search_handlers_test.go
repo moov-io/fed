@@ -6,12 +6,15 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/moov-io/fed"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/moov-io/fed"
+
+	"github.com/go-kit/kit/log"
+	"github.com/gorilla/mux"
 )
 
 func TestSearch__ACHName(t *testing.T) {
@@ -24,7 +27,7 @@ func TestSearch__ACHName(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -59,7 +62,7 @@ func TestSearch__ACHRoutingNumber(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -92,7 +95,7 @@ func TestSearch__ACHCity(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -125,7 +128,7 @@ func TestSearch__ACHState(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -158,7 +161,7 @@ func TestSearch__ACHPostalCode(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -191,7 +194,7 @@ func TestSearch__ACH(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -238,7 +241,7 @@ func TestSearch__Empty(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -259,7 +262,7 @@ func TestSearch__WIREName(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -292,7 +295,7 @@ func TestSearch__WIRERoutingNumber(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -325,7 +328,7 @@ func TestSearch__WIREState(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -358,7 +361,7 @@ func TestSearch__WIRECity(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -391,7 +394,7 @@ func TestSearch__WIRE(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -435,7 +438,7 @@ func TestSearch__ACHRoutingNumber1Digit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -454,7 +457,7 @@ func TestSearch__ACHRoutingNumberOnly1Digit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -473,7 +476,7 @@ func TestSearch__WIRERoutingNumber1Digit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -492,7 +495,7 @@ func TestSearch__WIRERoutingNumberOnly1Digit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -511,7 +514,7 @@ func TestSearch__WIREStateSoftLimit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -542,7 +545,7 @@ func TestSearch__WIREStateLimit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 
@@ -573,7 +576,7 @@ func TestSearch__WIREStateHardLimit(t *testing.T) {
 	}
 
 	router := mux.NewRouter()
-	addSearchRoutes(nil, router, &s)
+	addSearchRoutes(log.NewNopLogger(), router, &s)
 	router.ServeHTTP(w, req)
 	w.Flush()
 

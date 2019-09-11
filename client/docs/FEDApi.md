@@ -58,6 +58,7 @@ Optional parameters are passed through a pointer to a SearchFEDACHOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **xRequestID** | **optional.String**| Optional Request ID allows application developer to trace requests through the systems logs | 
+ **xUserID** | **optional.String**| Optional User ID used to perform this search | 
  **name** | **optional.String**| FEDACH Financial Institution Name | 
  **routingNumber** | **optional.String**| FEDACH Routing Number for a Financial Institution | 
  **state** | **optional.String**| FEDACH Financial Institution State | 
@@ -104,6 +105,7 @@ Optional parameters are passed through a pointer to a SearchFEDWIREOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **xRequestID** | **optional.String**| Optional Request ID allows application developer to trace requests through the systems logs | 
+ **xUserID** | **optional.String**| Optional User ID used to perform this search | 
  **name** | **optional.String**| FEDWIRE Financial Institution Name | 
  **routingNumber** | **optional.String**| FEDWIRE Routing Number for a Financial Institution | 
  **state** | **optional.String**| FEDWIRE Financial Institution State | 
