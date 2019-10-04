@@ -9,7 +9,7 @@
 
 package openapi
 
-// Search results containing ACHDictionary of Participants
+// AchDictionary Search results containing ACHDictionary of Participants
 type AchDictionary struct {
 	ACHParticipants []AchParticipant `json:"ACHParticipants,omitempty"`
 }

@@ -9,7 +9,7 @@
 
 package openapi
 
-// WIRELocation is the FEDWIRE delivery address
+// WireLocation WIRELocation is the FEDWIRE delivery address
 type WireLocation struct {
 	// City
 	City string `json:"city,omitempty"`

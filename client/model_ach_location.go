@@ -9,7 +9,7 @@
 
 package openapi
 
-// ACHLocation is the FEDACH delivery address
+// AchLocation ACHLocation is the FEDACH delivery address
 type AchLocation struct {
 	// Street Address
 	Address string `json:"address,omitempty"`

@@ -10,27 +10,28 @@
 package openapi
 
 import (
-	"context"
+	_context "context"
 	"github.com/antihax/optional"
-	"io/ioutil"
-	"net/http"
-	"net/url"
+	_ioutil "io/ioutil"
+	_nethttp "net/http"
+	_neturl "net/url"
 )
 
 // Linger please
 var (
-	_ context.Context
+	_ _context.Context
 )
 
+// FEDApiService FEDApi service
 type FEDApiService service
 
 /*
-FEDApiService Ping the FED service to check if running
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+Ping Ping the FED service to check if running
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 */
-func (a *FEDApiService) Ping(ctx context.Context) (*http.Response, error) {
+func (a *FEDApiService) Ping(ctx _context.Context) (*_nethttp.Response, error) {
 	var (
-		localVarHttpMethod   = http.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
@@ -41,68 +42,54 @@ func (a *FEDApiService) Ping(ctx context.Context) (*http.Response, error) {
 	localVarPath := a.client.cfg.BasePath + "/ping"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
 
 	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
 	}
 
 	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"text/plain"}
+	localVarHTTPHeaderAccepts := []string{"text/plain"}
 
 	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
+	localVarHTTPResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
 	if err != nil {
-		return localVarHttpResponse, err
+		return localVarHTTPResponse, err
 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
+	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
-			error: localVarHttpResponse.Status,
+			error: localVarHTTPResponse.Status,
 		}
-		return localVarHttpResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	return localVarHttpResponse, nil
+	return localVarHTTPResponse, nil
 }
 
-/*
-FEDApiService Search FEDACH names and metadata
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param optional nil or *SearchFEDACHOpts - Optional Parameters:
- * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
- * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
- * @param "Name" (optional.String) -  FEDACH Financial Institution Name
- * @param "RoutingNumber" (optional.String) -  FEDACH Routing Number for a Financial Institution
- * @param "State" (optional.String) -  FEDACH Financial Institution State
- * @param "City" (optional.String) -  FEDACH Financial Institution City
- * @param "PostalCode" (optional.String) -  FEDACH Financial Institution Postal Code
- * @param "Limit" (optional.Int32) -  Maximum results returned by a search
-@return AchDictionary
-*/
-
+// SearchFEDACHOpts Optional parameters for the method 'SearchFEDACH'
 type SearchFEDACHOpts struct {
 	XRequestID    optional.String
 	XUserID       optional.String
@@ -114,9 +101,23 @@ type SearchFEDACHOpts struct {
 	Limit         optional.Int32
 }
 
-func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *SearchFEDACHOpts) (AchDictionary, *http.Response, error) {
+/*
+SearchFEDACH Search FEDACH names and metadata
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param optional nil or *SearchFEDACHOpts - Optional Parameters:
+ * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
+ * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
+ * @param "Name" (optional.String) -  FEDACH Financial Institution Name
+ * @param "RoutingNumber" (optional.String) -  FEDACH Routing Number for a Financial Institution
+ * @param "State" (optional.String) -  FEDACH Financial Institution State
+ * @param "City" (optional.String) -  FEDACH Financial Institution City
+ * @param "PostalCode" (optional.String) -  FEDACH Financial Institution Postal Code
+ * @param "Limit" (optional.Int32) -  Maximum results returned by a search
+@return AchDictionary
+*/
+func (a *FEDApiService) SearchFEDACH(ctx _context.Context, localVarOptionals *SearchFEDACHOpts) (AchDictionary, *_nethttp.Response, error) {
 	var (
-		localVarHttpMethod   = http.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
@@ -128,8 +129,8 @@ func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *Sea
 	localVarPath := a.client.cfg.BasePath + "/fed/ach/search"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
 
 	if localVarOptionals != nil && localVarOptionals.Name.IsSet() {
 		localVarQueryParams.Add("name", parameterToString(localVarOptionals.Name.Value(), ""))
@@ -150,21 +151,21 @@ func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *Sea
 		localVarQueryParams.Add("limit", parameterToString(localVarOptionals.Limit.Value(), ""))
 	}
 	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
 	}
 
 	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	if localVarOptionals != nil && localVarOptionals.XRequestID.IsSet() {
 		localVarHeaderParams["X-Request-ID"] = parameterToString(localVarOptionals.XRequestID.Value(), "")
@@ -172,76 +173,63 @@ func (a *FEDApiService) SearchFEDACH(ctx context.Context, localVarOptionals *Sea
 	if localVarOptionals != nil && localVarOptionals.XUserID.IsSet() {
 		localVarHeaderParams["X-User-ID"] = parameterToString(localVarOptionals.XUserID.Value(), "")
 	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
+	localVarHTTPResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
 	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
+	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
-			error: localVarHttpResponse.Status,
+			error: localVarHTTPResponse.Status,
 		}
-		if localVarHttpResponse.StatusCode == 200 {
+		if localVarHTTPResponse.StatusCode == 200 {
 			var v AchDictionary
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		if localVarHttpResponse.StatusCode == 400 {
+		if localVarHTTPResponse.StatusCode == 400 {
 			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		return localVarReturnValue, localVarHttpResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
 			error: err.Error(),
 		}
-		return localVarReturnValue, localVarHttpResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarReturnValue, localVarHttpResponse, nil
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-/*
-FEDApiService Search FEDWIRE names and metadata
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param optional nil or *SearchFEDWIREOpts - Optional Parameters:
- * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
- * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
- * @param "Name" (optional.String) -  FEDWIRE Financial Institution Name
- * @param "RoutingNumber" (optional.String) -  FEDWIRE Routing Number for a Financial Institution
- * @param "State" (optional.String) -  FEDWIRE Financial Institution State
- * @param "City" (optional.String) -  FEDWIRE Financial Institution City
- * @param "Limit" (optional.Int32) -  Maximum results returned by a search
-@return WireDictionary
-*/
-
+// SearchFEDWIREOpts Optional parameters for the method 'SearchFEDWIRE'
 type SearchFEDWIREOpts struct {
 	XRequestID    optional.String
 	XUserID       optional.String
@@ -252,9 +240,22 @@ type SearchFEDWIREOpts struct {
 	Limit         optional.Int32
 }
 
-func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *SearchFEDWIREOpts) (WireDictionary, *http.Response, error) {
+/*
+SearchFEDWIRE Search FEDWIRE names and metadata
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param optional nil or *SearchFEDWIREOpts - Optional Parameters:
+ * @param "XRequestID" (optional.String) -  Optional Request ID allows application developer to trace requests through the systems logs
+ * @param "XUserID" (optional.String) -  Optional User ID used to perform this search
+ * @param "Name" (optional.String) -  FEDWIRE Financial Institution Name
+ * @param "RoutingNumber" (optional.String) -  FEDWIRE Routing Number for a Financial Institution
+ * @param "State" (optional.String) -  FEDWIRE Financial Institution State
+ * @param "City" (optional.String) -  FEDWIRE Financial Institution City
+ * @param "Limit" (optional.Int32) -  Maximum results returned by a search
+@return WireDictionary
+*/
+func (a *FEDApiService) SearchFEDWIRE(ctx _context.Context, localVarOptionals *SearchFEDWIREOpts) (WireDictionary, *_nethttp.Response, error) {
 	var (
-		localVarHttpMethod   = http.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
@@ -266,8 +267,8 @@ func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *Se
 	localVarPath := a.client.cfg.BasePath + "/fed/wire/search"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
 
 	if localVarOptionals != nil && localVarOptionals.Name.IsSet() {
 		localVarQueryParams.Add("name", parameterToString(localVarOptionals.Name.Value(), ""))
@@ -285,21 +286,21 @@ func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *Se
 		localVarQueryParams.Add("limit", parameterToString(localVarOptionals.Limit.Value(), ""))
 	}
 	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
 	}
 
 	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	if localVarOptionals != nil && localVarOptionals.XRequestID.IsSet() {
 		localVarHeaderParams["X-Request-ID"] = parameterToString(localVarOptionals.XRequestID.Value(), "")
@@ -307,58 +308,58 @@ func (a *FEDApiService) SearchFEDWIRE(ctx context.Context, localVarOptionals *Se
 	if localVarOptionals != nil && localVarOptionals.XUserID.IsSet() {
 		localVarHeaderParams["X-User-ID"] = parameterToString(localVarOptionals.XUserID.Value(), "")
 	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
+	localVarHTTPResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
 	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
+	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
-			error: localVarHttpResponse.Status,
+			error: localVarHTTPResponse.Status,
 		}
-		if localVarHttpResponse.StatusCode == 200 {
+		if localVarHTTPResponse.StatusCode == 200 {
 			var v WireDictionary
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		if localVarHttpResponse.StatusCode == 400 {
+		if localVarHTTPResponse.StatusCode == 400 {
 			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		return localVarReturnValue, localVarHttpResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
 			error: err.Error(),
 		}
-		return localVarReturnValue, localVarHttpResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarReturnValue, localVarHttpResponse, nil
+	return localVarReturnValue, localVarHTTPResponse, nil
 }

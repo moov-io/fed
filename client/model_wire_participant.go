@@ -9,7 +9,7 @@
 
 package openapi
 
-// WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+// WireParticipant WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
 type WireParticipant struct {
 	// The institution's routing number
 	RoutingNumber string `json:"routingNumber,omitempty"`
