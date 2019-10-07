@@ -1,3 +1,20 @@
+## v0.4.0 (Released 2019-10-07)
+
+BUG FIXES
+
+- changing ach participant model so AchLocation isn't a list (#68)
+- cmd/server: return after marshaling errNoSearchParams
+
+IMPROVEMENTS
+
+- cmd/fedtest: initial binary to perform ACH and Wire searches
+- cmd/server: log x-request-id and x-user-id HTTP headers
+
+BUILD
+
+- update module moov-io/base to v0.10.0
+- build: upgrade to Go 1.13 and Debian 10
+
 ## v0.3.0 (Released 2019-08-16)
 
 BREAKING CHANGES
