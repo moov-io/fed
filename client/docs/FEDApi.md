@@ -13,6 +13,7 @@ Method | HTTP request | Description
 ## Ping
 
 > Ping(ctx, )
+
 Ping the FED service to check if running
 
 ### Required Parameters
@@ -40,6 +41,7 @@ No authorization required
 ## SearchFEDACH
 
 > AchDictionary SearchFEDACH(ctx, optional)
+
 Search FEDACH names and metadata
 
 ### Required Parameters
@@ -87,6 +89,7 @@ No authorization required
 ## SearchFEDWIRE
 
 > WireDictionary SearchFEDWIRE(ctx, optional)
+
 Search FEDWIRE names and metadata
 
 ### Required Parameters
