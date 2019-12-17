@@ -18,7 +18,7 @@ client:
 # Versions from https://github.com/OpenAPITools/openapi-generator/releases
 	@chmod +x ./openapi-generator
 	@rm -rf ./client
-	OPENAPI_GENERATOR_VERSION=4.2.0 ./openapi-generator generate -i openapi.yaml -g go -o ./client
+	OPENAPI_GENERATOR_VERSION=4.2.2 ./openapi-generator generate -i openapi.yaml -g go -o ./client
 	rm -f client/go.mod client/go.sum
 	go fmt ./...
 	go build github.com/moov-io/fed/client
@@ -44,6 +44,15 @@ docker:
 # fedtest image
 	docker build --pull -t moov/fedtest:$(VERSION) -f Dockerfile-fedtest ./
 	docker tag moov/fedtest:$(VERSION) moov/fedtest:latest
+
+clean-integration:
+	docker-compose kill
+	docker-compose rm -v -f
+
+test-integration: clean-integration
+	docker-compose up -d
+	sleep 5
+	./bin/fedtest -local
 
 release: docker AUTHORS
 	go vet ./...

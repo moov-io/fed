@@ -9,11 +9,11 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/moov-io/base"
@@ -22,7 +22,9 @@ import (
 )
 
 var (
-	flagLocal = flag.Bool("local", false, "Use local HTTP addresses (e.g. 'go run')")
+	flagLocal   = flag.Bool("local", false, "Use local HTTP addresses")
+	flagDebug   = flag.Bool("debug", false, "Enable verbose debug logging")
+	flagAddress = flag.String("address", "https://api.moov.io/v1", "HTTP address for FED service")
 
 	flagRoutingNumber = flag.String("routing-number", chaseCaliforniaRouting, "Routing number to lookup in FED")
 )
@@ -37,11 +39,7 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.LUTC | log.Lmicroseconds | log.Lshortfile)
 	log.Printf("Starting fedtest %s", fed.Version)
 
-	// setup our APIClient and ping
 	api := client.NewAPIClient(makeConfig())
-	if err := ping(api); err != nil {
-		log.Fatalf("[FAILURE] %v", err)
-	}
 
 	requestID, routingNumber := base.ID(), *flagRoutingNumber
 	log.Printf("[INFO] using x-request-id: %s", requestID)
@@ -63,8 +61,19 @@ func main() {
 
 func makeConfig() *client.Configuration {
 	conf := client.NewConfiguration()
+	if *flagAddress != "" {
+		u, _ := url.Parse(*flagAddress)
+		conf.Scheme = u.Scheme
+		conf.Host = u.Host
+		conf.BasePath = u.Path
+	}
 	if *flagLocal {
-		conf.BasePath = "http://localhost"
+		conf.Scheme = "http"
+		conf.Host = "localhost:8086"
+		conf.BasePath = ""
+	}
+	if *flagDebug {
+		conf.Debug = true
 	}
 	conf.UserAgent = fmt.Sprintf("moov fedtest/%s", fed.Version)
 	conf.HTTPClient = &http.Client{
@@ -77,17 +86,4 @@ func makeConfig() *client.Configuration {
 		},
 	}
 	return conf
-}
-
-func ping(api *client.APIClient) error {
-	resp, err := api.FEDApi.Ping(context.Background())
-	defer func() {
-		if resp != nil {
-			resp.Body.Close()
-		}
-	}()
-	if err != nil {
-		return fmt.Errorf("ping error: %v", err)
-	}
-	return nil
 }
