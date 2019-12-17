@@ -1,3 +1,15 @@
+## v0.4.1 (Unreleased)
+
+IMPROVEMENTS
+
+- build: slim down final image, run as moov user
+
+BUILD
+
+- build: test docker image in CI
+- Update module prometheus/client_golang to v1.2.1
+- build: upgrade openapi-generator to 4.2.2
+
 ## v0.4.0 (Released 2019-10-07)
 
 BUG FIXES
