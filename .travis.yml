@@ -49,6 +49,7 @@ script:
   - staticcheck *.go
   - staticcheck ./cmd/server/*.go
   - staticcheck ./pkg/strcmp/*.go
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make && make docker && make test-integration; fi
 after_success:
   - bash <(curl -s https://codecov.io/bash) -X fix
   - make

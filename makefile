@@ -45,6 +45,15 @@ docker:
 	docker build --pull -t moov/fedtest:$(VERSION) -f Dockerfile-fedtest ./
 	docker tag moov/fedtest:$(VERSION) moov/fedtest:latest
 
+clean-integration:
+	docker-compose kill
+	docker-compose rm -v -f
+
+test-integration: clean-integration
+	docker-compose up -d
+	sleep 5
+	./bin/fedtest -local
+
 release: docker AUTHORS
 	go vet ./...
 	go test -coverprofile=cover-$(VERSION).out ./...
