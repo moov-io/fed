@@ -11,7 +11,7 @@ require (
 	github.com/prometheus/client_golang v1.2.1
 	github.com/rickar/cal v1.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20170218160415-a3153f7040e9
-	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 )
 
 go 1.13
