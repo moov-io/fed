@@ -5,7 +5,7 @@ VERSION := $(shell grep -Eo '(v[0-9]+[\.][0-9]+[\.][0-9]+(-[a-zA-Z0-9]*)?)' vers
 
 build: check
 # main FED binary
-	CGO_ENABLED=1 go build -o ./bin/server github.com/moov-io/fed/cmd/server
+	CGO_ENABLED=0 go build -o ./bin/server github.com/moov-io/fed/cmd/server
 # fedtest binary
 	CGO_ENABLED=0 go build -o bin/fedtest ./cmd/fedtest
 
