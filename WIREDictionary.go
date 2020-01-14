@@ -1,4 +1,4 @@
-// Copyright 2019 The Moov Authors
+// Copyright 2020 The Moov Authors
 // Use of this source code is governed by an Apache License
 // license that can be found in the LICENSE file.
 
@@ -6,12 +6,13 @@ package fed
 
 import (
 	"bufio"
-	"github.com/moov-io/base"
-	"github.com/moov-io/fed/pkg/strcmp"
 	"io"
 	"sort"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/strcmp"
 )
 
 var (

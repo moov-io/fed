@@ -1,4 +1,4 @@
-// Copyright 2019 The Moov Authors
+// Copyright 2020 The Moov Authors
 // Use of this source code is governed by an Apache License
 // license that can be found in the LICENSE file.
 
@@ -6,10 +6,11 @@ package main
 
 import (
 	"errors"
-	"github.com/moov-io/fed"
 	"net/http"
 	"strconv"
 	"sync"
+
+	"github.com/moov-io/fed"
 
 	"github.com/go-kit/kit/log"
 )
