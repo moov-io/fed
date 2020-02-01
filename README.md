@@ -12,7 +12,7 @@ Docs: [docs.moov.io](https://docs.moov.io/fed/) | [api docs](https://api.moov.io
 
 ### Project Status
 
-Moov FED is under active development and in production for multiple companies. Please star the project if you are interested in its progress.
+This project is currently under development and could introduce breaking changes to reach a stable status. We are looking for community feedback so please try out our code or give us feedback!
 
 ### Usage
 
