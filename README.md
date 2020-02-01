@@ -16,8 +16,7 @@ This project is currently under development and could introduce breaking changes
 
 ### Usage
 
-Go library
-github.com/moov-io/fed offers a Go based search for FEDACH and FEDWIRE Participants.
+The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Participants.
 
 To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
 
