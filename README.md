@@ -20,8 +20,6 @@ The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Par
 
 To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
 
-Docs: [docs.moov.io](https://docs.moov.io/) | [api docs](https://api.moov.io/apps/fed/)
-
 Note: The Docker image ships with old data files (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be obtained from your Financial Institution and provided to the server process.
 
 #### ACH Routing Number Example
