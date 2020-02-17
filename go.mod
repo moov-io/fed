@@ -3,7 +3,7 @@ module github.com/moov-io/fed
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/docker/docker v1.13.1
-	github.com/go-kit/kit v0.9.0
+	github.com/go-kit/kit v0.10.0
 	github.com/gorilla/mux v1.7.4
 	github.com/moov-io/base v0.11.0
 	github.com/prometheus/client_golang v1.4.1
