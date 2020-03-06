@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1.14-alpine as builder
 RUN apk add -U make git
 RUN adduser -D -g '' --shell /bin/false moov
 
@@ -10,7 +10,6 @@ RUN go get -u github.com/moov-io/go-client/client
 # Pull api code into image, then build
 WORKDIR /go/src/github.com/moov-io/fed/
 COPY . .
-ENV GO111MODULE=on
 RUN go mod download
 RUN make build
 USER moov
