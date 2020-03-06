@@ -3,18 +3,15 @@ dist: xenial
 sudo: false
 services:
 - docker
-env:
-  matrix:
-    - GO111MODULE=on
 matrix:
   include:
     - os: linux
-      go: 1.13.x
+      go: 1.14.x
       cache:
         directories:
           - "/home/travis/.cache/go-build"
     - os: osx
-      go: 1.13.x
+      go: 1.14.x
       cache:
         directories:
           - "/Users/travis/Library/Caches/go-build"
@@ -72,7 +69,7 @@ deploy:
   on:
     repo: moov-io/fed
     tags: true
-    go: 1.13.x
+    go: 1.14.x
   skip_cleanup: true
 after_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
