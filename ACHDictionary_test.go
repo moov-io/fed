@@ -125,7 +125,7 @@ func TestACHRoutingNumberSearchSingle(t *testing.T) {
 	achDir := helperLoadFEDACHFile(t)
 	fi := achDir.RoutingNumberSearchSingle("325183657")
 	if fi == nil {
-		t.Errorf("ach routing number `325183657` not found")
+		t.Fatal("ach routing number `325183657` not found")
 	}
 	if fi.CustomerName != "LOWER VALLEY CU" {
 		t.Errorf("Expected `LOWER VALLEY CU` got : %v", fi.CustomerName)

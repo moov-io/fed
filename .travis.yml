@@ -47,9 +47,7 @@ script:
   - misspell -error -locale US $GOFILES
   - gocyclo -over 25 $GOFILES
   - golint -set_exit_status $GOFILES
-  - staticcheck *.go
-  - staticcheck ./cmd/server/*.go
-  - staticcheck ./pkg/strcmp/*.go
+  - staticcheck . ./cmd/... ./pkg/...
   - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then go list -m all | ./bin/nancy; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make && make docker && make test-integration; fi
 after_success:
