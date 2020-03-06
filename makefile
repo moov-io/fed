@@ -26,8 +26,7 @@ client:
 
 .PHONY: clean
 clean:
-	@rm -rf client/
-	@rm -rf bin/
+	@rm -rf ./bin/
 	@rm -f openapi-generator-cli-*.jar
 
 dist: clean client build
