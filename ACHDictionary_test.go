@@ -6,32 +6,42 @@ package fed
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/moov-io/base"
 )
 
-func helperLoadFEDACHFile(t *testing.T) *ACHDictionary {
-	f, err := os.Open("./data/FedACHdir.txt")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
+func loadTestACHFiles(t *testing.T) (*ACHDictionary, *ACHDictionary) {
+	t.Helper()
+
+	open := func(path string) *ACHDictionary {
+		f, err := os.Open(path)
+		if err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		t.Cleanup(func() { f.Close() })
+
+		dict := NewACHDictionary()
+		if err := dict.Read(f); err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		return dict
 	}
-	defer f.Close()
-	achDir := NewACHDictionary(f)
-	err = achDir.Read()
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-	return achDir
+
+	jsonDict := open(filepath.Join("data", "fedachdir.json"))
+	plainDict := open(filepath.Join("data", "FedACHdir.txt"))
+
+	return jsonDict, plainDict
 }
 
 // Values within the tests can change if the FED ACH participants change (e.g. Number of participants, etc.)
 
 func TestACHParseParticipant(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
-	f := NewACHDictionary(strings.NewReader(line))
-	f.Read()
+	f := NewACHDictionary()
+	f.Read(strings.NewReader(line))
 	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.RoutingNumber != "073905527" {
 			t.Errorf("CustomerName Expected '073905527' got: %v", fi.RoutingNumber)
@@ -84,23 +94,33 @@ func TestACHParseParticipant(t *testing.T) {
 }
 
 func TestACHDirectoryRead(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	if len(achDir.ACHParticipants) != 18198 {
-		t.Errorf("Expected '18198' got: %v", len(achDir.ACHParticipants))
-	}
-	if fi, ok := achDir.IndexACHRoutingNumber["073905527"]; ok {
-		if fi.CustomerName != "LINCOLN SAVINGS BANK" {
-			t.Errorf("Expected `LINCOLN SAVINGS BANK` got : %v", fi.CustomerName)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		if fi, ok := dict.IndexACHRoutingNumber["073905527"]; ok {
+			if fi.CustomerName != "LINCOLN SAVINGS BANK" {
+				t.Errorf("%s: Expected `LINCOLN SAVINGS BANK` got : %v", kind, fi.CustomerName)
+			}
+		} else {
+			t.Errorf("%s: ach routing number `073905527` not found", kind)
 		}
-	} else {
-		t.Errorf("ach routing number `073905527` not found")
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	if len(jsonDict.ACHParticipants) != 6 {
+		t.Errorf("got %d participants", len(jsonDict.ACHParticipants))
+	}
+	check(t, "json", jsonDict)
+
+	if len(plainDict.ACHParticipants) != 18198 {
+		t.Errorf("got %d participants", len(plainDict.ACHParticipants))
+	}
+	check(t, "plain", plainDict)
 }
 
 func TestACHInvalidRecordLength(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E"
-	f := NewACHDictionary(strings.NewReader(line))
-	if err := f.Read(); err != nil {
+	f := NewACHDictionary()
+	if err := f.Read(strings.NewReader(line)); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(155, 80)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -109,8 +129,8 @@ func TestACHInvalidRecordLength(t *testing.T) {
 
 func TestACHParticipantLabel(t *testing.T) {
 	var line = "073905527O0710003011012908000000000LINCOLN SAVINGS BANK                P O BOX E                           REINBECK            IA506690159319788644111     "
-	f := NewACHDictionary(strings.NewReader(line))
-	f.Read()
+	f := NewACHDictionary()
+	f.Read(strings.NewReader(line))
 	if fi, ok := f.IndexACHRoutingNumber["073905527"]; ok {
 		if fi.CustomerNameLabel() != "Lincoln Savings Bank" {
 			t.Errorf("CustomerNameLabel Expected 'Lincoln Savings Bank' got: %v", fi.CustomerNameLabel())
@@ -122,45 +142,70 @@ func TestACHParticipantLabel(t *testing.T) {
 
 // TestACHRoutingNumberSearchSingle tests that a valid routing number defined in FedACHDir returns participant data
 func TestACHRoutingNumberSearchSingle(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.RoutingNumberSearchSingle("325183657")
-	if fi == nil {
-		t.Fatal("ach routing number `325183657` not found")
+	check := func(t *testing.T, kind string, dir *ACHDictionary) {
+		fi := dir.RoutingNumberSearchSingle("325183657")
+		if fi == nil {
+			t.Fatalf("%s: ach routing number `325183657` not found", kind)
+		}
+		if fi.CustomerName != "LOWER VALLEY CU" {
+			t.Errorf("%s: Expected `LOWER VALLEY CU` got : %v", kind, fi.CustomerName)
+		}
 	}
-	if fi.CustomerName != "LOWER VALLEY CU" {
-		t.Errorf("Expected `LOWER VALLEY CU` got : %v", fi.CustomerName)
-	}
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestInvalidRoutingNumberSearchSingle tests that an invalid routing number returns nil
 func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.RoutingNumberSearchSingle("433")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi := jsonDict.RoutingNumberSearchSingle("433")
 	if fi != nil {
-		t.Errorf("%s", "433 should have returned nil")
+		t.Error("json: 433 should have returned nil")
+	}
+
+	fi = plainDict.RoutingNumberSearchSingle("433")
+	if fi != nil {
+		t.Error("plain: 433 should have returned nil")
 	}
 }
 
 // TestACHFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedACHDir returns
 // participant data
 func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
-	if len(fi) == 0 {
-		t.Fatalf("ach financial institution `BANK OF AMERICA N.A` not found")
-	}
-	for _, f := range fi {
-		if f.CustomerName != "BANK OF AMERICA N.A" {
-			t.Errorf("Expected `BANK OF AMERICA, N.A` got : %s", f.CustomerName)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		for i := range dict.ACHParticipants {
+			t.Logf("#%d %#v", i, dict.ACHParticipants[i])
+		}
+
+		fi := dict.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
+		if len(fi) == 0 {
+			t.Fatalf("%s: ach financial institution `BANK OF AMERICA N.A` not found", kind)
+		}
+		for _, f := range fi {
+			if f.CustomerName != "BANK OF AMERICA N.A" {
+				t.Errorf("%s: Expected `BANK OF AMERICA, N.A` got : %s", kind, f.CustomerName)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestInvalidACHFinancialInstitutionSearchSingle tests that a Financial Institution is not defined in FedACHDir
 // returns nil
 func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearchSingle("XYZ")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi := jsonDict.FinancialInstitutionSearchSingle("XYZ")
+	if len(fi) != 0 {
+		t.Errorf("%s", "XYZ should have returned nil")
+	}
+
+	fi = plainDict.FinancialInstitutionSearchSingle("XYZ")
 	if len(fi) != 0 {
 		t.Errorf("%s", "XYZ should have returned nil")
 	}
@@ -168,8 +213,17 @@ func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 
 // TestACHRoutingNumberSearch tests that routing number search returns nil or FEDACH participant data
 func TestACHRoutingNumberSearch(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi, err := achDir.RoutingNumberSearch("325")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi, err := jsonDict.RoutingNumberSearch("325")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Errorf("%s", "325 should have returned values")
+	}
+
+	fi, err = plainDict.RoutingNumberSearch("325")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -180,8 +234,9 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 
 // TestACHRoutingNumberSearch02 tests string `02` returns results
 func TestACHRoutingNumberSearch02(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi, err := achDir.RoutingNumberSearch("02")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi, err := jsonDict.RoutingNumberSearch("03")
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -189,13 +244,27 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 		t.Fatalf("02 should have returned values")
 	}
 
+	fi, err = plainDict.RoutingNumberSearch("02")
+	if err != nil {
+		t.Fatalf("%T: %s", err, err)
+	}
+	if len(fi) == 0 {
+		t.Fatalf("02 should have returned values")
+	}
 }
 
 // TestACHRoutingNumberSearchMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is less than 2.
 func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	if _, err := achDir.RoutingNumberSearch("0"); err != nil {
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	if _, err := jsonDict.RoutingNumberSearch("0"); err != nil {
+		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+
+	if _, err := plainDict.RoutingNumberSearch("0"); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -204,21 +273,32 @@ func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 
 // TestInvalidACHRoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
 func TestInvalidACHRoutingNumberSearch(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi, err := achDir.RoutingNumberSearch("777777777")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		fi, err := dict.RoutingNumberSearch("777777777")
+		if err != nil {
+			t.Fatalf("%s: %T: %s", kind, err, err)
+		}
+		if len(fi) != 0 {
+			t.Fatalf("%s: ach routing number search should have returned nil", kind)
+		}
 	}
-	if len(fi) != 0 {
-		t.Fatal("ach routing number search should have returned nil")
-	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHRoutingNumberMaximumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is greater than 9.
 func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	if _, err := achDir.RoutingNumberSearch("1234567890"); err != nil {
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	if _, err := jsonDict.RoutingNumberSearch("1234567890"); err != nil {
+		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+	if _, err := plainDict.RoutingNumberSearch("1234567890"); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -228,8 +308,14 @@ func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 // TestACHRoutingNumberNumeric tests that routing number search returns an ErrRoutingNumberNumeric if the
 // string passed in is not numeric.
 func TestACHRoutingNumberNumeric(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	if _, err := achDir.RoutingNumberSearch("1  S5"); err != nil {
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	if _, err := jsonDict.RoutingNumberSearch("1  S5"); err != nil {
+		if !base.Has(err, ErrRoutingNumberNumeric) {
+			t.Errorf("%T: %s", err, err)
+		}
+	}
+	if _, err := plainDict.RoutingNumberSearch("1  S5"); err != nil {
 		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -238,120 +324,159 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 
 // TestACHFinancialInstitutionSearch tests search string `First Bank`
 func TestACHFinancialInstitutionSearch(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearch("First Bank")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi := jsonDict.FinancialInstitutionSearch("First Bank")
 	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
+		t.Fatalf("json: No Financial Institutions matched your search query")
+	}
+
+	fi = plainDict.FinancialInstitutionSearch("First Bank")
+	if len(fi) == 0 {
+		t.Fatalf("plain: No Financial Institutions matched your search query")
 	}
 }
 
 // TestACHFinancialInstitutionFarmers tests search string `FaRmerS`
 func TestACHFinancialInstitutionFarmers(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearch("FaRmerS")
+	jsonDict, plainDict := loadTestACHFiles(t)
+
+	fi := jsonDict.FinancialInstitutionSearch("FaRmerS")
 	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
+		t.Fatalf("json: No Financial Institutions matched your search query")
+	}
+
+	fi = plainDict.FinancialInstitutionSearch("FaRmerS")
+	if len(fi) == 0 {
+		t.Fatalf("plain: No Financial Institutions matched your search query")
 	}
 }
 
 // TestACHSearchStateFilter tests search string `Farmers State Bank` and filters by the state of Ohio, `OH`
 func TestACHSearchStateFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearch("Farmers State Bank")
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		if len(fi) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
 
-	filter := achDir.ACHParticipantStateFilter(fi, "OH")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.State != "OH" {
-			t.Errorf("Expected `OH` got : %s", loc.ACHLocation.State)
+		filter := dict.ACHParticipantStateFilter(fi, "MO")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.State != "MO" {
+				t.Errorf("%s: Expected `MO` got : %s", kind, loc.ACHLocation.State)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHSearchCityFilter tests search string `Farmers State Bank` and filters by the city of `ARCHBOLD`
 func TestACHSearchCityFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearch("Farmers State Bank")
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		if len(fi) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
 
-	filter := achDir.ACHParticipantCityFilter(fi, "ARCHBOLD")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.City != "ARCHBOLD" {
-			t.Errorf("Expected `ARCHBOLD` got : %s", loc.ACHLocation.City)
+		filter := dict.ACHParticipantCityFilter(fi, "CAMERON")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.City != "CAMERON" {
+				t.Errorf("%s: Expected `CAMERON` got : %s", kind, loc.ACHLocation.City)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHSearchPostalCodeFilter tests search string `Farmers State Bank` and filters by the postal code of
 func TestACHSearchPostalCodeFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-	fi := achDir.FinancialInstitutionSearch("Farmers State Bank")
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		if len(fi) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
 
-	filter := achDir.ACHParticipantPostalCodeFilter(fi, "56208")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.PostalCode != "56208" {
-			t.Errorf("Expected `56208` got : %s", loc.ACHLocation.PostalCode)
+		filter := dict.ACHParticipantPostalCodeFilter(fi, "64429")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.PostalCode != "64429" {
+				t.Errorf("%s: Expected `64429` got : %s", kind, loc.ACHLocation.PostalCode)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHDictionaryStateFilter tests filtering ACHDictionary.ACHParticipants by the state of `PA`
 func TestACHDictionaryStateFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-
-	filter := achDir.StateFilter("pa")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.State != "PA" {
-			t.Errorf("Expected `PA` got : %s", loc.ACHLocation.State)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		filter := dict.StateFilter("nj")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.State != "NJ" {
+				t.Errorf("%s: Expected `NJ` got : %s", kind, loc.ACHLocation.State)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHDictionaryCityFilter tests filtering ACHDictionary.ACHParticipants by the city of `Reading`
 func TestACHDictionaryCityFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-
-	filter := achDir.CityFilter("Reading")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.City != "READING" {
-			t.Errorf("Expected `READING` got : %s", loc.ACHLocation.City)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		filter := dict.CityFilter("Hamilton")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.City != "HAMILTON" {
+				t.Errorf("%s: Expected `HAMILTON` got : %s", kind, loc.ACHLocation.City)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestACHDictionaryPostalCodeFilter tests filtering ACHDictionary.ACHParticipants by the postal code of `19468`
 func TestACHDictionaryPostalCodeFilter(t *testing.T) {
-	achDir := helperLoadFEDACHFile(t)
-
-	filter := achDir.PostalCodeFilter("19468")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.ACHLocation.PostalCode != "19468" {
-			t.Errorf("Expected `19468` got : %s", loc.ACHLocation.PostalCode)
+	check := func(t *testing.T, kind string, dict *ACHDictionary) {
+		filter := dict.PostalCodeFilter("08690")
+		if len(filter) == 0 {
+			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
+		}
+		for _, loc := range filter {
+			if loc.ACHLocation.PostalCode != "08690" {
+				t.Errorf("%s: Expected `08690` got : %s", kind, loc.ACHLocation.PostalCode)
+			}
 		}
 	}
+
+	jsonDict, plainDict := loadTestACHFiles(t)
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
