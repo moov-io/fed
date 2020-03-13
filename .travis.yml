@@ -15,6 +15,8 @@ matrix:
       cache:
         directories:
           - "/Users/travis/Library/Caches/go-build"
+    - os: windows
+      go: 1.14.x
 before_install:
   # Setup directory for binaries
   - mkdir ./bin
@@ -56,6 +58,7 @@ after_success:
   - make client
   - make docker
 before_deploy:
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y make; fi
   - make dist
 deploy:
   provider: releases
@@ -64,6 +67,7 @@ deploy:
   file_glob: true
   file:
     - bin/fed-*
+    - bin/fed.exe
   on:
     repo: moov-io/fed
     tags: true
