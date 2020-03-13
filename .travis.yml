@@ -56,7 +56,7 @@ after_success:
   - bash <(curl -s https://codecov.io/bash) -X fix
   - make
   - make client
-  - make docker
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then make docker; fi
 before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y make; fi
   - make dist
