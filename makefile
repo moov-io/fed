@@ -31,7 +31,7 @@ clean:
 
 dist: clean client build
 ifeq ($(OS),Windows_NT)
-	CGO_ENABLED=1 GOOS=windows go build -o bin/fed-windows-amd64.exe github.com/moov-io/fed/cmd/server
+	CGO_ENABLED=1 GOOS=windows go build -o bin/fed.exe github.com/moov-io/fed/cmd/server
 else
 	CGO_ENABLED=1 GOOS=$(PLATFORM) go build -o bin/fed-$(PLATFORM)-amd64 github.com/moov-io/fed/cmd/server
 endif
