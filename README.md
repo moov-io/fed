@@ -20,7 +20,7 @@ The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Par
 
 To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
 
-**Note**: The Docker image ships with **old data files** (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be **obtained from your Financial Institution** and provided to the server process.
+**Note**: The Docker image ships with **old data files** (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be **obtained from your Financial Institution** and provided to the server process. The official JSON file format from the Federal Reserve is also supported.
 
 #### ACH Routing Number Example
 
@@ -99,7 +99,7 @@ Fed ships a client library generated from an [OpenAPI Specification](https://en.
 
 ## FedWire and FedACH data from the Federal Reserve Bank Services
 
-The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/).
+The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/). Both the official Fed plaintext and JSON file formats are supported.
 
 ### FedWire Directory
 
