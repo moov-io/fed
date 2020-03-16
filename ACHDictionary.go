@@ -6,7 +6,11 @@ package fed
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"sort"
 	"strings"
 	"unicode/utf8"
@@ -28,10 +32,6 @@ var (
 type ACHDictionary struct {
 	// Participants is a list of Participant structs
 	ACHParticipants []*ACHParticipant
-	//scanner provides a convenient interface for reading data
-	scanner *bufio.Scanner
-	// line being read
-	line string
 	// IndexACHRoutingNumber creates an index of ACHParticipants keyed by ACHParticipant.RoutingNumber
 	IndexACHRoutingNumber map[string]*ACHParticipant
 	// IndexACHCustomerName creates an index of ACHParticipants keyed by ACHParticipant.CustomerName
@@ -43,11 +43,10 @@ type ACHDictionary struct {
 }
 
 // NewACHDictionary creates a ACHDictionary
-func NewACHDictionary(r io.Reader) *ACHDictionary {
+func NewACHDictionary() *ACHDictionary {
 	return &ACHDictionary{
 		IndexACHRoutingNumber: make(map[string]*ACHParticipant),
 		IndexACHCustomerName:  make(map[string][]*ACHParticipant),
-		scanner:               bufio.NewScanner(r),
 	}
 }
 
@@ -98,17 +97,101 @@ type ACHLocation struct {
 }
 
 // Read parses a single line or multiple lines of FedACHdir text
-func (f *ACHDictionary) Read() error {
-	// read through the entire file
-	for f.scanner.Scan() {
-		f.line = f.scanner.Text()
+func (f *ACHDictionary) Read(r io.Reader) error {
+	if f == nil {
+		return nil
+	}
 
-		if utf8.RuneCountInString(f.line) != ACHLineLength {
-			f.errors.Add(NewRecordWrongLengthErr(ACHLineLength, len(f.line)))
+	bs, err := ioutil.ReadAll(r)
+	if err != nil {
+		return err
+	}
+
+	// Try reading the file as JSON and if that fails read as plaintext
+	if err := f.readJSON(bytes.NewReader(bs)); err == nil {
+		return nil
+	}
+	return f.readPlaintext(bytes.NewReader(bs))
+}
+
+// jsonACHDictionary is a JSON representation of the FED ACH Participant directory
+// Model generated with // https://mholt.github.io/json-to-go/
+type jsonACHDictionary struct {
+	FedACHParticipants struct {
+		Response struct {
+			Code int `json:"code"`
+		} `json:"response"`
+		FedACHParticipants []struct {
+			RoutingNumber         string `json:"routingNumber"`
+			OfficeCode            string `json:"officeCode"`
+			ServicingFRBNumber    string `json:"servicingFRBNumber"`
+			RecordTypeCode        string `json:"recordTypeCode"`
+			ChangeDate            string `json:"changeDate"`
+			NewRoutingNumber      string `json:"newRoutingNumber"`
+			CustomerName          string `json:"customerName"`
+			CustomerAddress       string `json:"customerAddress"`
+			CustomerCity          string `json:"customerCity"`
+			CustomerState         string `json:"customerState"`
+			CustomerZip           string `json:"customerZip"`
+			CustomerZipExt        string `json:"customerZipExt"`
+			CustomerAreaCode      string `json:"customerAreaCode"`
+			CustomerPhonePrefix   string `json:"customerPhonePrefix"`
+			CustomerPhoneSuffix   string `json:"customerPhoneSuffix"`
+			InstitutionStatusCode string `json:"institutionStatusCode"`
+			DataViewCode          string `json:"dataViewCode"`
+		} `json:"fedACHParticipants"`
+	} `json:"fedACHParticipants"`
+}
+
+func (f *ACHDictionary) readJSON(r io.Reader) error {
+	var wrapper jsonACHDictionary
+	if err := json.NewDecoder(r).Decode(&wrapper); err != nil {
+		return err
+	}
+	ps := wrapper.FedACHParticipants.FedACHParticipants
+	for i := range ps {
+		p := &ACHParticipant{
+			RoutingNumber:      ps[i].RoutingNumber,
+			OfficeCode:         ps[i].OfficeCode,
+			ServicingFRBNumber: ps[i].ServicingFRBNumber,
+			RecordTypeCode:     ps[i].RecordTypeCode,
+			Revised:            ps[i].ChangeDate,
+			NewRoutingNumber:   ps[i].NewRoutingNumber,
+			CustomerName:       ps[i].CustomerName,
+			ACHLocation: ACHLocation{
+				Address:             ps[i].CustomerAddress,
+				City:                ps[i].CustomerCity,
+				State:               ps[i].CustomerState,
+				PostalCode:          ps[i].CustomerZip,
+				PostalCodeExtension: ps[i].CustomerZipExt,
+			},
+			PhoneNumber: fmt.Sprintf("%s%s%s", ps[i].CustomerAreaCode, ps[i].CustomerPhonePrefix, ps[i].CustomerPhoneSuffix),
+			StatusCode:  ps[i].InstitutionStatusCode,
+			ViewCode:    ps[i].DataViewCode,
+		}
+		f.IndexACHRoutingNumber[ps[i].RoutingNumber] = p
+		f.ACHParticipants = append(f.ACHParticipants, p)
+	}
+	f.createIndexACHCustomerName()
+	return nil
+}
+
+func (f *ACHDictionary) readPlaintext(r io.Reader) error {
+	if f == nil || r == nil {
+		return nil
+	}
+	// read each line and lift it into a ACHParticipant
+	s := bufio.NewScanner(r)
+	var line string
+	for s.Scan() {
+		line = s.Text()
+
+		if utf8.RuneCountInString(line) != ACHLineLength {
+			f.errors.Add(NewRecordWrongLengthErr(ACHLineLength, len(line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
-		if err := f.parseACHParticipant(); err != nil {
+		if err := f.parseACHParticipant(line); err != nil {
 			f.errors.Add(err)
 			return f.errors
 		}
@@ -118,39 +201,39 @@ func (f *ACHDictionary) Read() error {
 }
 
 // TODO return a parsing error if the format or file is wrong.
-func (f *ACHDictionary) parseACHParticipant() error {
+func (f *ACHDictionary) parseACHParticipant(line string) error {
 	p := new(ACHParticipant)
 
 	//RoutingNumber (9): 011000015
-	p.RoutingNumber = f.line[:9]
+	p.RoutingNumber = line[:9]
 	// OfficeCode (1): O
-	p.OfficeCode = f.line[9:10]
+	p.OfficeCode = line[9:10]
 	// ServicingFrbNumber (9): 011000015
-	p.ServicingFRBNumber = f.line[10:19]
+	p.ServicingFRBNumber = line[10:19]
 	// RecordTypeCode (1): 0
-	p.RecordTypeCode = f.line[19:20]
+	p.RecordTypeCode = line[19:20]
 	// ChangeDate (6): 122415
-	p.Revised = f.line[20:26]
+	p.Revised = line[20:26]
 	// NewRoutingNumber (9): 000000000
-	p.NewRoutingNumber = f.line[26:35]
+	p.NewRoutingNumber = line[26:35]
 	// CustomerName (36): FEDERAL RESERVE BANK
-	p.CustomerName = strings.Trim(f.line[35:71], " ")
+	p.CustomerName = strings.Trim(line[35:71], " ")
 	// Address (36): 1000 PEACHTREE ST N.E.
-	p.Address = strings.Trim(f.line[71:107], " ")
+	p.Address = strings.Trim(line[71:107], " ")
 	// City (20): ATLANTA
-	p.City = strings.Trim(f.line[107:127], " ")
+	p.City = strings.Trim(line[107:127], " ")
 	// State (2): GA
-	p.State = f.line[127:129]
+	p.State = line[127:129]
 	// PostalCode (5): 30309
-	p.PostalCode = f.line[129:134]
+	p.PostalCode = line[129:134]
 	// PostalCodeExtension (4): 4470
-	p.PostalCodeExtension = f.line[134:138]
+	p.PostalCodeExtension = line[134:138]
 	// PhoneNumber(10): 8773722457
-	p.PhoneNumber = f.line[138:148]
+	p.PhoneNumber = line[138:148]
 	// StatusCode (1): 1
-	p.StatusCode = f.line[148:149]
+	p.StatusCode = line[148:149]
 	// ViewCode (1): 1
-	p.ViewCode = f.line[149:150]
+	p.ViewCode = line[149:150]
 
 	f.ACHParticipants = append(f.ACHParticipants, p)
 	f.IndexACHRoutingNumber[p.RoutingNumber] = p

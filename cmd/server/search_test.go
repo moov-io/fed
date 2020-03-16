@@ -22,8 +22,8 @@ func (s *searcher) helperLoadFEDACHFile(t *testing.T) error {
 	}
 	defer f.Close()
 
-	s.ACHDictionary = fed.NewACHDictionary(f)
-	if err := s.ACHDictionary.Read(); err != nil {
+	s.ACHDictionary = fed.NewACHDictionary()
+	if err := s.ACHDictionary.Read(f); err != nil {
 		return fmt.Errorf("ERROR: reading FedACHdir.txt %v", err)
 	}
 	return nil

@@ -1,0 +1,20 @@
+{
+  "fedwireParticipants" : {
+    "response" : {
+      "code" : 100
+    },
+    "fedwireParticipants" : [
+      {
+        "routingNumber" : "011000015",
+        "telegraphicName" : "FRB-BOS",
+        "customerName" : "FEDERAL RESERVE BANK OF BOSTON",
+        "customerState" : "MA",
+        "customerCity" : "BOSTON",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20040910"
+      }
+    ]
+  }
+}
