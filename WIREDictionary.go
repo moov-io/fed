@@ -6,7 +6,10 @@ package fed
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"sort"
 	"strings"
 	"unicode/utf8"
@@ -28,10 +31,6 @@ var (
 type WIREDictionary struct {
 	// Participants is a list of Participant structs
 	WIREParticipants []*WIREParticipant
-	//scanner provides a convenient interface for reading data
-	scanner *bufio.Scanner
-	// line being read
-	line string
 	// IndexWIRERoutingNumber creates an index of WIREParticipants keyed by WIREParticipant.RoutingNumber
 	IndexWIRERoutingNumber map[string]*WIREParticipant
 	// IndexWIRECustomerName creates an index of WIREParticipants keyed by WIREParticipant.CustomerName
@@ -43,11 +42,10 @@ type WIREDictionary struct {
 }
 
 // NewWIREDictionary creates a WIREDictionary
-func NewWIREDictionary(r io.Reader) *WIREDictionary {
+func NewWIREDictionary() *WIREDictionary {
 	return &WIREDictionary{
 		IndexWIRERoutingNumber: map[string]*WIREParticipant{},
 		IndexWIRECustomerName:  map[string][]*WIREParticipant{},
-		scanner:                bufio.NewScanner(r),
 	}
 }
 
@@ -83,19 +81,87 @@ type WIRELocation struct {
 	State string `json:"state"`
 }
 
-// Read parses a single line or multiple lines of FedWIREdir text
-func (f *WIREDictionary) Read() error {
-	// read through the entire file
-	for f.scanner.Scan() {
-		f.line = f.scanner.Text()
+// jsonWIREDictionary is a JSON representation of the FED Wire Participant directory
+// Model generated with // https://mholt.github.io/json-to-go/
+type jsonWIREDictionary struct {
+	FedwireParticipants struct {
+		Response struct {
+			Code int `json:"code"`
+		} `json:"response"`
+		FedwireParticipants []struct {
+			RoutingNumber             string `json:"routingNumber"`
+			TelegraphicName           string `json:"telegraphicName"`
+			CustomerName              string `json:"customerName"`
+			CustomerState             string `json:"customerState"`
+			CustomerCity              string `json:"customerCity"`
+			FundsEligibility          string `json:"fundsEligibility"`
+			FundsSettlementOnlyStatus string `json:"fundsSettlementOnlyStatus"`
+			SecuritiesEligibility     string `json:"securitiesEligibility"`
+			ChangeDate                string `json:"changeDate"`
+		} `json:"fedwireParticipants"`
+	} `json:"fedwireParticipants"`
+}
 
-		if utf8.RuneCountInString(f.line) != WIRELineLength {
-			f.errors.Add(NewRecordWrongLengthErr(WIRELineLength, len(f.line)))
+// Read parses a single line or multiple lines of FedWIREdir text
+func (f *WIREDictionary) Read(r io.Reader) error {
+	if f == nil {
+		return nil
+	}
+
+	bs, err := ioutil.ReadAll(r)
+	if err != nil {
+		return err
+	}
+
+	// Try reading the file as JSON and if that fails read as plaintext
+	if err := f.readJSON(bytes.NewReader(bs)); err == nil {
+		return nil
+	}
+	return f.readPlaintext(bytes.NewReader(bs))
+}
+
+func (f *WIREDictionary) readJSON(r io.Reader) error {
+	var wrapper jsonWIREDictionary
+	if err := json.NewDecoder(r).Decode(&wrapper); err != nil {
+		return err
+	}
+	ps := wrapper.FedwireParticipants.FedwireParticipants
+	for i := range ps {
+		p := &WIREParticipant{
+			RoutingNumber:   ps[i].RoutingNumber,
+			TelegraphicName: ps[i].TelegraphicName,
+			CustomerName:    ps[i].CustomerName,
+			WIRELocation: WIRELocation{
+				City:  ps[i].CustomerCity,
+				State: ps[i].CustomerState,
+			},
+			FundsTransferStatus:               ps[i].FundsEligibility,
+			FundsSettlementOnlyStatus:         ps[i].FundsSettlementOnlyStatus,
+			BookEntrySecuritiesTransferStatus: ps[i].SecuritiesEligibility,
+			Date:                              ps[i].ChangeDate,
+		}
+		f.WIREParticipants = append(f.WIREParticipants, p)
+		f.IndexWIRERoutingNumber[p.RoutingNumber] = p
+	}
+	f.createIndexWIRECustomerName()
+	return nil
+}
+
+func (f *WIREDictionary) readPlaintext(r io.Reader) error {
+	if f == nil || r == nil {
+		return nil
+	}
+	// read each line and lift it into a ACHParticipant
+	s := bufio.NewScanner(r)
+	var line string
+	for s.Scan() {
+		line = s.Text()
+		if utf8.RuneCountInString(line) != WIRELineLength {
+			f.errors.Add(NewRecordWrongLengthErr(WIRELineLength, len(line)))
 			// Return with error if the record length is incorrect as this file is a FED file
 			return f.errors
 		}
-
-		if err := f.parseWIREParticipant(); err != nil {
+		if err := f.parseWIREParticipant(line); err != nil {
 			f.errors.Add(err)
 			return f.errors
 		}
@@ -105,27 +171,29 @@ func (f *WIREDictionary) Read() error {
 }
 
 // TODO return a parsing error if the format or file is wrong.
-func (f *WIREDictionary) parseWIREParticipant() error {
+func (f *WIREDictionary) parseWIREParticipant(line string) error {
 	p := new(WIREParticipant)
 
 	//RoutingNumber (9): 011000015
-	p.RoutingNumber = f.line[:9]
+	p.RoutingNumber = line[:9]
 	// TelegraphicName (18): FED
-	p.TelegraphicName = strings.Trim(f.line[9:27], " ")
+	p.TelegraphicName = strings.Trim(line[9:27], " ")
 	// CustomerName (36): FEDERAL RESERVE BANK
-	p.CustomerName = strings.Trim(f.line[27:63], " ")
-	// State (2): GA
-	p.State = f.line[63:65]
-	// City (25): ATLANTA
-	p.City = strings.Trim(f.line[65:90], " ")
+	p.CustomerName = strings.Trim(line[27:63], " ")
+	p.WIRELocation = WIRELocation{
+		// State (2): GA
+		State: line[63:65],
+		// City (25): ATLANTA
+		City: strings.Trim(line[65:90], " "),
+	}
 	// FundsTransferStatus (1): Y or N
-	p.FundsTransferStatus = f.line[90:91]
+	p.FundsTransferStatus = line[90:91]
 	// FundsSettlementOnlyStatus (1): " " or S - Settlement-Only
-	p.FundsSettlementOnlyStatus = f.line[91:92]
+	p.FundsSettlementOnlyStatus = line[91:92]
 	// BookEntrySecuritiesTransferStatus (1): Y or N
-	p.BookEntrySecuritiesTransferStatus = f.line[92:93]
+	p.BookEntrySecuritiesTransferStatus = line[92:93]
 	// Date YYYYMMDD (8): 122415
-	p.Date = f.line[93:101]
+	p.Date = line[93:101]
 	f.WIREParticipants = append(f.WIREParticipants, p)
 	f.IndexWIRERoutingNumber[p.RoutingNumber] = p
 	return nil

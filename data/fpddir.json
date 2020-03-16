@@ -14,6 +14,105 @@
         "fundsSettlementOnlyStatus" : " ",
         "securitiesEligibility" : "Y",
         "changeDate" : "20040910"
+      },
+      {
+        "routingNumber": "325280039",
+        "telegraphicName" : "MAC FCU",
+        "customerName" : "MAC FEDERAL CREDIT UNION",
+        "customerState" : "AK",
+        "customerCity" : "FAIRBANKS",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20180629"
+      },
+      {
+        "routingNumber": "324172465",
+        "telegraphicName" : "ALBERT EFCU BOIS",
+        "customerName" : "TRUGROCER FEDERAL CREDIT UNION",
+        "customerState" : "ID",
+        "customerCity" : "BOISE",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "N",
+        "changeDate" : "20061002"
+      },
+      {
+        "routingNumber": "021000018",
+        "telegraphicName" : "BK OF NYC",
+        "customerName" : "THE BANK OF NEW YORK MELLON",
+        "customerState" : "NY",
+        "customerCity" : "NEW YORK",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20080701"
+      },
+      {
+        "routingNumber": "031207924",
+        "telegraphicName" : "FIRST BANK",
+        "customerName" : "FIRST BANK",
+        "customerState" : "NJ",
+        "customerCity" : "HAMILTON",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "N",
+        "changeDate" : "20180307"
+      },
+      {
+        "routingNumber": "021054941",
+        "telegraphicName" : "FARMER MAC SEC P&I",
+        "customerName" : "FARMER MAC SEC P&I ACCOUNT",
+        "customerState" : "NJ",
+        "customerCity" : "EAST RUTHERFORD",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20160331"
+      },
+      {
+        "routingNumber": "113109898",
+        "telegraphicName" : "CARMINE STATE BK",
+        "customerName" : "CARMINE STATE BANK",
+        "customerState" : "TX",
+        "customerCity" : "CARMINE",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "N",
+        "changeDate" : "        "
+      },
+      {
+        "routingNumber": "053103640",
+        "telegraphicName" : "FMB GRANITE QUARRY",
+        "customerName" : "FARMERS & MERCHANTS BANK",
+        "customerState" : "NC",
+        "customerCity" : "SALISBURY",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20070504"
+      },
+      {
+        "routingNumber": "011075150",
+        "telegraphicName" : "SANTANDER BK",
+        "customerName" : "SANTANDER BANK, N.A.",
+        "customerState" : "PA",
+        "customerCity" : "WYOMISSING",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "20131029"
+      },
+      {
+        "routingNumber": "211372404",
+        "telegraphicName" : "READING COOP BANK",
+        "customerName" : "READING CO-OPERATIVE BANK",
+        "customerState" : "MA",
+        "customerCity" : "READING",
+        "fundsEligibility" : "Y",
+        "fundsSettlementOnlyStatus" : " ",
+        "securitiesEligibility" : "Y",
+        "changeDate" : "19991230"
       }
     ]
   }

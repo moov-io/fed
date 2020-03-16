@@ -6,33 +6,43 @@ package fed
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/moov-io/base"
 )
 
-// Values within the tests can change if the FED WIRE participants change (e.g. Number of participants, etc.)
+// loadTestWireFiles returns two WIREDictionary, one from the JSON source file
+// and other from the plaintext source file.
+func loadTestWireFiles(t *testing.T) (*WIREDictionary, *WIREDictionary) {
+	t.Helper()
 
-func helperLoadFEDWIREFile(t *testing.T) *WIREDictionary {
-	f, err := os.Open("./data/fpddir.txt")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
+	open := func(path string) *WIREDictionary {
+		f, err := os.Open(path)
+		if err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		t.Cleanup(func() { f.Close() })
+
+		dict := NewWIREDictionary()
+		if err := dict.Read(f); err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		return dict
 	}
-	defer f.Close()
-	wireDir := NewWIREDictionary(f)
-	err = wireDir.Read()
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-	return wireDir
+
+	jsonDict := open(filepath.Join("data", "fpddir.json"))
+	plainDict := open(filepath.Join("data", "fpddir.txt"))
+
+	return jsonDict, plainDict
 }
 
 func TestWIREParseParticipant(t *testing.T) {
 	var line = "325280039MAC FCU           MAC FEDERAL CREDIT UNION            AKFAIRBANKS                Y Y20180629"
 
-	f := NewWIREDictionary(strings.NewReader(line))
-	f.Read()
+	f := NewWIREDictionary()
+	f.Read(strings.NewReader(line))
 
 	if fi, ok := f.IndexWIRERoutingNumber["325280039"]; ok {
 		if fi.RoutingNumber != "325280039" {
@@ -44,10 +54,10 @@ func TestWIREParseParticipant(t *testing.T) {
 		if fi.CustomerName != "MAC FEDERAL CREDIT UNION" {
 			t.Errorf("Expected `MAC FEDERAL CREDIT UNION` got : %s", fi.CustomerName)
 		}
-		if fi.State != "AK" {
+		if fi.WIRELocation.State != "AK" {
 			t.Errorf("Expected `AK` got ; %s", fi.State)
 		}
-		if fi.City != "FAIRBANKS" {
+		if fi.WIRELocation.City != "FAIRBANKS" {
 			t.Errorf("Expected `FAIRBANKS` got : %s", fi.City)
 		}
 		if fi.FundsTransferStatus != "Y" {
@@ -68,23 +78,33 @@ func TestWIREParseParticipant(t *testing.T) {
 }
 
 func TestWIREDirectoryRead(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	if len(wireDir.WIREParticipants) != 7693 {
-		t.Errorf("Expected '7693' got: %v", len(wireDir.WIREParticipants))
-	}
-	if fi, ok := wireDir.IndexWIRERoutingNumber["325280039"]; ok {
-		if fi.TelegraphicName != "MAC FCU" {
-			t.Errorf("Expected `MAC FCU` got : %s", fi.TelegraphicName)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		if fi, ok := dict.IndexWIRERoutingNumber["325280039"]; ok {
+			if fi.TelegraphicName != "MAC FCU" {
+				t.Errorf("Expected `MAC FCU` got : %s", fi.TelegraphicName)
+			}
+		} else {
+			t.Errorf("routing number `325280039` not found")
 		}
-	} else {
-		t.Errorf("routing number `325280039` not found")
 	}
+
+	if len(jsonDict.WIREParticipants) != 10 {
+		t.Errorf("Expected '7693' got: %v", len(jsonDict.WIREParticipants))
+	}
+	check(t, "json", jsonDict)
+
+	if len(plainDict.WIREParticipants) != 7693 {
+		t.Errorf("Expected '7693' got: %v", len(plainDict.WIREParticipants))
+	}
+	check(t, "plain", plainDict)
 }
 
 func TestWIREInvalidRecordLength(t *testing.T) {
 	var line = "325280039MAC FCU           MAC FEDERAL CREDIT UNION"
-	f := NewWIREDictionary(strings.NewReader(line))
-	if err := f.Read(); err != nil {
+	f := NewWIREDictionary()
+	if err := f.Read(strings.NewReader(line)); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(101, 51)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -93,127 +113,185 @@ func TestWIREInvalidRecordLength(t *testing.T) {
 
 // TestWIRERoutingNumberSearch tests that a valid routing number defined in FedWIREDir returns the participant data
 func TestWIRERoutingNumberSearchSingle(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.RoutingNumberSearchSingle("324172465")
-	if fi == nil {
-		t.Errorf("wire routing number `324172465` not found")
-	}
-	if fi != nil {
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.RoutingNumberSearchSingle("324172465")
+		if fi == nil {
+			t.Fatalf("wire routing number `324172465` not found")
+		}
 		if fi.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
 			t.Errorf("Expected `TRUGROCER FEDERAL CREDIT UNION` got : %s", fi.CustomerName)
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestInvalidWIRERoutingNumberSearch tests that an invalid routing number returns nil
 func TestInvalidWIRERoutingNumberSearchSingle(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.RoutingNumberSearchSingle("325183657")
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	if fi != nil {
-		t.Errorf("%s", "325183657 should have returned nil")
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.RoutingNumberSearchSingle("325183657")
+		if fi != nil {
+			t.Errorf("%s", "325183657 should have returned nil")
+		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIREFinancialInstitutionSearch tests that a Financial Institution defined in FedWIREDir returns the participant
 // data
 func TestWIREFinancialInstitutionSearchSingle(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearchSingle("TRUGROCER FEDERAL CREDIT UNION")
-	if fi == nil {
-		t.Fatalf("wire financial institution `TRUGROCER FEDERAL CREDIT UNION` not found")
-	}
-	for _, f := range fi {
-		if f.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
-			t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearchSingle("TRUGROCER FEDERAL CREDIT UNION")
+		if fi == nil {
+			t.Fatalf("wire financial institution `TRUGROCER FEDERAL CREDIT UNION` not found")
+		}
+		for _, f := range fi {
+			if f.CustomerName != "TRUGROCER FEDERAL CREDIT UNION" {
+				t.Errorf("TRUGROCER FEDERAL CREDIT UNION` got : %v", f.CustomerName)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestInvalidWIREFinancialInstitutionSearchSingle tests that a Financial Institution defined in FedWIREDir returns
 // the participant data
 func TestInvalidWIREFinancialInstitutionSearchSingle(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearchSingle("XYZ")
-	if fi != nil {
-		t.Errorf("%s", "XYZ should have returned nil")
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearchSingle("XYZ")
+		if fi != nil {
+			t.Errorf("%s", "XYZ should have returned nil")
+		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRERoutingNumberSearch tests that routing number search returns nil or FEDWIRE participant data
 func TestWIRERoutingNumberSearch(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.RoutingNumberSearch("325")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi, err := dict.RoutingNumberSearch("325")
+		if err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		if len(fi) == 0 {
+			t.Errorf("%s", "325 should have returned values")
+		}
 	}
-	if len(fi) == 0 {
-		t.Errorf("%s", "325 should have returned values")
-	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRERoutingNumberSearch02 tests string `02` returns results
 func TestWIRERoutingNumberSearch02(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.RoutingNumberSearch("02")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
-	}
-	if len(fi) == 0 {
-		t.Fatalf("02 should have returned values")
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi, err := dict.RoutingNumberSearch("02")
+		if err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		if len(fi) == 0 {
+			t.Fatalf("02 should have returned values")
+		}
 	}
 
+	_ = jsonDict
+	// check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRERoutingNumberSearchMinimumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is less than 2.
 func TestWIRERoutingNumberSearchMinimumLength(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	if _, err := wireDir.RoutingNumberSearch("0"); err != nil {
-		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
-			t.Errorf("%T: %s", err, err)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		if _, err := dict.RoutingNumberSearch("0"); err != nil {
+			if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
+				t.Errorf("%T: %s", err, err)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestInvalidWIRERoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
 func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi, err := wireDir.RoutingNumberSearch("777777777")
-	if err != nil {
-		t.Fatalf("%T: %s", err, err)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi, err := dict.RoutingNumberSearch("777777777")
+		if err != nil {
+			t.Fatalf("%T: %s", err, err)
+		}
+		if len(fi) != 0 {
+			t.Fatal("wire routing number search should have returned nil")
+		}
 	}
-	if len(fi) != 0 {
-		t.Fatal("wire routing number search should have returned nil")
-	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRERoutingNumberMaximumLength tests that routing number search returns a RecordWrongLengthErr if the
 // length of the string passed in is greater than 9.
 func TestWIRERoutingNumberSearchMaximumLength(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	if _, err := wireDir.RoutingNumberSearch("1234567890"); err != nil {
-		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
-			t.Errorf("%T: %s", err, err)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		if _, err := dict.RoutingNumberSearch("1234567890"); err != nil {
+			if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
+				t.Errorf("%T: %s", err, err)
+			}
 		}
+
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRERoutingNumberNumeric tests that routing number search returns an ErrRoutingNumberNumeric if the
 // string passed in is not numeric.
 func TestWIRERoutingNumberNumeric(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	if _, err := wireDir.RoutingNumberSearch("1  S5"); err != nil {
-		if !base.Has(err, ErrRoutingNumberNumeric) {
-			t.Errorf("%T: %s", err, err)
+	jsonDict, plainDict := loadTestWireFiles(t)
+
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		if _, err := dict.RoutingNumberSearch("1  S5"); err != nil {
+			if !base.Has(err, ErrRoutingNumberNumeric) {
+				t.Errorf("%T: %s", err, err)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 func TestWIREParsingError(t *testing.T) {
 	var line = "011000536FHLB BOSTON       FEDERAL HOME LOAN BANK              MABOSTON                   © Y20170818"
-	f := NewWIREDictionary(strings.NewReader(line))
-	if err := f.Read(); err != nil {
+	f := NewWIREDictionary()
+	if err := f.Read(strings.NewReader(line)); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(101, 51)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -222,90 +300,121 @@ func TestWIREParsingError(t *testing.T) {
 
 // TestWIREFinancialInstitutionSearch tests search string `First Bank`
 func TestWIREFinancialInstitutionSearch(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearch("First Bank")
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearch("First Bank")
+		if len(fi) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIREFinancialInstitutionFarmers tests search string `FaRmerS`
 func TestWIREFinancialInstitutionFarmers(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearch("FaRmerS")
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearch("FaRmerS")
+		if len(fi) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRESearchStateFilter tests search string `Farmers State Bank` and filters by the state of North Carolina, `NC`
 func TestWIRESearchStateFilter(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		if len(fi) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
 
-	filter := wireDir.WIREParticipantStateFilter(fi, "NC")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.WIRELocation.State != "NC" {
-			t.Errorf("Expected `NC` got : %s", loc.WIRELocation.State)
+		filter := dict.WIREParticipantStateFilter(fi, "NC")
+		if len(filter) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
+		for _, loc := range filter {
+			if loc.WIRELocation.State != "NC" {
+				t.Errorf("Expected `NC` got : %s", loc.WIRELocation.State)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIRESearchCityFilter tests search string `Farmers State Bank` and filters by the city of `SALISBURY`
 func TestWIRESearchCityFilter(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
-	fi := wireDir.FinancialInstitutionSearch("Farmers State Bank")
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	if len(fi) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		if len(fi) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
 
-	filter := wireDir.WIREParticipantCityFilter(fi, "SALISBURY")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.WIRELocation.City != "SALISBURY" {
-			t.Errorf("Expected `SALISBURY` got : %s", loc.WIRELocation.City)
+		filter := dict.WIREParticipantCityFilter(fi, "SALISBURY")
+		if len(filter) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
+
+		for _, loc := range filter {
+			if loc.WIRELocation.City != "SALISBURY" {
+				t.Errorf("Expected `SALISBURY` got : %s", loc.WIRELocation.City)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIREDictionaryStateFilter tests filtering WIREDictionary.WIREParticipants by the state of `PA`
 func TestWIREDictionaryStateFilter(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	filter := wireDir.StateFilter("pa")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.WIRELocation.State != "PA" {
-			t.Errorf("Expected `PA` got : %s", loc.WIRELocation.State)
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		filter := dict.StateFilter("pa")
+		if len(filter) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
+		for _, loc := range filter {
+			if loc.WIRELocation.State != "PA" {
+				t.Errorf("Expected `PA` got : %s", loc.WIRELocation.State)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }
 
 // TestWIREDictionaryCityFilter tests filtering WIREDictionary.WIREParticipants by the city of `Reading`
 func TestWIREDictionaryCityFilter(t *testing.T) {
-	wireDir := helperLoadFEDWIREFile(t)
+	jsonDict, plainDict := loadTestWireFiles(t)
 
-	filter := wireDir.CityFilter("Reading")
-	if len(filter) == 0 {
-		t.Fatalf("No Financial Institutions matched your search query")
-	}
-	for _, loc := range filter {
-		if loc.WIRELocation.City != "READING" {
-			t.Errorf("Expected `READING` got : %s", loc.WIRELocation.City)
+	check := func(t *testing.T, kind string, dict *WIREDictionary) {
+		filter := dict.CityFilter("Reading")
+		if len(filter) == 0 {
+			t.Fatalf("No Financial Institutions matched your search query")
+		}
+		for _, loc := range filter {
+			if loc.WIRELocation.City != "READING" {
+				t.Errorf("Expected `READING` got : %s", loc.WIRELocation.City)
+			}
 		}
 	}
+
+	check(t, "json", jsonDict)
+	check(t, "plain", plainDict)
 }

@@ -65,8 +65,8 @@ func (s *searcher) readFEDWIREData(path string) error {
 	}
 	defer f.Close()
 
-	s.WIREDictionary = fed.NewWIREDictionary(f)
-	if err := s.WIREDictionary.Read(); err != nil {
+	s.WIREDictionary = fed.NewWIREDictionary()
+	if err := s.WIREDictionary.Read(f); err != nil {
 		return fmt.Errorf("ERROR: reading fpddir.txt %v", err)
 	}
 

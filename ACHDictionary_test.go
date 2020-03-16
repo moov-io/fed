@@ -175,10 +175,6 @@ func TestInvalidACHRoutingNumberSearchSingle(t *testing.T) {
 // participant data
 func TestACHFinancialInstitutionSearchSingle(t *testing.T) {
 	check := func(t *testing.T, kind string, dict *ACHDictionary) {
-		for i := range dict.ACHParticipants {
-			t.Logf("#%d %#v", i, dict.ACHParticipants[i])
-		}
-
 		fi := dict.FinancialInstitutionSearchSingle("BANK OF AMERICA N.A")
 		if len(fi) == 0 {
 			t.Fatalf("%s: ach financial institution `BANK OF AMERICA N.A` not found", kind)
