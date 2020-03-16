@@ -1,3 +1,9 @@
+## v0.4.3 (Released 2020-03-16)
+
+BUILD:
+
+- Fix `make dist` on Windows
+
 ## v0.4.2 (Released 2020-03-16)
 
 ADDITIONS
