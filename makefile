@@ -15,6 +15,9 @@ check:
 
 .PHONY: client
 client:
+ifeq ($(OS),Windows_NT)
+	@echo "Please generate client on macOS or Linux, currently unsupported on windows."
+else
 # Versions from https://github.com/OpenAPITools/openapi-generator/releases
 	@chmod +x ./openapi-generator
 	@rm -rf ./client
@@ -23,11 +26,16 @@ client:
 	go fmt ./...
 	go build github.com/moov-io/fed/client
 	go test ./client
+endif
 
 .PHONY: clean
 clean:
+ifeq ($(OS),Windows_NT)
+	@echo "Skipping cleanup on Windows, currently unsupported."
+else
 	@rm -rf ./bin/
 	@rm -f openapi-generator-cli-*.jar
+endif
 
 dist: clean client build
 ifeq ($(OS),Windows_NT)
