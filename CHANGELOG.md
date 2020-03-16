@@ -1,3 +1,21 @@
+## v0.4.2 (Released 2020-03-16)
+
+ADDITIONS
+
+- build: release windows binary
+
+IMPROVEMENTS
+
+- api: use shared Error model
+- docs: clarify included data files are old
+
+BUILD:
+
+- chore(deps): update golang docker tag to v1.14
+- Update module prometheus/client_golang to v1.3.0
+- chore(deps): update golang.org/x/oauth2 commit hash to bf48bf1
+- build: run sonatype-nexus-community/nancy in CI
+
 ## v0.4.1 (Released 2019-12-17)
 
 IMPROVEMENTS
