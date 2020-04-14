@@ -1,6 +1,17 @@
+## v0.5.0 (Released 2020-04-14)
+
+ADDITIONS
+
+- ach: support reading input files in the official JSON format
+- wire: read official JSON data files
+
+BUILD
+
+- wire: read official JSON data files
+
 ## v0.4.3 (Released 2020-03-16)
 
-BUILD:
+BUILD
 
 - Fix `make dist` on Windows
 
@@ -15,7 +26,7 @@ IMPROVEMENTS
 - api: use shared Error model
 - docs: clarify included data files are old
 
-BUILD:
+BUILD
 
 - chore(deps): update golang docker tag to v1.14
 - Update module prometheus/client_golang to v1.3.0
