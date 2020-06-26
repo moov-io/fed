@@ -8,7 +8,7 @@ moov-io/fed
 
 Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System such as [ABA routing numbers](https://en.wikipedia.org/wiki/ABA_routing_transit_number), Financial Institution name lookup and [Fed Wire](https://en.wikipedia.org/wiki/Fedwire) routing information. Moov's primary usage for this project is with ACH origination in our [paygate](https://github.com/moov-io/paygate) project.
 
-Docs: [docs.moov.io](https://docs.moov.io/fed/) | [api docs](https://moov-io.github.io/fed/)
+Docs: [Project](https://moov-io.github.io/fed/) | [API Endpoints](https://moov-io.github.io/fed/api/)
 
 ### Project Status
 
@@ -117,7 +117,7 @@ The data and formats in this repository represent a compilation of the **FedWire
 
  channel | info
  ------- | -------
-[Project Documentation](https://docs.moov.io/) | Our project documentation available online.
+[Project Documentation](https://moov-io.github.io/fed/) | Our project documentation available online.
 Google Group [moov-users](https://groups.google.com/forum/#!forum/moov-users)| The Moov users Google group is for contributors other people contributing to the Moov project. You can join them without a google account by sending an email to [moov-users+subscribe@googlegroups.com](mailto:moov-users+subscribe@googlegroups.com). After receiving the join-request message, you can simply reply to that to confirm the subscription.
 Twitter [@moov_io](https://twitter.com/moov_io)	| You can follow Moov.IO's Twitter feed to get updates on our project(s). You can also tweet us questions or just share blogs or stories.
 [GitHub Issue](https://github.com/moov-io) | If you are able to reproduce a problem please open a GitHub Issue under the specific project that caused the error.
