@@ -29,7 +29,7 @@ jobs:
       run: make client
 
     - name: Check
-      run: make check
+      run: make build && make check
 
     - name: Upload Code Coverage
       if: runner.os == 'Linux'
