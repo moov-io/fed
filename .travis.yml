@@ -1,65 +1,16 @@
 language: go
 dist: xenial
 sudo: false
-services:
-- docker
+services: [docker]
+
 matrix:
   include:
     - os: linux
       go: 1.14.x
-      cache:
-        directories:
-          - "/home/travis/.cache/go-build"
-    - os: osx
-      go: 1.14.x
-      cache:
-        directories:
-          - "/Users/travis/Library/Caches/go-build"
-    - os: windows
-      go: 1.14.x
-before_install:
-  # Setup directory for binaries
-  - mkdir ./bin
-  - export PATH=$PATH:$PWD/bin
-  # Misspell
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_linux_64bit.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_mac_64bit.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf misspell.tar.gz && cp ./misspell ./bin/misspell; fi
-  # staticcheck
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2020.1.3/staticcheck_linux_amd64.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2020.1.3/staticcheck_darwin_amd64.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf staticcheck.tar.gz && cp ./staticcheck/staticcheck ./bin/staticcheck; fi
-  # nancy (vulnerable dependencies)
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then curl -L -o ./bin/nancy https://github.com/sonatype-nexus-community/nancy/releases/download/v0.1.17/nancy-linux.amd64-v0.1.17; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -L -o ./bin/nancy https://github.com/sonatype-nexus-community/nancy/releases/download/v0.1.17/nancy-darwin.amd64-v0.1.17; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then chmod +x ./bin/nancy; fi
-  # golint
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then go get -u golang.org/x/lint/golint; fi
-  # gocyclo
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O ./bin/gocyclo https://github.com/adamdecaf/gocyclo/releases/download/2019-08-09/gocyclo-linux-amd64; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O ./bin/gocyclo https://github.com/adamdecaf/gocyclo/releases/download/2019-08-09/gocyclo-darwin-amd64; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then chmod +x ./bin/gocyclo; fi
-before_script:
-  - GOFILES=$(find . -type f -name '*.go' | grep -v vendor | grep -v client)
-  - go mod graph
-script:
-  # Just check gofmt on linux, it's the fastest builder
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
-  - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then misspell -error -locale US $GOFILES; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then gocyclo -over 25 $GOFILES; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then golint -set_exit_status $GOFILES; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then staticcheck . ./cmd/... ./pkg/...; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then  go list -m all | ./bin/nancy -exclude-vulnerability CVE-2020-7219,CVE-2018-19653; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make && make docker && make test-integration; fi
-after_success:
-  - bash <(curl -s https://codecov.io/bash) -X fix
-  - make
-  - make client
-  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then make docker; fi
+
 before_deploy:
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install -y make; fi
   - make dist
+
 deploy:
   provider: releases
   api_key:
@@ -73,9 +24,11 @@ deploy:
     tags: true
     go: 1.14.x
   skip_cleanup: true
+
 after_deploy:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make release-push; fi
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - make release-push
+
 notifications:
   slack:
     secure: yIXmC0LCJjGyhwN8ocIJkms/sWJt3zK5tXAyi/+W3eLy1h+AMNSac8aavE297nqfB2kqbPnhZkieVXEOJpEEM4HJ2lli4EqQKpUAoGsWlU/bdLJiWuAQ6xflsB/MPuW2QnM4hptjYNEW7IwMQLBQLRMok4ROBLjaiadBOEpRgjLqTOd5sSRCS5iAMKAuxSEJeQ5lExoa4DDQhiraAOq5pUb5HaAmT8exXAxV1HLbm3hMJPKsFL37DE3ch+Gcx1cW6p34cLykrS6cb9F36A/APdCytYxsmBZRjMYZASYhSIky+DuO1hoAgUlEIx7jTyuF+R+0byR9TCH5x818Cc81JJmCWNrfVOHBnvzIu6G+0MYrdFgVfTOVYqMWzGfooJehPzp1uQiyytqf0djSt0RXxMRev0mwE7q3MHYF7v2AzrrG6Y9zM41qPaZkbVyra1dzwlq/ZxD2gAxCMC2AVVGgA3CDeGPgsTlNWNw7I8RdKMtAM0k6XbYypoJm9jf5XMW6p+gxdpdZccDMuSq0+FAbh5y3Z3IUir3BkWepGPUfrgDKOQ1I9XHtwMDDbhJTWFYN7S5nB7JnU8XXCdG6wAwlRoGyZjslb7mLEUCAFyw0PAvwb5uhd8CATu1xDXy4vgQJaVCjIVLd2B36lmpheSAHalA3FKqxbaTwdFZC7QYxvHw=
