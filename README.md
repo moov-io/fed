@@ -18,7 +18,7 @@ This project is currently under development and could introduce breaking changes
 
 The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Participants.
 
-To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags).
+To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags). We also have docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags).
 
 **Note**: The Docker image ships with **old data files** (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be **obtained from your Financial Institution** and provided to the server process. The official JSON file format from the Federal Reserve is also supported.
 

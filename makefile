@@ -33,8 +33,7 @@ clean:
 ifeq ($(OS),Windows_NT)
 	@echo "Skipping cleanup on Windows, currently unsupported."
 else
-	@rm -rf ./bin/
-	@rm -f openapi-generator-cli-*.jar
+	@rm -rf ./bin/ cover.out coverage.txt openapi-generator-cli-*.jar misspell* staticcheck* lint-project.sh
 endif
 
 dist: clean client build
@@ -44,10 +43,13 @@ else
 	CGO_ENABLED=1 GOOS=$(PLATFORM) go build -o bin/fed-$(PLATFORM)-amd64 github.com/moov-io/fed/cmd/server
 endif
 
-docker:
+docker: clean
 # main FED image
 	docker build --pull -t moov/fed:$(VERSION) -f Dockerfile .
 	docker tag moov/fed:$(VERSION) moov/fed:latest
+# OpenShift Docker image
+	docker build --pull -t quay.io/moov/fed:$(VERSION) -f Dockerfile-openshift --build-arg VERSION=$(VERSION) .
+	docker tag quay.io/moov/fed:$(VERSION) quay.io/moov/fed:latest
 # fedtest image
 	docker build --pull -t moov/fedtest:$(VERSION) -f Dockerfile-fedtest ./
 	docker tag moov/fedtest:$(VERSION) moov/fedtest:latest
