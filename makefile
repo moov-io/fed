@@ -72,6 +72,10 @@ release-push:
 	docker push moov/fed:$(VERSION)
 	docker push moov/fed:latest
 
+quay-push:
+	docker push quay.io/moov/fed:$(VERSION)
+	docker push quay.io/moov/fed:latest
+
 .PHONY: cover-test cover-web
 cover-test:
 	go test -coverprofile=cover.out ./...
