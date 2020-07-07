@@ -1,3 +1,12 @@
+## v0.5.1 (Released 2020-07-07)
+
+BUULD
+
+- build: add OpenShift [`quay.io/moov/fed`](https://quay.io/repository/moov/fed) Docker image
+- build: convert to Actions from TravisCI
+- chore(deps): update module prometheus/client_golang to v1.7.0
+- chore(deps): upgrade github.com/gorilla/websocket to v1.4.2
+
 ## v0.5.0 (Released 2020-04-14)
 
 ADDITIONS
