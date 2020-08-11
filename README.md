@@ -12,7 +12,7 @@ Docs: [Project](https://moov-io.github.io/fed/) | [API Endpoints](https://moov-i
 
 ### Project Status
 
-This project is currently under development and could introduce breaking changes to reach a stable status. We are looking for community feedback so please try out our code or give us feedback!
+Moov Fed is actively used in multiple production environments. Please star the project if you are interested in its progress. We would appreciate any issues created or pull requests. Thanks!
 
 ### Usage
 
