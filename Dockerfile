@@ -21,6 +21,6 @@ ENV FEDWIRE_DATA_PATH=/data/fed/fpddir.txt
 COPY --from=builder /etc/passwd /etc/passwd
 USER moov
 
-EXPOSE 8080
-EXPOSE 9090
+EXPOSE 8086
+EXPOSE 9096
 ENTRYPOINT ["/bin/server"]
