@@ -26,6 +26,10 @@ func TestClient(t *testing.T) {
 		t.Error(err)
 	}
 
+	if testing.Verbose() {
+		t.Logf("logo=%#v", logo)
+	}
+
 	if !strings.EqualFold(logo.Name, "Veridian Credit Union") {
 		t.Errorf("got %q", logo.Name)
 	}
