@@ -2,12 +2,10 @@
 // Use of this source code is governed by an Apache License
 // license that can be found in the LICENSE file.
 
-package clearbit
+package logos
 
 import (
 	"fmt"
-
-	"github.com/moov-io/fed/pkg/logos"
 
 	"github.com/clearbit/clearbit-go/clearbit"
 )
@@ -16,13 +14,16 @@ type Client struct {
 	underlying *clearbit.Client
 }
 
-func New(apiKey string) *Client {
-	return &Client{
-		underlying: clearbit.NewClient(clearbit.WithAPIKey(apiKey)),
+func newClearbit(apiKey string) *Client {
+	if apiKey != "" {
+		return &Client{
+			underlying: clearbit.NewClient(clearbit.WithAPIKey(apiKey)),
+		}
 	}
+	return nil
 }
 
-func (c *Client) Lookup(name string) (*logos.Logo, error) {
+func (c *Client) Lookup(name string) (*Logo, error) {
 	result, resp, err := c.underlying.NameToDomain.Find(clearbit.NameToDomainFindParams{
 		Name: name,
 	})
@@ -40,7 +41,7 @@ func (c *Client) Lookup(name string) (*logos.Logo, error) {
 			return nil, err
 		}
 
-		return &logos.Logo{
+		return &Logo{
 			Name: company.Name,
 			URL:  company.Logo,
 		}, nil

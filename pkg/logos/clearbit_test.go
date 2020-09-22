@@ -2,7 +2,7 @@
 // Use of this source code is governed by an Apache License
 // license that can be found in the LICENSE file.
 
-package clearbit
+package logos
 
 import (
 	"os"
@@ -15,7 +15,7 @@ func setupTestClient(t *testing.T) *Client {
 	if apiKey == "" {
 		t.Skip("missing CLEARBIT_API_KEY")
 	}
-	return New(apiKey)
+	return newClearbit(apiKey)
 }
 
 func TestClient(t *testing.T) {
