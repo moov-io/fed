@@ -5,7 +5,6 @@ RUN adduser -D -g '' --shell /bin/false moov
 # Pull api code into image, then build
 WORKDIR /go/src/github.com/moov-io/fed/
 COPY . .
-RUN go mod download
 RUN make build
 USER moov
 

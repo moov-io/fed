@@ -2,7 +2,6 @@ FROM golang:1.15-buster as builder
 WORKDIR /go/src/github.com/moov-io/fed
 RUN apt-get update && apt-get install make gcc g++
 COPY . .
-RUN go mod download
 RUN make build
 RUN useradd --shell /bin/false moov
 
