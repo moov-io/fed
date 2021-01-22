@@ -11,4 +11,14 @@ LABEL name="fed"
 LABEL version=$VERSION
 
 COPY --from=builder /opt/app-root/src/bin/server /bin/server
+
+COPY data/FedACHdir.txt /data/fed/FedACHdir.txt
+COPY data/fpddir.txt /data/fed/fpddir.txt
+
+ENV FEDACH_DATA_PATH=/data/fed/FedACHdir.txt
+ENV FEDWIRE_DATA_PATH=/data/fed/fpddir.txt
+
+EXPOSE 8086
+EXPOSE 9096
+
 ENTRYPOINT ["/bin/server"]
