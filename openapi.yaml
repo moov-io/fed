@@ -1,0 +1,383 @@
+openapi: 3.0.2
+info:
+  description: FED API is designed to create FEDACH and FEDWIRE dictionaries.  The FEDACH dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive ACH entries.  The FEDWIRE dictionary contains receiving depository financial institutions (RDFI’s) which are qualified to receive WIRE entries.  This project implements a modern REST HTTP API for FEDACH Dictionary and FEDWIRE Dictionary.
+  version: v1
+  title: FED API
+  contact:
+    name: FED API Support
+    url: 'https://github.com/moov-io/fed'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:8086'
+    description: Local development
+tags:
+  - name: FED
+    description: FEDACH Dictionary and FEDWIRE Dictionary
+paths:
+  /ping:
+    get:
+      tags:
+        - FED
+      summary: Ping the FED service to check if running
+      operationId: ping
+      responses:
+        '200':
+          description: Service is running properly
+          content:
+            text/plain:
+              example: PONG
+  /fed/ach/search:
+    get:
+      tags:
+        - FED
+      summary: Search FEDACH names and metadata
+      operationId: searchFEDACH
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Optional Request ID allows application developer to trace requests through the systems logs
+          example: rs4f9915
+          schema:
+            type: string
+        - name: X-User-ID
+          in: header
+          description: Optional User ID used to perform this search
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: Farmers
+          description: FEDACH Financial Institution Name
+        - name: routingNumber
+          in: query
+          schema:
+            type: string
+            example: 044112187
+          description: FEDACH Routing Number for a Financial Institution
+        - name: state
+          in: query
+          schema:
+            type: string
+            example: OH
+          description: FEDACH Financial Institution State
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: CALDWELL
+          description: FEDACH Financial Institution City
+        - name: postalCode
+          in: query
+          schema:
+            type: string
+            example: 43724
+          description: FEDACH Financial Institution Postal Code
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDACH Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACHDictionary'
+        '400':
+          description: Invalid, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/moov-io/base/master/api/common.yaml#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
+  /fed/wire/search:
+    get:
+      tags:
+        - FED
+      summary: Search FEDWIRE names and metadata
+      operationId: searchFEDWIRE
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Optional Request ID allows application developer to trace requests through the systems logs
+          example: rs4f9915
+          schema:
+            type: string
+        - name: X-User-ID
+          in: header
+          description: Optional User ID used to perform this search
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+            example: MIDWEST
+          description: FEDWIRE Financial Institution Name
+        - name: routingNumber
+          in: query
+          schema:
+            type: string
+            example: 091905114
+          description: FEDWIRE Routing Number for a Financial Institution
+        - name: state
+          in: query
+          schema:
+            type: string
+            example: IA
+          description: FEDWIRE Financial Institution State
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: IOWA CITY
+          description: FEDWIRE Financial Institution City
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 499
+          description: Maximum results returned by a search
+      responses:
+        '200':
+          description: FEDWIRE Participants returned from a search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WIREDictionary'
+        '400':
+          description: Invalid, check error(s).
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/moov-io/base/master/api/common.yaml#/components/schemas/Error'
+        '500':
+          description: Internal error, check error(s) and report the issue.
+
+components:
+  schemas:
+    ACHDictionary:
+      description: Search results containing ACHDictionary of Participants
+      properties:
+        ACHParticipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACHParticipant'
+    ACHParticipant:
+      description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
+      properties:
+        routingNumber:
+          type: string
+          minLength: 9
+          maxLength: 9
+          description: The institution's routing number
+          example: '044112187'
+        officeCode:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |
+            Main/Head Office or Branch
+
+            * `O` - Main
+            * `B` - Branch
+          enum:
+            - O
+            - B
+          example: 'O'
+        servicingFRBNumber:
+          type: string
+          minLength: 9
+          maxLength: 9
+          description: Servicing Fed's main office routing number
+          example: '041000014'
+        recordTypeCode:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |
+            The code indicating the ABA number to be used to route or send ACH items to the RDFI
+
+            * `0` - Institution is a Federal Reserve Bank
+            * `1` - Send items to customer routing number
+            * `2` - Send items to customer using new routing number field
+          enum:
+            - 0
+            - 1
+            - 2
+          example: '1'
+        revised:
+          type: string
+          maxLength: 8
+          description: |
+            Date of last revision
+
+            * YYYYMMDD
+            * Blank
+          example: '20190311'
+        newRoutingNumber:
+          type: string
+          minLength: 9
+          maxLength: 9
+          description: Financial Institution's new routing number resulting from a merger or renumber
+          example: '000000000'
+        customerName:
+          type: string
+          maxLength: 36
+          description: Financial Institution Name
+          example: FARMERS & MERCHANTS BANK
+        achLocation:
+          $ref: '#/components/schemas/ACHLocation'
+        phoneNumber:
+          type: string
+          minLength: 10
+          maxLength: 10
+          description: The Financial Institution's phone number
+          example: '7407325621'
+        statusCode:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |
+            Code is based on the customers receiver code
+
+            * `1` - Receives Gov/Comm
+          enum:
+            - 1
+          example: '1'
+        viewCode:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |-
+            Code is current view
+
+            * `1` - Current view
+          enum:
+            - 1
+          example: '1'
+    ACHLocation:
+      description: ACHLocation is the FEDACH delivery address
+      properties:
+        address:
+          type: string
+          maxLength: 36
+          description: Street Address
+          example: '430 NORTH ST'
+        city:
+          type: string
+          maxLength: 20
+          description: City
+          example: 'CALDWELL'
+        state:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: State
+          example: 'OH'
+        postalCode:
+          type: string
+          minLength: 5
+          maxLength: 5
+          description: Postal Code
+          example: '43724'
+        postalExtension:
+          type: string
+          minLength: 4
+          maxLength: 4
+          description: Postal Code Extension
+          example: '0000'
+    WIREDictionary:
+      description: Search results containing WIREDictionary of Participants
+      properties:
+        WIREParticipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/WIREParticipant'
+    WIREParticipant:
+      description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
+      properties:
+        routingNumber:
+          type: string
+          minLength: 9
+          maxLength: 9
+          description: The institution's routing number
+          example: '091905114'
+        telegraphicName:
+          type: string
+          maxLength: 18
+          description: Short name of financial institution
+          example: 'MIDWESTONE B&T'
+        customerName:
+          type: string
+          maxLength: 36
+          description: Financial Institution Name
+          example: 'MIDWESTONE BK'
+        wireLocation:
+          $ref: '#/components/schemas/WIRELocation'
+        fundsTransferStatus:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |
+            Designates funds transfer status
+
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+            - Y
+            - N
+          example: 'Y'
+        fundsSettlementOnlyStatus:
+          type: string
+          maxLength: 1
+          description: |
+            Designates funds settlement only status
+
+             * `S` - Settlement-Only
+          enum:
+            - S
+          example: ''
+        bookEntrySecuritiesTransferStatus:
+          type: string
+          minLength: 1
+          maxLength: 1
+          description: |
+            Designates book entry securities transfer status
+
+            * `Y` - Eligible
+            * `N` - Ineligible
+          enum:
+            - Y
+            - N
+          example: 'N'
+        date:
+          type: string
+          maxLength: 8
+          description: |
+            Date of last revision
+
+            * YYYYMMDD
+            * Blank
+          example: '20190401'
+    WIRELocation:
+      description: WIRELocation is the FEDWIRE delivery address
+      properties:
+        city:
+          type: string
+          maxLength: 25
+          description: City
+          example: 'IOWA CITY'
+        state:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: State
+          example: 'IA'
