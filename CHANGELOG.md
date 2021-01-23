@@ -1,3 +1,18 @@
+## v0.5.2 (Released 2021-01-22)
+
+IMPROVEMENTS
+
+- chore(deps): update github.com/xrash/smetrics commit hash to 89a2a8a
+
+BUG FIXES
+
+- build: fixup for OpenShift image running
+
+BUILD
+
+- chore(deps): update golang docker tag to v1.15
+- chore(deps): update module gorilla/mux to v1.8.0
+
 ## v0.5.1 (Released 2020-07-07)
 
 BUULD
