@@ -2,11 +2,11 @@
 
 <p align="center">
   <a href="https://moov-io.github.io/fed/">Project Documentation</a>
-  ·
+  Â·
   <a href="https://moov-io.github.io/fed/api/#overview">API Endpoints</a>
-  ·
+  Â·
   <a href="https://slack.moov.io/">Community</a>
-  ·
+  Â·
   <a href="https://moov.io/blog/">Blog</a>
   <br>
   <br>
@@ -35,18 +35,28 @@ Moov Fed is actively used in multiple production environments. Please star the p
 
 ### Usage
 
-The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Participants.
+The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/github.com/moov-io/fed) for searching for FedACH and Fedwire participants.
 
-To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags). We also have docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags).
+**Note**: The Docker image ships with **old data files** ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) as example data. In a production deployment, updated files should be **obtained from your Financial Institution** and provided to the server process. The official JSON file format from the Federal Reserve is also supported.
 
-**Note**: The Docker image ships with **old data files** (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be **obtained from your Financial Institution** and provided to the server process. The official JSON file format from the Federal Reserve is also supported.
+### Docker
 
-#### ACH Routing Number Example
+We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
 
-Fed can be used to lookup a Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`) or name (`?name=...`):
+Pull & start the Docker image:
+```
+docker pull moov/fed:latest
+docker run -p 8086:8086 -p 9096:9096 moov/fed:latest
+```
+
+#### **ACH Routing Number Example**
+
+Fed can be used to look up Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`):
 
 ```
-$ curl -s localhost:8086/fed/ach/search?routingNumber=273976369 | jq .
+curl "localhost:8086/fed/ach/search?routingNumber=273976369"
+```
+```
 {
   "achParticipants": [
     {
@@ -73,12 +83,14 @@ $ curl -s localhost:8086/fed/ach/search?routingNumber=273976369 | jq .
 }
 ```
 
-#### Wire Routing Number Example
+#### **Wire Routing Number Example**
 
-Fed can be used to lookup a Financial Institutions for FED Wire Messages ([FEDWire](https://en.wikipedia.org/wiki/Fedwire)) by their routing number (`?routingNumber=...`) or name (`?name=...`):
+Fed can be used to look up Financial Institutions for [Fedwire](https://en.wikipedia.org/wiki/Fedwire) messages by their routing number (`?routingNumber=...`):
 
 ```
-$ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
+curl "localhost:8086/fed/wire/search?routingNumber=273976369"
+```
+```
 {
   "achParticipants": null,
   "wireParticipants": [
@@ -99,22 +111,70 @@ $ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
 }
 ```
 
-### Client Library
+### Google Cloud Run
 
-Fed ships a client library generated from an [OpenAPI Specification](https://en.wikipedia.org/wiki/OpenAPI_Specification) (Go package [`github.com/moov-io/fed/client`](https://godoc.org/github.com/moov-io/fed/client)). We generate a Go version as Moov's primary language is Go, but other languages can be generated. To make a change edit `openapi.yaml` and run `make generate`. Commit the changes and open a pull request.
+To get started in a hosted environment you can deploy this project to the Google Cloud Platform.
 
-### Configuration
+From your [Google Cloud dashboard](https://console.cloud.google.com/home/dashboard) create a new project and call it:
+```
+moov-fed-demo
+```
+
+Enable the [Container Registry](https://cloud.google.com/container-registry) API for your project and associate a [billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account) if needed. Then, open the Cloud Shell terminal and run the following Docker commands, substituting your unique project ID:
+
+```
+docker pull moov/fed
+docker tag moov/fed gcr.io/<PROJECT-ID>/fed
+docker push gcr.io/<PROJECT-ID>/fed
+```
+
+Deploy the container to Cloud Run:
+```
+gcloud run deploy --image gcr.io/<PROJECT-ID>/fed --port 8086
+```
+
+Select your target platform to `1`, service name to `fed`, and region to the one closest to you (enable Google API service if a prompt appears). Upon a successful build you will be given a URL where the API has been deployed:
+
+```
+https://YOUR-FED-APP-URL.a.run.app
+```
+
+Now you can ping the server:
+```
+curl https://YOUR-FED-APP-URL.a.run.app/ping
+```
+You should get this response:
+```
+PONG
+```
+
+### Configuration Settings
 
 | Environmental Variable | Description | Default |
 |-----|-----|-----|
-| `FEDACH_DATA_PATH` | Filepath to FEDACH data file | `./data/FedACHdir.txt` |
-| `FEDWIRE_DATA_PATH` | Filepath to FedWIRE data file | `./data/fpddir.txt` |
+| `FEDACH_DATA_PATH` | Filepath to FedACH data file | `./data/FedACHdir.txt` |
+| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
 | `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
-| `HTTP_BIND_ADDRESS` | Address for paygate to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
-| `HTTP_ADMIN_BIND_ADDRESS` | Address for paygate to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
+| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
+| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
 
+### Data Persistence
+By design, Fed  **does not persist** (save) any data about the search queries created. The only storage occurs in memory of the process and upon restart Fed will have no files or data saved. Also, no in-memory encryption of the data is performed.
+
+### Go Library
+
+This project uses [Go Modules](https://github.com/golang/go/wiki/Modules) and uses Go v1.14 or higher. See [Golang's install instructions](https://golang.org/doc/install) for help setting up Go. You can download the source code and we offer [tagged and released versions](https://github.com/moov-io/fed/releases/latest) as well. We highly recommend you use a tagged release for production.
+
+```
+$ git@github.com:moov-io/fed.git
+
+# Pull down into the Go Module cache
+$ go get -u github.com/moov-io/fed
+
+$ go doc github.com/moov-io/fed ACHDictionary
+```
 
 ## FedWire and FedACH data from the Federal Reserve Bank Services
 
