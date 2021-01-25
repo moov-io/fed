@@ -1,14 +1,51 @@
-moov-io/fed
-===
+[![Moov Banner Logo](https://user-images.githubusercontent.com/20115216/104214617-885b3c80-53ec-11eb-8ce0-9fc745fb5bfc.png)](https://github.com/moov-io)
+
+<p align="center">
+  <a href="https://moov-io.github.io/fed/">Project Documentation</a>
+  ·
+  <a href="https://moov-io.github.io/fed/api/#overview">API Endpoints</a>
+  ·
+  <a href="https://slack.moov.io/">Community</a>
+  ·
+  <a href="https://moov.io/blog/">Blog</a>
+  <br>
+  <br>
+</p>
+
 [![GoDoc](https://godoc.org/github.com/moov-io/fed?status.svg)](https://godoc.org/github.com/moov-io/fed)
 [![Build Status](https://github.com/moov-io/fed/workflows/Go/badge.svg)](https://github.com/moov-io/fed/actions)
 [![Coverage Status](https://codecov.io/gh/moov-io/fed/branch/master/graph/badge.svg)](https://codecov.io/gh/moov-io/fed)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moov-io/fed)](https://goreportcard.com/report/github.com/moov-io/fed)
-[![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/moov-io/fed/master/LICENSE)
+[![Repo Size](https://img.shields.io/github/languages/code-size/moov-io/fed?label=project%20size)](https://github.com/moov-io/fed)
+[![Apache 2 License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/moov-io/ach/master/LICENSE)
+[![Slack Channel](https://slack.moov.io/badge.svg?bg=e01563&fgColor=fffff)](https://slack.moov.io/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/moov/fed)](https://hub.docker.com/r/moov/fed)
+[![GitHub Stars](https://img.shields.io/github/stars/moov-io/fed)](https://github.com/moov-io/fed)
+[![Twitter](https://img.shields.io/twitter/follow/moov_io?style=social)](https://twitter.com/moov_io?lang=en)
 
-Package `github.com/moov-io/fed` implements utility services for searching the United States Federal Reserve System such as [ABA routing numbers](https://en.wikipedia.org/wiki/ABA_routing_transit_number), Financial Institution name lookup and [Fed Wire](https://en.wikipedia.org/wiki/Fedwire) routing information. Moov's primary usage for this project is with ACH origination in our [paygate](https://github.com/moov-io/paygate) project.
+# moov-io/fed
 
-Docs: [Project](https://moov-io.github.io/fed/) | [API Endpoints](https://moov-io.github.io/fed/api/)
+Moov's mission is to give developers an easy way to create and integrate bank processing into their own software products. Our open source projects are each focused on solving a single responsibility in financial services and designed around performance, scalability, and ease-of-use.
+
+Fed implements utility services for searching the United States Federal Reserve System such as [ABA routing numbers](https://en.wikipedia.org/wiki/ABA_routing_transit_number), financial institution name lookup, and [Fedwire](https://en.wikipedia.org/wiki/Fedwire) and [FedACH](https://en.wikipedia.org/wiki/FedACH) routing information. The HTTP server is available in a [Docker image](#docker) and the Go package `github.com/moov-io/fed` is available. Moov's primary usage for this project is with ACH origination in our [paygate](https://github.com/moov-io/paygate) project.
+
+The data and formats in this repository represent a compilation of **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/). Both the official Fed plaintext and JSON file formats are supported.
+
+## Table of Contents
+
+- [Project Status](#project-status)
+- [Usage](#usage)
+  - As an API
+    - [Docker](#docker) ([Config](#configuration-settings))
+    - [Google Cloud](#google-cloud-run) ([Config](#configuration-settings))
+    - [Data Persistence](#data-persistence)
+  - [As a Go Module](#go-library)
+- [Learn About Fed Services Participation](#learn-about-fed-services-participation)
+- [Getting Help](#getting-help)
+- [Supported and Tested Platforms](#supported-and-tested-platforms)
+- [Contributing](#contributing)
+- [Related Projects](#related-projects)
+- [Copyright](#copyright-and-terms-of-use)
 
 ### Project Status
 
@@ -16,18 +53,28 @@ Moov Fed is actively used in multiple production environments. Please star the p
 
 ### Usage
 
-The `github.com/moov-io/fed` Go package offers search for FEDACH and FEDWIRE Participants.
+The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/github.com/moov-io/fed) for searching for FedACH and Fedwire participants.
 
-To get started using Fed download [the latest release](https://github.com/moov-io/fed/releases/latest) or our [Docker image](https://hub.docker.com/r/moov/fed/tags). We also have docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags).
+**Note**: The Docker image ships with **old data files** ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) as example data. In a production deployment, updated files should be **obtained from your Financial Institution** and provided to the server process.
 
-**Note**: The Docker image ships with **old data files** (`FedACHdir.txt` and `fpddir.txt`) as example data. In a production deployment updated files should be **obtained from your Financial Institution** and provided to the server process. The official JSON file format from the Federal Reserve is also supported.
+### Docker
 
-#### ACH Routing Number Example
+We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
 
-Fed can be used to lookup a Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`) or name (`?name=...`):
+Pull & start the Docker image:
+```
+docker pull moov/fed:latest
+docker run -p 8086:8086 -p 9096:9096 moov/fed:latest
+```
+
+#### **ACH Routing Number Example**
+
+Fed can be used to look up Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`):
 
 ```
-$ curl -s localhost:8086/fed/ach/search?routingNumber=273976369 | jq .
+curl "localhost:8086/fed/ach/search?routingNumber=273976369"
+```
+```
 {
   "achParticipants": [
     {
@@ -54,12 +101,14 @@ $ curl -s localhost:8086/fed/ach/search?routingNumber=273976369 | jq .
 }
 ```
 
-#### Wire Routing Number Example
+#### **Wire Routing Number Example**
 
-Fed can be used to lookup a Financial Institutions for FED Wire Messages ([FEDWire](https://en.wikipedia.org/wiki/Fedwire)) by their routing number (`?routingNumber=...`) or name (`?name=...`):
+Fed can be used to look up Financial Institutions for [Fedwire](https://en.wikipedia.org/wiki/Fedwire) messages by their routing number (`?routingNumber=...`):
 
 ```
-$ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
+curl "localhost:8086/fed/wire/search?routingNumber=273976369"
+```
+```
 {
   "achParticipants": null,
   "wireParticipants": [
@@ -80,50 +129,121 @@ $ curl -s localhost:8086/fed/wire/search?routingNumber=273976369 | jq .
 }
 ```
 
-### Client Library
+### Google Cloud Run
 
-Fed ships a client library generated from an [OpenAPI Specification](https://en.wikipedia.org/wiki/OpenAPI_Specification) (Go package [`github.com/moov-io/fed/client`](https://godoc.org/github.com/moov-io/fed/client)). We generate a Go version as Moov's primary language is Go, but other languages can be generated. To make a change edit `openapi.yaml` and run `make generate`. Commit the changes and open a pull request.
+To get started in a hosted environment you can deploy this project to the Google Cloud Platform.
 
-### Configuration
+From your [Google Cloud dashboard](https://console.cloud.google.com/home/dashboard) create a new project and call it:
+```
+moov-fed-demo
+```
+
+Enable the [Container Registry](https://cloud.google.com/container-registry) API for your project and associate a [billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account) if needed. Then, open the Cloud Shell terminal and run the following Docker commands, substituting your unique project ID:
+
+```
+docker pull moov/fed
+docker tag moov/fed gcr.io/<PROJECT-ID>/fed
+docker push gcr.io/<PROJECT-ID>/fed
+```
+
+Deploy the container to Cloud Run:
+```
+gcloud run deploy --image gcr.io/<PROJECT-ID>/fed --port 8086
+```
+
+Select your target platform to `1`, service name to `fed`, and region to the one closest to you (enable Google API service if a prompt appears). Upon a successful build you will be given a URL where the API has been deployed:
+
+```
+https://YOUR-FED-APP-URL.a.run.app
+```
+
+Now you can ping the server:
+```
+curl https://YOUR-FED-APP-URL.a.run.app/ping
+```
+You should get this response:
+```
+PONG
+```
+
+### Configuration Settings
 
 | Environmental Variable | Description | Default |
 |-----|-----|-----|
-| `FEDACH_DATA_PATH` | Filepath to FEDACH data file | `./data/FedACHdir.txt` |
-| `FEDWIRE_DATA_PATH` | Filepath to FedWIRE data file | `./data/fpddir.txt` |
+| `FEDACH_DATA_PATH` | Filepath to FedACH data file | `./data/FedACHdir.txt` |
+| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
 | `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
-| `HTTP_BIND_ADDRESS` | Address for paygate to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
-| `HTTP_ADMIN_BIND_ADDRESS` | Address for paygate to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
+| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
+| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
 
+### Data Persistence
+By design, Fed  **does not persist** (save) any data about the search queries created. The only storage occurs in memory of the process and upon restart Fed will have no files or data saved. Also, no in-memory encryption of the data is performed.
 
-## FedWire and FedACH data from the Federal Reserve Bank Services
+### Go Library
 
-The data and formats in this repository represent a compilation of the **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/). Both the official Fed plaintext and JSON file formats are supported.
+This project uses [Go Modules](https://github.com/golang/go/wiki/Modules) and uses Go v1.14 or higher. See [Golang's install instructions](https://golang.org/doc/install) for help setting up Go. You can download the source code and we offer [tagged and released versions](https://github.com/moov-io/fed/releases/latest) as well. We highly recommend you use a tagged release for production.
 
-### FedWire Directory
+```
+$ git@github.com:moov-io/fed.git
 
-* [FedWire](./docs/fpddir.md)
+# Pull down into the Go Module cache
+$ go get -u github.com/moov-io/fed
 
-### FedACH Directory
+$ go doc github.com/moov-io/fed ACHDictionary
+```
 
-* [FedACH](./docs/FedACHdir.md)
-
-### Other resources
-
-* [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
+## Learn About Fed Services Participation
+- [Intro to Fedwire](https://www.frbservices.org/assets/financial-services/wires/funds.pdf)
+- [Intro to FedACH](https://www.frbservices.org/assets/financial-services/ach/ach-product-sheet.pdf)
+- [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
+- [Fedwire Directory File Format](./docs/fpddir_FORMAT.md)
+- [FedACH Directory File Format](./docs/FEDACHDIR_FORMAT.MD)
 
 ## Getting Help
 
  channel | info
  ------- | -------
 [Project Documentation](https://moov-io.github.io/fed/) | Our project documentation available online.
-Google Group [moov-users](https://groups.google.com/forum/#!forum/moov-users)| The Moov users Google group is for contributors other people contributing to the Moov project. You can join them without a google account by sending an email to [moov-users+subscribe@googlegroups.com](mailto:moov-users+subscribe@googlegroups.com). After receiving the join-request message, you can simply reply to that to confirm the subscription.
 Twitter [@moov_io](https://twitter.com/moov_io)	| You can follow Moov.IO's Twitter feed to get updates on our project(s). You can also tweet us questions or just share blogs or stories.
 [GitHub Issue](https://github.com/moov-io) | If you are able to reproduce a problem please open a GitHub Issue under the specific project that caused the error.
 [moov-io slack](https://slack.moov.io/) | Join our slack channel to have an interactive discussion about the development of the project.
 
-### Copyright and Terms of Use
+## Supported and Tested Platforms
+
+- 64-bit Linux (Ubuntu, Debian), macOS, and Windows
+
+Note: 32-bit platforms have known issues and are not supported.
+
+## Contributing
+
+Yes please! Please review our [Contributing guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) to get started!
+
+This project uses [Go Modules](https://github.com/golang/go/wiki/Modules) and uses Go v1.14 or higher. See [Golang's install instructions](https://golang.org/doc/install) for help setting up Go. You can download the source code and we offer [tagged and released versions](https://github.com/moov-io/fed/releases/latest) as well. We highly recommend you use a tagged release for production.
+
+### Releasing
+
+To make a release of fed simply open a pull request with `CHANGELOG.md` and `version.go` updated with the next version number and details. You'll also need to push the tag (i.e. `git push origin v1.0.0`) to origin in order for CI to make the release.
+
+### Testing
+
+We maintain a comprehensive suite of unit tests and recommend table-driven testing when a particular function warrants several very similar test cases. To run all test files in the current directory, use `go test`. Current overall coverage can be found on [Codecov](https://app.codecov.io/gh/moov-io/fed/).
+
+## Related Projects
+As part of Moov's initiative to offer open source fintech infrastructure, we have a large collection of active projects you may find useful:
+
+- [Moov Watchman](https://github.com/moov-io/watchman) offers search functions over numerous trade sanction lists from the United States and European Union.
+
+- [Moov Image Cash Letter](https://github.com/moov-io/imagecashletter) implements Image Cash Letter (ICL) files used for Check21, X.9 or check truncation files for exchange and remote deposit in the U.S.
+
+- [Moov Wire](https://github.com/moov-io/wire) implements an interface to write files for the Fedwire Funds Service, a real-time gross settlement funds transfer system operated by the United States Federal Reserve Banks.
+
+- [Moov ACH](https://github.com/moov-io/ach) provides ACH file generation and parsing, supporting all Standard Entry Codes for the primary method of money movement throughout the United States.
+
+- [Moov Metro 2](https://github.com/moov-io/metro2) provides a way to easily read, create, and validate Metro 2 format, which is used for consumer credit history reporting by the United States credit bureaus.
+
+## Copyright and Terms of Use
 
 (c) Federal Reserve Banks
 
@@ -131,4 +251,8 @@ By accessing the [data](./data/) in this repository you agree to the [Federal Re
 
 ## Disclaimer
 
-**THIS REPOSITORY IS NOT AFFILIATED WITH THE FEDERAL RESERVE BANKS AND IS NOT AN OFFICIAL SOURCE FOR THE FEDWIRE AND THE FEDACH DATA.**
+**THIS REPOSITORY IS NOT AFFILIATED WITH THE FEDERAL RESERVE BANKS AND IS NOT AN OFFICIAL SOURCE FOR FEDWIRE AND FEDACH DATA.**
+
+## License
+
+Apache License 2.0 - See [LICENSE](LICENSE) for details.
