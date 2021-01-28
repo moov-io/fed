@@ -79,7 +79,7 @@ Moov Fed can read the data files from anywhere on the filesystem. This allows yo
 ## Connecting to Moov Fed
 The Moov Fed service will be running on port `8086` (with an admin port on `9096`).
 
-Confirm that the service is running by issuing the following command or simply visiting [localhost:8086/ping](localhost:8086/ping) in your browser.
+Confirm that the service is running by issuing the following command or simply visiting [localhost:8086/ping](http://localhost:8086/ping) in your browser.
 
 ```sh
 $ curl http://localhost:8086/ping
