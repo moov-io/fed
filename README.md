@@ -25,7 +25,7 @@
 
 # moov-io/fed
 
-Moov's mission is to give developers an easy way to create and integrate bank processing into their own software products. Our open source projects are each focused on solving a single responsibility in financial services and designed around performance, scalability, and ease-of-use.
+Moov's mission is to give developers an easy way to create and integrate bank processing into their own software products. Our open source projects are each focused on solving a single responsibility in financial services and designed around performance, scalability, and ease of use.
 
 Fed implements utility services for searching the United States Federal Reserve System such as [ABA routing numbers](https://en.wikipedia.org/wiki/ABA_routing_transit_number), financial institution name lookup, and [Fedwire](https://en.wikipedia.org/wiki/Fedwire) and [FedACH](https://en.wikipedia.org/wiki/FedACH) routing information. The HTTP server is available in a [Docker image](#docker) and the Go package `github.com/moov-io/fed` is available. Moov's primary usage for this project is with ACH origination in our [paygate](https://github.com/moov-io/paygate) project.
 
@@ -207,7 +207,7 @@ $ go doc github.com/moov-io/fed ACHDictionary
  ------- | -------
 [Project Documentation](https://moov-io.github.io/fed/) | Our project documentation available online.
 Twitter [@moov_io](https://twitter.com/moov_io)	| You can follow Moov.IO's Twitter feed to get updates on our project(s). You can also tweet us questions or just share blogs or stories.
-[GitHub Issue](https://github.com/moov-io) | If you are able to reproduce a problem please open a GitHub Issue under the specific project that caused the error.
+[GitHub Issue](https://github.com/moov-io/fed/issues) | If you are able to reproduce a problem please open a GitHub Issue under the specific project that caused the error.
 [moov-io slack](https://slack.moov.io/) | Join our slack channel to have an interactive discussion about the development of the project.
 
 ## Supported and Tested Platforms
