@@ -55,7 +55,7 @@ Moov Fed is actively used in multiple production environments. Please star the p
 
 The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/github.com/moov-io/fed) for searching for FedACH and Fedwire participants.
 
-**Note**: The Docker image ships with **old data files** ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) as example data. In a production deployment, updated files should be **obtained from your Financial Institution** and provided to the server process.
+**Note**: The data files included in this repository ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [Accuity](https://accuity.com/product/us-payments-routing-and-transit-number-file/) or your financial institution.
 
 ### Docker
 
