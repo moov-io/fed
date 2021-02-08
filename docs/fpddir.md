@@ -1,7 +1,8 @@
 # FedWire Directory
 
-* Data: [FPDDIR.TXT](../data/fpddir.txt)
-* Format: [FPDDIR_FORMAT.MD](fpddir_FORMAT.md)
-* Source: [fpddir.txt](https://frbservices.org/EPaymentsDirectory/fpddir.txt)
+* Data: [fpddir.txt](../data/fpddir.txt)
+* JSON Data Example: [fpddir.json](../data/fpddir.json)
+* Format: [fpddir_format.md](fpddir_FORMAT.md)
+* Source: [Federal Reserve Bank Services](https://frbservices.org/)
 
-The effective date of this Fedwire directory is Dec 4th, 2018.
+The effective date of this Fedwire directory is Dec 4th, 2018. These data files are no longer published on the [FRBServices](https://frbservices.org/) website.

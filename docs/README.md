@@ -72,7 +72,7 @@ Next: [Connect to Moov Fed](#connecting-to-moov-fed)
 
 ## FED Data Files
 
-The data files included with the Docker image (and in the Fed repository) are **outdated**. This is due to the licensing on the files which prevents us from distributing them.
+The data files included in this repository ([`FedACHdir.md`](FedACHdir.md) and [`fpddir.md`](fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [Accuity](https://accuity.com/product/us-payments-routing-and-transit-number-file/) or your financial institution.
 
 Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
 
