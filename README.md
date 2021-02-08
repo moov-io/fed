@@ -57,6 +57,8 @@ The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/gi
 
 **Note**: The data files included in this repository ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [Accuity](https://accuity.com/product/us-payments-routing-and-transit-number-file/) or your financial institution.
 
+Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
+
 ### Docker
 
 We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
