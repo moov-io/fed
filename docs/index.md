@@ -8,7 +8,7 @@ menubar: docs-menu
 
 # Overview
 
-![Moov Logo](https://moov.io/images/social/moov-share-image.png)
+![Moov Fed Logo](https://moov.io/images/social/moov-share-image.png)
 
 Moov's mission is to give developers an easy way to create and integrate bank processing into their own software products. Our open source projects are each focused on solving a single responsibility in financial services and designed around performance, scalability, and ease of use.
 

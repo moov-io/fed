@@ -18,6 +18,14 @@
     - name: Go Library
       link: /usage-go/
 
+- label: Fed Search
+  items:
+    - name: FedACH Format
+      link: /FEDACHDIR_FORMAT/
+    - name: Fedwire Format
+      link: /fpddir_FORMAT/
+      
+
 - label: Production and Monitoring
   items:
     - name: Kubernetes
