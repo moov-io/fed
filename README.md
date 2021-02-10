@@ -199,6 +199,7 @@ $ go doc github.com/moov-io/fed ACHDictionary
 ## Learn About Fed Services Participation
 - [Intro to Fedwire](https://www.frbservices.org/assets/financial-services/wires/funds.pdf)
 - [Intro to FedACH](https://www.frbservices.org/assets/financial-services/ach/ach-product-sheet.pdf)
+- [U.S. Department of the Treasury FAQ](https://www.treasury.gov/resource-center/faqs/Sanctions/Pages/faq_general.aspx#basic)
 - [State and Territory Abbreviations](./docs/Fed_STATE_CODES.md)
 - [Fedwire Directory File Format](./docs/fpddir_FORMAT.md)
 - [FedACH Directory File Format](./docs/FEDACHDIR_FORMAT.MD)

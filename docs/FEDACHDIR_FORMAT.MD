@@ -1,3 +1,12 @@
+---
+layout: page
+title: FedACH Format
+hide_hero: true
+show_sidebar: false
+menubar: docs-menu
+---
+
+
 # FedACH Directory File Format
 
 **Source:** [achFormat](https://frbservices.org/EPaymentsDirectory/achFormat.html)
