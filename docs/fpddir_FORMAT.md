@@ -1,3 +1,11 @@
+---
+layout: page
+title: Fedwire Format
+hide_hero: true
+show_sidebar: false
+menubar: docs-menu
+---
+
 # Fedwire Directory File Format
 
 **Source:** [FedWireFormat](https://frbservices.org/EPaymentsDirectory/fedwireFormat.html)

@@ -2,8 +2,6 @@
   link: https://moov-io.github.io/fed/api
 - name: Go
   link: https://pkg.go.dev/github.com/moov-io/fed#section-documentation
-- name: Demo
-  link: https://oss.moov.io/fed/
 - name: Community
   link: https://slack.moov.io/
 - name: Other Projects

@@ -1,3 +1,11 @@
+---
+layout: page
+title: Fed State Codes
+hide_hero: true
+show_sidebar: false
+menubar: docs-menu
+---
+
 # State and Territory Abbreviations
 
 **Source:** [Fed States](https://frbservices.org/EPaymentsDirectory/states.html)
