@@ -6,14 +6,13 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 	moovhttp "github.com/moov-io/base/http"
+	"github.com/moov-io/base/log"
 )
 
 const (
@@ -99,7 +98,9 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 		req := readFEDSearchRequest(r.URL)
 		if req.empty() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", errNoSearchParams, "requestID", requestID, "userID", userID)
+				logger.Set("searchFEDWIRE", log.String(errNoSearchParams.Error())).
+					Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).Log("search request")
 			}
 			moovhttp.Problem(w, errNoSearchParams)
 			return
@@ -107,37 +108,49 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		if req.nameOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by name only %s", req.Name), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by name only %s", req.Name)
 			}
 			req.searchNameOnly(logger, searcher, ACH)(w, r)
 			return
 		} else if req.routingNumberOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber)
 			}
 			req.searchRoutingNumberOnly(logger, searcher, ACH)(w, r)
 			return
 		} else if req.stateOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by state only %s", req.State), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by state only %s", req.State)
 			}
 			req.searchStateOnly(logger, searcher, ACH)(w, r)
 			return
 		} else if req.cityOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by city only %s", req.City), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by city only %s", req.City)
 			}
 			req.searchCityOnly(logger, searcher, ACH)(w, r)
 			return
 		} else if req.postalCodeOnly() {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by postal code only %s", req.PostalCode), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by postal code only %s", req.PostalCode)
 			}
 			req.searchPostalCodeOnly(logger, searcher, ACH)(w, r)
 			return
 		} else {
 			if logger != nil {
-				logger.Log("searchFEDACH", fmt.Sprintf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber)
 			}
 			req.search(logger, searcher, ACH)(w, r)
 			return
@@ -150,9 +163,10 @@ func (req fedSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Log("searchFEDACH", fmt.Sprintf("search by name %s", req.Name), "requestID", requestID, "userID", userID)
+			logger.Set("requestID", log.String(requestID)).
+				Set("userID", log.String(userID)).
+				Logf("search by name %s", req.Name)
 		}
-
 		switch searchType {
 		case ACH:
 			achP := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
@@ -177,7 +191,9 @@ func (req fedSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Log("searchFEDACH", fmt.Sprintf("search by routing number %s", req.RoutingNumber), "requestID", requestID, "userID", userID)
+			logger.Set("requestID", log.String(requestID)).
+				Set("userID", log.String(userID)).
+				Logf("search by routing number %s", req.RoutingNumber)
 		}
 		switch searchType {
 		case ACH:
@@ -209,9 +225,10 @@ func (req fedSearchRequest) searchStateOnly(logger log.Logger, searcher *searche
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Log("searchFEDACH", fmt.Sprintf("search by state %s", req.State), "requestID", requestID, "userID", userID)
+			logger.Set("requestID", log.String(requestID)).
+				Set("userID", log.String(userID)).
+				Logf("search by state %s", req.State)
 		}
-
 		switch searchType {
 		case ACH:
 			achP := searcher.ACHFindStateOnly(extractSearchLimit(r), req.State)
@@ -237,9 +254,10 @@ func (req fedSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.City), "requestID", requestID, "userID", userID)
+			logger.Set("requestID", log.String(requestID)).
+				Set("userID", log.String(userID)).
+				Logf("search by city %s", req.City)
 		}
-
 		switch searchType {
 		case ACH:
 			achP := searcher.ACHFindCityOnly(extractSearchLimit(r), req.City)
@@ -264,7 +282,9 @@ func (req fedSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *se
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger != nil {
 			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Log("searchFEDACH", fmt.Sprintf("search by city %s", req.PostalCode), "requestID", requestID, "userID", userID)
+			logger.Set("requestID", log.String(requestID)).
+				Set("userID", log.String(userID)).
+				Logf("search by city %s", req.PostalCode)
 		}
 		switch searchType {
 		case ACH:
@@ -318,7 +338,9 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 		req := readFEDSearchRequest(r.URL)
 		if req.empty() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", errNoSearchParams, "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: %v", errNoSearchParams)
 			}
 			moovhttp.Problem(w, errNoSearchParams)
 			return
@@ -326,31 +348,41 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		if req.nameOnly() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by name only %s", req.Name), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: searching FED WIRE Dictionary by name only %s", req.Name)
 			}
 			req.searchNameOnly(logger, searcher, WIRE)(w, r)
 			return
 		} else if req.routingNumberOnly() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by routing number only %s", req.RoutingNumber), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: searching FED WIRE Dictionary by routing number only %s", req.RoutingNumber)
 			}
 			req.searchRoutingNumberOnly(logger, searcher, WIRE)(w, r)
 			return
 		} else if req.stateOnly() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by state only %s", req.State), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: searching FED WIRE Dictionary by state only %s", req.State)
 			}
 			req.searchStateOnly(logger, searcher, WIRE)(w, r)
 			return
 		} else if req.cityOnly() {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by city only %s", req.City), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: searching FED WIRE Dictionary by city only %s", req.City)
 			}
 			req.searchCityOnly(logger, searcher, WIRE)(w, r)
 			return
 		} else {
 			if logger != nil {
-				logger.Log("searchFEDWIRE", fmt.Sprintf("searching FED WIRE Dictionary by parameters %v", req.RoutingNumber), "requestID", requestID, "userID", userID)
+				logger.Set("requestID", log.String(requestID)).
+					Set("userID", log.String(userID)).
+					Logf("searchFEDWIRE: searching FED WIRE Dictionary by parameters %v", req.RoutingNumber)
 			}
 			req.search(logger, searcher, WIRE)(w, r)
 			return

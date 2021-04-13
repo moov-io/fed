@@ -19,9 +19,9 @@ import (
 	"github.com/moov-io/base/admin"
 	moovhttp "github.com/moov-io/base/http"
 	"github.com/moov-io/base/http/bind"
+	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 
-	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -40,14 +40,11 @@ func main() {
 		*flagLogFormat = v
 	}
 	if strings.ToLower(*flagLogFormat) == "json" {
-		logger = log.NewJSONLogger(os.Stderr)
+		logger = log.NewJSONLogger()
 	} else {
-		logger = log.NewLogfmtLogger(os.Stderr)
+		logger = log.NewDefaultLogger()
 	}
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
-	logger = log.With(logger, "caller", log.DefaultCaller)
-
-	logger.Log("startup", fmt.Sprintf("Starting fed server version %s", fed.Version))
+	logger.Info().Logf("Starting fed server version %s", fed.Version)
 
 	// Channel for errors
 	errs := make(chan error)
@@ -87,7 +84,7 @@ func main() {
 	}
 	shutdownServer := func() {
 		if err := serve.Shutdown(context.TODO()); err != nil {
-			logger.Log("shutdown", err)
+			logger.Logf("shutting down: %v", err)
 		}
 	}
 
@@ -100,10 +97,10 @@ func main() {
 	adminServer := admin.NewServer(*adminAddr)
 	adminServer.AddVersionHandler(fed.Version) // Setup 'GET /version'
 	go func() {
-		logger.Log("admin", fmt.Sprintf("listening on %s", adminServer.BindAddr()))
+		logger.Info().Logf(fmt.Sprintf("listening on %s", adminServer.BindAddr()))
 		if err := adminServer.Listen(); err != nil {
 			err = fmt.Errorf("problem starting admin http: %v", err)
-			logger.Log("admin", err)
+			logger.Logf("admin: %v", err)
 			errs <- err
 		}
 	}()
@@ -112,7 +109,7 @@ func main() {
 	// Start our searcher
 	searcher := &searcher{logger: logger}
 	if err := setupSearcher(logger, searcher, fedACHDataFilepath, fedWIREDataFilepath); err != nil {
-		logger.Log("read", err)
+		logger.Logf("read: %v", err)
 		os.Exit(1)
 	}
 
@@ -122,14 +119,14 @@ func main() {
 	// Start business logic HTTP server
 	go func() {
 		if certFile, keyFile := os.Getenv("HTTPS_CERT_FILE"), os.Getenv("HTTPS_KEY_FILE"); certFile != "" && keyFile != "" {
-			logger.Log("startup", fmt.Sprintf("binding to %s for secure HTTP server", *httpAddr))
+			logger.Logf("binding to %s for secure HTTP server", *httpAddr)
 			if err := serve.ListenAndServeTLS(certFile, keyFile); err != nil {
-				logger.Log("exit", err)
+				logger.Logf("listen: %v", err)
 			}
 		} else {
-			logger.Log("startup", fmt.Sprintf("binding to %s for HTTP server", *httpAddr))
+			logger.Logf("binding to %s for HTTP server", *httpAddr)
 			if err := serve.ListenAndServe(); err != nil {
-				logger.Log("exit", err)
+				logger.Logf("listen: %v", err)
 			}
 		}
 	}()
@@ -137,7 +134,7 @@ func main() {
 	// Block/Wait for an error
 	if err := <-errs; err != nil {
 		shutdownServer()
-		logger.Log("exit", err)
+		logger.Logf("exit: %v", err)
 		os.Exit(1)
 	}
 }
@@ -152,12 +149,12 @@ func addPingRoute(r *mux.Router) {
 }
 
 func setupSearcher(logger log.Logger, s *searcher, achPath, wirePath string) error {
-	logger.Log("search", fmt.Sprintf("loading %s for ACH data", achPath))
+	logger.Logf("search: loading %s for ACH data", achPath)
 	if err := s.readFEDACHData(achPath); err != nil {
 		return fmt.Errorf("error reading ACH file at %s: %v", achPath, err)
 	}
 
-	logger.Log("search", fmt.Sprintf("loading %s for Wire data", wirePath))
+	logger.Logf("search: loading %s for Wire data", wirePath)
 	if err := s.readFEDWIREData(wirePath); err != nil {
 		return fmt.Errorf("error reading wire file at %s: %v", wirePath, err)
 	}

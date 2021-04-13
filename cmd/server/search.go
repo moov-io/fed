@@ -10,9 +10,8 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
-
-	"github.com/go-kit/kit/log"
 )
 
 var (
