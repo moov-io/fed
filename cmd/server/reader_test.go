@@ -5,6 +5,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -13,7 +14,12 @@ import (
 
 func TestReader__readFEDACHData(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
-	if err := s.readFEDACHData(filepath.Join("..", "..", "data", "FedACHdir.txt")); err != nil {
+
+	achFile, err := os.Open(filepath.Join("..", "..", "data", "FedACHdir.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.readFEDACHData(achFile); err != nil {
 		t.Fatal(err)
 	}
 	if len(s.ACHDictionary.ACHParticipants) == 0 {
@@ -21,14 +27,24 @@ func TestReader__readFEDACHData(t *testing.T) {
 	}
 
 	// bad path
-	if err := s.readFEDACHData("empty.txt"); err == nil {
+	achFile, err = os.Open("reader_test.go") // invalid fedach file
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer achFile.Close()
+	if err := s.readFEDACHData(achFile); err == nil {
 		t.Error("expected error")
 	}
 }
 
 func TestReader__readFEDWIREData(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
-	if err := s.readFEDWIREData(filepath.Join("..", "..", "data", "fpddir.txt")); err != nil {
+
+	wireFile, err := os.Open(filepath.Join("..", "..", "data", "fpddir.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.readFEDWIREData(wireFile); err != nil {
 		t.Fatal(err)
 	}
 	if len(s.WIREDictionary.WIREParticipants) == 0 {
@@ -36,7 +52,12 @@ func TestReader__readFEDWIREData(t *testing.T) {
 	}
 
 	// bad path
-	if err := s.readFEDWIREData("empty.txt"); err == nil {
+	wireFile, err = os.Open("reader_test.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer wireFile.Close()
+	if err := s.readFEDWIREData(wireFile); err == nil {
 		t.Error("expected error")
 	}
 }

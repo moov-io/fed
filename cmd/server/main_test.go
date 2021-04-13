@@ -5,6 +5,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -15,16 +16,22 @@ func TestSearcher__setup(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
 
 	logger := log.NewNopLogger()
-	achPath := filepath.Join("..", "..", "data", "FedACHdir.txt")
-	wirePath := filepath.Join("..", "..", "data", "fpddir.txt")
-
-	if err := setupSearcher(logger, s, achPath, wirePath); err != nil {
+	achFile, err := os.Open(filepath.Join("..", "..", "data", "FedACHdir.txt"))
+	if err != nil {
 		t.Fatal(err)
 	}
-	if err := setupSearcher(logger, s, achPath, "empty2.txt"); err == nil {
+	wireFile, err := os.Open(filepath.Join("..", "..", "data", "fpddir.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := setupSearcher(logger, s, achFile, wireFile); err != nil {
+		t.Fatal(err)
+	}
+	if err := setupSearcher(logger, s, achFile, nil); err == nil {
 		t.Errorf("expected error")
 	}
-	if err := setupSearcher(logger, s, "empty.txt", "empty2.txt"); err == nil {
+	if err := setupSearcher(logger, s, nil, nil); err == nil {
 		t.Errorf("expected error")
 	}
 }
