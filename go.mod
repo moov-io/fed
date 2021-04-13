@@ -2,7 +2,7 @@ module github.com/moov-io/fed
 
 require (
 	github.com/antihax/optional v1.0.0
-	github.com/clearbit/clearbit-go v1.0.0
+	github.com/clearbit/clearbit-go v1.0.1
 	github.com/docker/docker v20.10.6+incompatible
 	github.com/go-kit/kit v0.10.0
 	github.com/golang/protobuf v1.5.2 // indirect
