@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 
-	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -46,7 +46,7 @@ func TestSearch__ACHName(t *testing.T) {
 	}
 
 	for _, p := range wrapper.ACHParticipants {
-		if !strings.Contains(p.CustomerName, strings.ToUpper("Farmer")) {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("FARM")) {
 			t.Errorf("Name=%s", p.CustomerName)
 		}
 	}

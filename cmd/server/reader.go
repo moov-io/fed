@@ -31,7 +31,7 @@ func readDataFilepath(env, fallback string) string {
 // parse and define ACHDictionary properties
 func (s *searcher) readFEDACHData(path string) error {
 	if s.logger != nil {
-		s.logger.Log("read", "Read of FED data")
+		s.logger.Logf("Read of FED data")
 	}
 
 	f, err := os.Open(path)
@@ -46,7 +46,7 @@ func (s *searcher) readFEDACHData(path string) error {
 	}
 
 	if s.logger != nil {
-		s.logger.Log("read", "Finished refresh of ACH data")
+		s.logger.Logf("Finished refresh of ACH data")
 	}
 
 	return nil
@@ -56,7 +56,7 @@ func (s *searcher) readFEDACHData(path string) error {
 // parse and define WIREDictionary properties
 func (s *searcher) readFEDWIREData(path string) error {
 	if s.logger != nil {
-		s.logger.Log("read", "Read of FED data")
+		s.logger.Logf("Read of FED data")
 	}
 
 	f, err := os.Open(path)
@@ -71,7 +71,7 @@ func (s *searcher) readFEDWIREData(path string) error {
 	}
 
 	if s.logger != nil {
-		s.logger.Log("read", "Finished refresh of WIRE data")
+		s.logger.Logf("Finished refresh of WIRE data")
 	}
 
 	return nil

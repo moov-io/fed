@@ -149,7 +149,7 @@ func TestSearcher_ACHFindNameOnly(t *testing.T) {
 	}
 
 	for _, p := range achP {
-		if !strings.Contains(p.CustomerName, strings.ToUpper("Farmer")) {
+		if !strings.Contains(p.CustomerName, strings.ToUpper("Farm")) {
 			t.Errorf("Name=%s", p.CustomerName)
 		}
 	}
