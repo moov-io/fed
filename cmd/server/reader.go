@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 	"github.com/moov-io/fed/pkg/download"
-
-	"github.com/go-kit/kit/log"
 )
 
 func fedACHDataFile(logger log.Logger) *os.File {
@@ -49,7 +48,7 @@ func attemptFileDownload(logger log.Logger, listName string) (*os.File, error) {
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
 
 	if routingNumber != "" && downloadCode != "" {
-		logger.Log("download", fmt.Sprintf("attempting %s download", listName))
+		logger.Logf("download: attempting %s", listName)
 		client, err := download.NewClient(&download.ClientOpts{
 			RoutingNumber: routingNumber,
 			DownloadCode:  downloadCode,
