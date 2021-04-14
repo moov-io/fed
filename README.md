@@ -59,6 +59,15 @@ The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/gi
 
 Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
 
+#### Download Files
+
+The Federal Reserve Board (FRB) eServices offers API access to download the files. To download these files, work with your ODFI / banking partner to obtain a download code. Then run Fed with the following environment variables set.
+
+```
+FRB_ROUTING_NUMBER=123456780
+FRB_DOWNLOAD_CODE=86cfa5a9-1ab9-4af5-bd89-0f84d546de13
+```
+
 ### Docker
 
 We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
@@ -174,6 +183,8 @@ PONG
 |-----|-----|-----|
 | `FEDACH_DATA_PATH` | Filepath to FedACH data file | `./data/FedACHdir.txt` |
 | `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
+| `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files | Empty |
+| `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files | Empty |
 | `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
 | `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
 | `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
