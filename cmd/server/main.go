@@ -150,8 +150,11 @@ func addPingRoute(r *mux.Router) {
 }
 
 func setupSearcher(logger log.Logger, s *searcher, achFile, wireFile *os.File) error {
-	if achFile == nil || wireFile == nil {
-		return errors.New("missing fedach or fedwire data file(s)")
+	if achFile == nil {
+		return errors.New("missing fedach data file")
+	}
+	if wireFile == nil {
+		return errors.New("missing fedwire data file")
 	}
 
 	logger.Logf("search: loading %s for ACH data", achFile.Name())

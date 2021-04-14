@@ -39,8 +39,11 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		}
 	}
 
-	if opts.RoutingNumber == "" || opts.DownloadCode == "" {
-		return nil, errors.New("missing routing number or download code")
+	if opts.RoutingNumber == "" {
+		return nil, errors.New("missing routing number")
+	}
+	if opts.DownloadCode == "" {
+		return nil, errors.New("missing download code")
 	}
 
 	return &Client{
