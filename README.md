@@ -61,7 +61,7 @@ Moov Fed can read the data files from anywhere on the filesystem. This allows yo
 
 #### Download Files
 
-The Federal Reserve Board (FRB) eServices offers API access to download the files. To download these work with your ODFI / banking partner to obtain a download code. Then run Fed with the following environmental variables set.
+The Federal Reserve Board (FRB) eServices offers API access to download the files. To download these files, work with your ODFI / banking partner to obtain a download code. Then run Fed with the following environment variables set.
 
 ```
 FRB_ROUTING_NUMBER=123456780
