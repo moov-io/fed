@@ -1,3 +1,13 @@
+## v0.6.0 (Released 2021-04-14)
+
+ADDITIONS
+
+- cmd/server: download files if env vars are populated (`FRB_ROUTING_NUMBER` and `FRB_DOWNLOAD_CODE`)
+
+BUILD
+
+- fix(deps): update module github.com/clearbit/clearbit-go to v1.0.1
+
 ## v0.5.3 (Released 2021-02-23)
 
 IMPROVEMENTS
