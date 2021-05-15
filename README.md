@@ -185,6 +185,7 @@ PONG
 | `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
 | `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files | Empty |
 | `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files | Empty |
+| `DOWNLOAD_DIRECTORY` | Directory for saving downloaded eServices files into | OS Temp Dir |
 | `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
 | `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
 | `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
