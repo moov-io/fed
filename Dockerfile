@@ -5,7 +5,7 @@ COPY . .
 RUN make build
 RUN useradd --shell /bin/false moov
 
-FROM scratch
+FROM golang:1.16-buster
 LABEL maintainer="Moov <support@moov.io>"
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
