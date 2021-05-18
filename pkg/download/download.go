@@ -13,6 +13,8 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/moov-io/base/strx"
 )
 
 type Client struct {
@@ -53,6 +55,16 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 	}, nil
 }
 
+var (
+	downloadDirectory = strx.Or(os.Getenv("DOWNLOAD_DIRECTORY"), os.TempDir())
+)
+
+func init() {
+	if _, err := os.Stat(downloadDirectory); os.IsNotExist(err) {
+		os.MkdirAll(downloadDirectory, 0777)
+	}
+}
+
 // GetList downloads an FRB list and saves it into a temporary file.
 // Example listName values: fedach, fedwire
 func (c *Client) GetList(listName string) (*os.File, error) {
@@ -75,7 +87,7 @@ func (c *Client) GetList(listName string) (*os.File, error) {
 	}
 	defer resp.Body.Close()
 
-	out, err := ioutil.TempFile("", fmt.Sprintf("%s-*", listName))
+	out, err := ioutil.TempFile(downloadDirectory, fmt.Sprintf("%s-*", listName))
 	if err != nil {
 		return nil, fmt.Errorf("temp file: %v", err)
 	}
