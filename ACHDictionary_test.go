@@ -5,6 +5,7 @@
 package fed
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -211,7 +212,7 @@ func TestInvalidACHFinancialInstitutionSearchSingle(t *testing.T) {
 func TestACHRoutingNumberSearch(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	fi, err := jsonDict.RoutingNumberSearch("325")
+	fi, err := jsonDict.RoutingNumberSearch("325", 10)
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -219,7 +220,7 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 		t.Errorf("%s", "325 should have returned values")
 	}
 
-	fi, err = plainDict.RoutingNumberSearch("325")
+	fi, err = plainDict.RoutingNumberSearch("325", 10)
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -232,7 +233,7 @@ func TestACHRoutingNumberSearch(t *testing.T) {
 func TestACHRoutingNumberSearch02(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	fi, err := jsonDict.RoutingNumberSearch("03")
+	fi, err := jsonDict.RoutingNumberSearch("03", 10)
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -240,7 +241,7 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 		t.Fatalf("02 should have returned values")
 	}
 
-	fi, err = plainDict.RoutingNumberSearch("02")
+	fi, err = plainDict.RoutingNumberSearch("02", 10)
 	if err != nil {
 		t.Fatalf("%T: %s", err, err)
 	}
@@ -254,13 +255,13 @@ func TestACHRoutingNumberSearch02(t *testing.T) {
 func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	if _, err := jsonDict.RoutingNumberSearch("0"); err != nil {
+	if _, err := jsonDict.RoutingNumberSearch("0", 10); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
 
-	if _, err := plainDict.RoutingNumberSearch("0"); err != nil {
+	if _, err := plainDict.RoutingNumberSearch("0", 10); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -270,9 +271,12 @@ func TestACHRoutingNumberSearchMinimumLength(t *testing.T) {
 // TestInvalidACHRoutingNumberSearch tests that routing number returns nil for an invalid RoutingNumber.
 func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 	check := func(t *testing.T, kind string, dict *ACHDictionary) {
-		fi, err := dict.RoutingNumberSearch("777777777")
+		fi, err := dict.RoutingNumberSearch("777777777", 10)
 		if err != nil {
 			t.Fatalf("%s: %T: %s", kind, err, err)
+		}
+		for i := range fi {
+			fmt.Printf("fi[%d]=%#v\n", i, fi[i])
 		}
 		if len(fi) != 0 {
 			t.Fatalf("%s: ach routing number search should have returned nil", kind)
@@ -289,12 +293,12 @@ func TestInvalidACHRoutingNumberSearch(t *testing.T) {
 func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	if _, err := jsonDict.RoutingNumberSearch("1234567890"); err != nil {
+	if _, err := jsonDict.RoutingNumberSearch("1234567890", 10); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
-	if _, err := plainDict.RoutingNumberSearch("1234567890"); err != nil {
+	if _, err := plainDict.RoutingNumberSearch("1234567890", 10); err != nil {
 		if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -306,12 +310,12 @@ func TestACHRoutingNumberSearchMaximumLength(t *testing.T) {
 func TestACHRoutingNumberNumeric(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	if _, err := jsonDict.RoutingNumberSearch("1  S5"); err != nil {
+	if _, err := jsonDict.RoutingNumberSearch("1  S5", 10); err != nil {
 		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
 	}
-	if _, err := plainDict.RoutingNumberSearch("1  S5"); err != nil {
+	if _, err := plainDict.RoutingNumberSearch("1  S5", 10); err != nil {
 		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
@@ -322,12 +326,12 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 func TestACHFinancialInstitutionSearch(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	fi := jsonDict.FinancialInstitutionSearch("First Bank")
+	fi := jsonDict.FinancialInstitutionSearch("First Bank", 10)
 	if len(fi) == 0 {
 		t.Fatalf("json: No Financial Institutions matched your search query")
 	}
 
-	fi = plainDict.FinancialInstitutionSearch("First Bank")
+	fi = plainDict.FinancialInstitutionSearch("First Bank", 10)
 	if len(fi) == 0 {
 		t.Fatalf("plain: No Financial Institutions matched your search query")
 	}
@@ -337,12 +341,12 @@ func TestACHFinancialInstitutionSearch(t *testing.T) {
 func TestACHFinancialInstitutionFarmers(t *testing.T) {
 	jsonDict, plainDict := loadTestACHFiles(t)
 
-	fi := jsonDict.FinancialInstitutionSearch("FaRmerS")
+	fi := jsonDict.FinancialInstitutionSearch("FaRmerS", 10)
 	if len(fi) == 0 {
 		t.Fatalf("json: No Financial Institutions matched your search query")
 	}
 
-	fi = plainDict.FinancialInstitutionSearch("FaRmerS")
+	fi = plainDict.FinancialInstitutionSearch("FaRmerS", 10)
 	if len(fi) == 0 {
 		t.Fatalf("plain: No Financial Institutions matched your search query")
 	}
@@ -351,7 +355,7 @@ func TestACHFinancialInstitutionFarmers(t *testing.T) {
 // TestACHSearchStateFilter tests search string `Farmers State Bank` and filters by the state of Ohio, `OH`
 func TestACHSearchStateFilter(t *testing.T) {
 	check := func(t *testing.T, kind string, dict *ACHDictionary) {
-		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank", 100)
 		if len(fi) == 0 {
 			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
 		}
@@ -375,7 +379,7 @@ func TestACHSearchStateFilter(t *testing.T) {
 // TestACHSearchCityFilter tests search string `Farmers State Bank` and filters by the city of `ARCHBOLD`
 func TestACHSearchCityFilter(t *testing.T) {
 	check := func(t *testing.T, kind string, dict *ACHDictionary) {
-		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank", 100)
 		if len(fi) == 0 {
 			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
 		}
@@ -399,7 +403,7 @@ func TestACHSearchCityFilter(t *testing.T) {
 // TestACHSearchPostalCodeFilter tests search string `Farmers State Bank` and filters by the postal code of
 func TestACHSearchPostalCodeFilter(t *testing.T) {
 	check := func(t *testing.T, kind string, dict *ACHDictionary) {
-		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank", 100)
 		if len(fi) == 0 {
 			t.Fatalf("%s: No Financial Institutions matched your search query", kind)
 		}

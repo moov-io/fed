@@ -161,7 +161,7 @@ func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	achP, err := s.ACHFindRoutingNumberOnly(hardResultsLimit, "044112187")
+	achP, err := s.ACHFindRoutingNumberOnly(10, "044112187")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,9 +171,13 @@ func TestSearcher_ACHFindRoutingNumberOnly(t *testing.T) {
 	}
 
 	for _, p := range achP {
-		if !strings.Contains(p.RoutingNumber, "044112187") {
-			t.Errorf("Routing Number=%s", p.RoutingNumber)
+		if strings.HasPrefix(p.RoutingNumber, "041") {
+			continue
 		}
+		if strings.HasPrefix(p.RoutingNumber, "044") {
+			continue
+		}
+		t.Errorf("Routing Number=%s", p.RoutingNumber)
 	}
 }
 

@@ -38,48 +38,40 @@ type searchResponse struct {
 func (s *searcher) ACHFindNameOnly(limit int, participantName string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi := s.ACHDictionary.FinancialInstitutionSearch(participantName)
-	out := achLimit(fi, limit)
-	return out
+
+	return s.ACHDictionary.FinancialInstitutionSearch(participantName, limit)
 }
 
 // ACHFindRoutingNumberOnly finds ACH Participants by routing number only
 func (s *searcher) ACHFindRoutingNumberOnly(limit int, routingNumber string) ([]*fed.ACHParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-	fi, err := s.ACHDictionary.RoutingNumberSearch(routingNumber)
-	if err != nil {
-		return nil, err
-	}
-	out := achLimit(fi, limit)
-	return out, nil
+
+	return s.ACHDictionary.RoutingNumberSearch(routingNumber, limit)
 }
 
 // ACHFindCityOnly finds ACH Participants by city only
 func (s *searcher) ACHFindCityOnly(limit int, city string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi := s.ACHDictionary.CityFilter(city)
-	out := achLimit(fi, limit)
-	return out
+
+	return achLimit(s.ACHDictionary.CityFilter(city), limit)
 }
 
 // ACHFindSateOnly finds ACH Participants by state only
 func (s *searcher) ACHFindStateOnly(limit int, state string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi := s.ACHDictionary.StateFilter(state)
-	out := achLimit(fi, limit)
-	return out
+
+	return achLimit(s.ACHDictionary.StateFilter(state), limit)
 }
 
 // ACHFindPostalCodeOnly finds ACH Participants by postal code only
 func (s *searcher) ACHFindPostalCodeOnly(limit int, postalCode string) []*fed.ACHParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi := s.ACHDictionary.PostalCodeFilter(postalCode)
-	out := achLimit(fi, limit)
-	return out
+
+	return achLimit(s.ACHDictionary.PostalCodeFilter(postalCode), limit)
 }
 
 // ACHFind finds ACH Participants based on multiple parameters
@@ -88,27 +80,22 @@ func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipa
 	defer s.RUnlock()
 	var err error
 
-	fi := s.ACHDictionary.FinancialInstitutionSearch(req.Name)
-
+	out := s.ACHDictionary.FinancialInstitutionSearch(req.Name, limit)
 	if req.RoutingNumber != "" {
-		fi, err = s.ACHDictionary.ACHParticipantRoutingNumberFilter(fi, req.RoutingNumber)
+		out, err = s.ACHDictionary.ACHParticipantRoutingNumberFilter(out, req.RoutingNumber)
 		if err != nil {
 			return nil, err
 		}
 	}
-
 	if req.State != "" {
-		fi = s.ACHDictionary.ACHParticipantStateFilter(fi, req.State)
+		out = s.ACHDictionary.ACHParticipantStateFilter(out, req.State)
 	}
-
 	if req.City != "" {
-		fi = s.ACHDictionary.ACHParticipantCityFilter(fi, req.City)
+		out = s.ACHDictionary.ACHParticipantCityFilter(out, req.City)
 	}
-
 	if req.PostalCode != "" {
-		fi = s.ACHDictionary.ACHParticipantPostalCodeFilter(fi, req.PostalCode)
+		out = s.ACHDictionary.ACHParticipantPostalCodeFilter(out, req.PostalCode)
 	}
-	out := achLimit(fi, limit)
 	return out, nil
 }
 
