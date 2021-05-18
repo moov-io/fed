@@ -311,34 +311,23 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
 	// and Levenshtein similarity
 	Participants := make([]*ACHParticipant, 0)
 
-	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
-	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
-	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
+		// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+		// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+		// typos are less common to happen at the beginning.
+		jaroScore := strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s)
+
+		// Levenshtein is the "edit distance" between two strings. This is the count of operations
+		// (insert, delete, replace) needed for two strings to be equal.
+		levenScore := strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s)
+
+		if jaroScore > ACHJaroWinklerSimilarity || levenScore > ACHLevenshteinSimilarity {
 			Participants = append(Participants, achP)
 		}
 	}
 
-	// Levenshtein is the "edit distance" between two strings. This is the count of operations
-	// (insert, delete, replace) needed for two strings to be equal.
-	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
+	// TODO(adam): we need to save higher score for sorting, not by name
 
-			// Only append if the not included in the Participant sub-set
-			if len(Participants) != 0 {
-				for _, p := range Participants {
-					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
-						break
-					}
-				}
-				Participants = append(Participants, achP)
-
-			} else {
-				Participants = append(Participants, achP)
-			}
-		}
-	}
 	// Sort the result
 	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
 
