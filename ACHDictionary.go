@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"sort"
 	"strings"
 	"unicode/utf8"
@@ -80,6 +81,12 @@ type ACHParticipant struct {
 	// ViewCode is current view
 	// 1 = Current view
 	ViewCode string `json:"viewCode"`
+}
+
+type achParticipantResult struct {
+	*ACHParticipant
+
+	highestMatch float64
 }
 
 // ACHLocation is the institution's delivery address
@@ -273,7 +280,7 @@ func (f *ACHDictionary) FinancialInstitutionSearchSingle(s string) []*ACHPartici
 // RoutingNumberSearch returns FEDACH participants if ACHParticipant.RoutingNumber begins with prefix string s.
 // The first 2 digits of the routing number are required.
 // Based on https://www.frbservices.org/EPaymentsDirectory/search.html
-func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error) {
+func (f *ACHDictionary) RoutingNumberSearch(s string, limit int) ([]*ACHParticipant, error) {
 	s = strings.TrimSpace(s)
 
 	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
@@ -291,58 +298,54 @@ func (f *ACHDictionary) RoutingNumberSearch(s string) ([]*ACHParticipant, error)
 		f.errors.Add(ErrRoutingNumberNumeric)
 		return nil, f.errors
 	}
+	exactMatch := len(s) == 9
 
-	Participants := make([]*ACHParticipant, 0)
-
+	out := make([]*achParticipantResult, 0)
 	for _, achP := range f.ACHParticipants {
-		if strings.HasPrefix(achP.RoutingNumber, s) {
-			Participants = append(Participants, achP)
+		if exactMatch {
+			if achP.RoutingNumber == s {
+				out = append(out, &achParticipantResult{
+					ACHParticipant: achP,
+					highestMatch:   1.0,
+				})
+			}
+		} else {
+			out = append(out, &achParticipantResult{
+				ACHParticipant: achP,
+				highestMatch:   strcmp.JaroWinkler(achP.RoutingNumber, s),
+			})
 		}
 	}
-
-	return Participants, nil
+	return reduceResult(out, limit), nil
 }
 
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
-func (f *ACHDictionary) FinancialInstitutionSearch(s string) []*ACHParticipant {
+func (f *ACHDictionary) FinancialInstitutionSearch(s string, limit int) []*ACHParticipant {
 	s = strings.ToLower(s)
 
 	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
 	// and Levenshtein similarity
-	Participants := make([]*ACHParticipant, 0)
+	out := make([]*achParticipantResult, 0)
 
-	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
-	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
-	// typos are less common to happen at the beginning.
 	for _, achP := range f.ACHParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s) > ACHJaroWinklerSimilarity {
-			Participants = append(Participants, achP)
+		// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+		// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+		// typos are less common to happen at the beginning.
+		jaroScore := strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s)
+
+		// Levenshtein is the "edit distance" between two strings. This is the count of operations
+		// (insert, delete, replace) needed for two strings to be equal.
+		levenScore := strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s)
+
+		if jaroScore > ACHJaroWinklerSimilarity || levenScore > ACHLevenshteinSimilarity {
+			out = append(out, &achParticipantResult{
+				ACHParticipant: achP,
+				highestMatch:   math.Max(jaroScore, levenScore),
+			})
 		}
 	}
 
-	// Levenshtein is the "edit distance" between two strings. This is the count of operations
-	// (insert, delete, replace) needed for two strings to be equal.
-	for _, achP := range f.ACHParticipants {
-		if strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s) > ACHLevenshteinSimilarity {
-
-			// Only append if the not included in the Participant sub-set
-			if len(Participants) != 0 {
-				for _, p := range Participants {
-					if p.CustomerName == achP.CustomerName && p.RoutingNumber == achP.RoutingNumber {
-						break
-					}
-				}
-				Participants = append(Participants, achP)
-
-			} else {
-				Participants = append(Participants, achP)
-			}
-		}
-	}
-	// Sort the result
-	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
-
-	return Participants
+	return reduceResult(out, limit)
 }
 
 // ACHParticipantStateFilter filters ACHParticipant by State.
@@ -428,4 +431,14 @@ func (f *ACHDictionary) PostalCodeFilter(s string) []*ACHParticipant {
 		}
 	}
 	return nsl
+}
+
+func reduceResult(in []*achParticipantResult, limit int) []*ACHParticipant {
+	sort.SliceStable(in, func(i, j int) bool { return in[i].highestMatch > in[j].highestMatch })
+
+	out := make([]*ACHParticipant, 0)
+	for i := 0; i < limit && i < len(in); i++ {
+		out = append(out, in[i].ACHParticipant)
+	}
+	return out
 }

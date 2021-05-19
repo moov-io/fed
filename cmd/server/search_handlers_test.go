@@ -54,7 +54,7 @@ func TestSearch__ACHName(t *testing.T) {
 
 func TestSearch__ACHRoutingNumber(t *testing.T) {
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/fed/ach/search?routingNumber=044112187", nil)
+	req := httptest.NewRequest("GET", "/fed/ach/search?routingNumber=044112187&limit=3", nil)
 
 	s := searcher{}
 	if err := s.helperLoadFEDACHFile(t); err != nil {
@@ -79,9 +79,10 @@ func TestSearch__ACHRoutingNumber(t *testing.T) {
 	}
 
 	for _, p := range wrapper.ACHParticipants {
-		if !strings.Contains(p.RoutingNumber, "044112187") {
-			t.Errorf("RoutingNumber=%s", p.RoutingNumber)
+		if strings.HasPrefix(p.RoutingNumber, "044") {
+			continue
 		}
+		t.Errorf("Routing Number=%s", p.RoutingNumber)
 	}
 }
 
