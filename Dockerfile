@@ -7,12 +7,11 @@ RUN useradd --shell /bin/false moov
 
 FROM golang:1.16-buster
 LABEL maintainer="Moov <support@moov.io>"
+RUN apt-get update && apt-get install ca-certificates
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /go/src/github.com/moov-io/fed/bin/server /bin/server
 
-COPY data/FedACHdir.txt /data/fed/FedACHdir.txt
-COPY data/fpddir.txt /data/fed/fpddir.txt
+COPY data/*.txt /data/fed/
 
 ENV FEDACH_DATA_PATH=/data/fed/FedACHdir.txt
 ENV FEDWIRE_DATA_PATH=/data/fed/fpddir.txt
