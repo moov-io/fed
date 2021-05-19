@@ -1,3 +1,22 @@
+## v0.7.0 (Released 2021-05-19)
+
+ADDITIONS
+
+- Read `DOWNLOAD_DIRECTORY` environment variable for storing downloaded files.
+
+IMPROVEMENTS
+
+- search: rank results based on fuzzy score rather than name, offer exect routing number matching
+
+BUG FIXES
+
+- Fix file download errors in Docker images
+- De-duplicate search results, improve performance
+
+BUILD
+
+- build(deps): bump rexml from 3.2.4 to 3.2.5 in /docs
+
 ## v0.6.0 (Released 2021-04-14)
 
 ADDITIONS
