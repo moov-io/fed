@@ -25,7 +25,7 @@ docker pull moov/fed:latest
 docker run -p 8086:8086 -p 9096:9096 moov/fed:latest
 ```
 
-#### **ACH Routing Number Example**
+#### **ACH routing number example**
 
 Fed can be used to look up Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`):
 
@@ -59,7 +59,7 @@ curl "localhost:8086/fed/ach/search?routingNumber=273976369"
 }
 ```
 
-#### **Wire Routing Number Example**
+#### **Wire routing number example**
 
 Fed can be used to look up Financial Institutions for [Fedwire](https://en.wikipedia.org/wiki/Fedwire) messages by their routing number (`?routingNumber=...`):
 

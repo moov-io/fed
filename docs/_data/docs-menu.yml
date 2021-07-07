@@ -1,4 +1,4 @@
-- label: Getting Started
+- label: Getting started
   items:
     - name: Overview
       link: /
@@ -11,26 +11,26 @@
       link: /usage-docker/
     - name: Google Cloud Run
       link: /usage-google-cloud/
-    - name: Binary Distribution
+    - name: Binary distribution
       link: /usage-binary/
-    - name: API Configuration
+    - name: API configuration
       link: /usage-configuration/
-    - name: Go Library
+    - name: Go library
       link: /usage-go/
 
-- label: Fed Search
+- label: Fed search
   items:
-    - name: FedACH Format
+    - name: FedACH format
       link: /FEDACHDIR_FORMAT/
-    - name: Fedwire Format
+    - name: Fedwire format
       link: /fpddir_FORMAT/
-    - name: Fed State Codes
+    - name: Fed state codes
       link: /Fed_STATE_CODES/
       
 
-- label: Production and Monitoring
+- label: Production and monitoring
   items:
     - name: Kubernetes
       link: /kubernetes/
-    - name: Prometheus Metrics
+    - name: Prometheus metrics
       link: /prometheus/

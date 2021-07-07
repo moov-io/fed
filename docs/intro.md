@@ -18,7 +18,7 @@ The data and formats below represent a compilation of  **Fedwire** and **FedACH*
 
 Fed can be used standalone to search for routing numbers by Financial Institution name, city, state, postal code, and routing number. It can also be used in conjunction with [Moov ACH](https://github.com/moov-io/ach) and [Moov Wire](https://github.com/moov-io/wire) to validate routing numbers.
 
-## Data Files
+## Data files
 
 The data files included in this repository ([`FedACHdir.md`](https://github.com/moov-io/fed/tree/master/docs/FedACHdir.md) and [`fpddir.md`](https://github.com/moov-io/fed/tree/master/docs/fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [Accuity](https://accuity.com/product/us-payments-routing-and-transit-number-file/) or your financial institution.
 
