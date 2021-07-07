@@ -1,12 +1,12 @@
 ---
 layout: page
-title: API Configuration
+title: API configuration
 hide_hero: true
 show_sidebar: false
 menubar: docs-menu
 ---
 
-# Configuration Settings
+# Configuration settings
 
 | Environmental Variable | Description | Default |
 |-----|-----|-----|
@@ -18,5 +18,5 @@ menubar: docs-menu
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
 
-## Data Persistence
+## Data persistence
 By design, Fed  **does not persist** (save) any data about the search queries created. The only storage occurs in memory of the process and upon restart Fed will have no files or data saved. Also, no in-memory encryption of the data is performed.

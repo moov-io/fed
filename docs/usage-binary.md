@@ -1,12 +1,12 @@
 ---
 layout: page
-title: Binary Distribution
+title: Binary distribution
 hide_hero: true
 show_sidebar: false
 menubar: docs-menu
 ---
 
-# Binary Distribution
+# Binary distribution
 
 Download the [latest Moov Fed server release](https://github.com/moov-io/fed/releases) for your operating system and run it from a terminal.
 
@@ -56,7 +56,7 @@ $ curl "localhost:8086/fed/ach/search?routingNumber=273976369"
 }
 ```
 
-Search for a Financial Institution by name:
+Search for a financial institution by name:
 
 ```
 $ curl "localhost:8086/fed/ach/search?name=Veridian&limit=1"

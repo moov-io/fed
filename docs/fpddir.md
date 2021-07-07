@@ -1,4 +1,4 @@
-# FedWire Directory
+# FedWire directory
 
 * Data: [fpddir.txt](../data/fpddir.txt)
 * JSON Data Example: [fpddir.json](../data/fpddir.json)

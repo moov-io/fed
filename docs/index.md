@@ -16,7 +16,7 @@ Fed implements utility services for searching the United States Federal Reserve 
 
 The data and formats in this repository represent a compilation of **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/). Both the official Fed plaintext and JSON file formats are supported.
 
-## Copyright and Terms of Use
+## Copyright and terms of use
 
 Copyright &copy; Federal Reserve Banks
 

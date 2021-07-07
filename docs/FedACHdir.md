@@ -1,4 +1,4 @@
-# FedACH Directory
+# FedACH directory
 
 * Data: [FedACHdir.txt](../data/FedACHdir.txt)
 * JSON Data Example: [fedachdir.json](../data/fedachdir.json)

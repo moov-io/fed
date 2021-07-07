@@ -21,7 +21,7 @@
 [![Slack Channel](https://slack.moov.io/badge.svg?bg=e01563&fgColor=fffff)](https://slack.moov.io/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/moov/fed)](https://hub.docker.com/r/moov/fed)
 [![GitHub Stars](https://img.shields.io/github/stars/moov-io/fed)](https://github.com/moov-io/fed)
-[![Twitter](https://img.shields.io/twitter/follow/moov_io?style=social)](https://twitter.com/moov_io?lang=en)
+[![Twitter](https://img.shields.io/twitter/follow/moov?style=social)](https://twitter.com/moov?lang=en)
 
 # moov-io/fed
 
@@ -31,23 +31,23 @@ Fed implements utility services for searching the United States Federal Reserve 
 
 The data and formats in this repository represent a compilation of **FedWire** and **FedACH** data from the [Federal Reserve Bank Services site](https://frbservices.org/). Both the official Fed plaintext and JSON file formats are supported.
 
-## Table of Contents
+## Table of contents
 
-- [Project Status](#project-status)
+- [Project status](#project-status)
 - [Usage](#usage)
   - As an API
     - [Docker](#docker) ([Config](#configuration-settings))
     - [Google Cloud](#google-cloud-run) ([Config](#configuration-settings))
-    - [Data Persistence](#data-persistence)
-  - [As a Go Module](#go-library)
-- [Learn About Fed Services Participation](#learn-about-fed-services-participation)
-- [Getting Help](#getting-help)
-- [Supported and Tested Platforms](#supported-and-tested-platforms)
+    - [Data persistence](#data-persistence)
+  - [As a Go module](#go-library)
+- [Learn about Fed services participation](#learn-about-fed-services-participation)
+- [Getting help](#getting-help)
+- [Supported and tested platforms](#supported-and-tested-platforms)
 - [Contributing](#contributing)
-- [Related Projects](#related-projects)
+- [Related projects](#related-projects)
 - [Copyright](#copyright-and-terms-of-use)
 
-### Project Status
+### Project status
 
 Moov Fed is actively used in multiple production environments. Please star the project if you are interested in its progress. We would appreciate any issues created or pull requests. Thanks!
 
@@ -59,7 +59,7 @@ The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/gi
 
 Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
 
-#### Download Files
+#### Download files
 
 The Federal Reserve Board (FRB) eServices offers API access to download the files. To download these files, work with your ODFI / banking partner to obtain a download code. Then run Fed with the following environment variables set.
 
@@ -78,7 +78,7 @@ docker pull moov/fed:latest
 docker run -p 8086:8086 -p 9096:9096 moov/fed:latest
 ```
 
-#### **ACH Routing Number Example**
+#### **ACH routing number example**
 
 Fed can be used to look up Financial Institutions for Automated Clearing House ([ACH](https://en.wikipedia.org/wiki/Automated_Clearing_House)) transfers by their routing number (`?routingNumber=...`):
 
@@ -112,7 +112,7 @@ curl "localhost:8086/fed/ach/search?routingNumber=273976369"
 }
 ```
 
-#### **Wire Routing Number Example**
+#### **Wire routing number example**
 
 Fed can be used to look up Financial Institutions for [Fedwire](https://en.wikipedia.org/wiki/Fedwire) messages by their routing number (`?routingNumber=...`):
 
@@ -177,7 +177,7 @@ You should get this response:
 PONG
 ```
 
-### Configuration Settings
+### Configuration settings
 
 | Environmental Variable | Description | Default |
 |-----|-----|-----|
@@ -192,10 +192,10 @@ PONG
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
 
-### Data Persistence
+### Data persistence
 By design, Fed  **does not persist** (save) any data about the search queries created. The only storage occurs in memory of the process and upon restart Fed will have no files or data saved. Also, no in-memory encryption of the data is performed.
 
-### Go Library
+### Go library
 
 This project uses [Go Modules](https://github.com/golang/go/wiki/Modules) and uses Go v1.14 or higher. See [Golang's install instructions](https://golang.org/doc/install) for help setting up Go. You can download the source code and we offer [tagged and released versions](https://github.com/moov-io/fed/releases/latest) as well. We highly recommend you use a tagged release for production.
 
@@ -208,7 +208,7 @@ $ go get -u github.com/moov-io/fed
 $ go doc github.com/moov-io/fed ACHDictionary
 ```
 
-## Learn About Fed Services Participation
+## Learn about Fed services participation
 - [Intro to Fedwire](https://www.frbservices.org/assets/financial-services/wires/funds.pdf)
 - [Intro to FedACH](https://www.frbservices.org/assets/financial-services/ach/ach-product-sheet.pdf)
 - [U.S. Department of the Treasury FAQ](https://www.treasury.gov/resource-center/faqs/Sanctions/Pages/faq_general.aspx#basic)
@@ -216,16 +216,16 @@ $ go doc github.com/moov-io/fed ACHDictionary
 - [Fedwire Directory File Format](./docs/fpddir_FORMAT.md)
 - [FedACH Directory File Format](./docs/FEDACHDIR_FORMAT.MD)
 
-## Getting Help
+## Getting help
 
  channel | info
  ------- | -------
 [Project Documentation](https://moov-io.github.io/fed/) | Our project documentation available online.
-Twitter [@moov_io](https://twitter.com/moov_io)	| You can follow Moov.IO's Twitter feed to get updates on our project(s). You can also tweet us questions or just share blogs or stories.
+Twitter [@moov](https://twitter.com/moov)	| You can follow Moov.io's Twitter feed to get updates on our project(s). You can also tweet us questions or just share blogs or stories.
 [GitHub Issue](https://github.com/moov-io/fed/issues) | If you are able to reproduce a problem please open a GitHub Issue under the specific project that caused the error.
 [moov-io slack](https://slack.moov.io/) | Join our slack channel to have an interactive discussion about the development of the project.
 
-## Supported and Tested Platforms
+## Supported and tested platforms
 
 - 64-bit Linux (Ubuntu, Debian), macOS, and Windows
 
@@ -245,7 +245,7 @@ To make a release of fed simply open a pull request with `CHANGELOG.md` and `ver
 
 We maintain a comprehensive suite of unit tests and recommend table-driven testing when a particular function warrants several very similar test cases. To run all test files in the current directory, use `go test`. Current overall coverage can be found on [Codecov](https://app.codecov.io/gh/moov-io/fed/).
 
-## Related Projects
+## Related projects
 As part of Moov's initiative to offer open source fintech infrastructure, we have a large collection of active projects you may find useful:
 
 - [Moov Watchman](https://github.com/moov-io/watchman) offers search functions over numerous trade sanction lists from the United States and European Union.
@@ -258,7 +258,7 @@ As part of Moov's initiative to offer open source fintech infrastructure, we hav
 
 - [Moov Metro 2](https://github.com/moov-io/metro2) provides a way to easily read, create, and validate Metro 2 format, which is used for consumer credit history reporting by the United States credit bureaus.
 
-## Copyright and Terms of Use
+## Copyright and terms of use
 
 (c) Federal Reserve Banks
 

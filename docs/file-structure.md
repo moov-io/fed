@@ -1,4 +1,4 @@
-# FedACH Directory File Format
+# FedACH directory file format
 
 **Source:** [achFormat](https://frbservices.org/EPaymentsDirectory/achFormat.html)
 
@@ -23,7 +23,7 @@
 | Data View Code | 1 | 150 | 1 = Current view |
 | Filler | 5 | 151-155 | Spaces |
 
-# Fedwire Directory File Format
+# Fedwire directory file format
 
 **Source:** [FedWireFormat](https://frbservices.org/EPaymentsDirectory/fedwireFormat.html)
 
