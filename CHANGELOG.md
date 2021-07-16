@@ -1,3 +1,12 @@
+## v0.7.1 (Released 2021-07-16)
+
+BUILD
+
+- build(deps): bump addressable from 2.7.0 to 2.8.0 in /docs
+- build(deps): bump nokogiri from 1.11.1 to 1.11.5 in /docs
+- fix(deps): update golang.org/x/oauth2 commit hash to d040287
+- fix(deps): update module github.com/go-kit/kit to v0.11.0
+
 ## v0.7.0 (Released 2021-05-19)
 
 ADDITIONS
