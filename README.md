@@ -5,6 +5,8 @@
   ·
   <a href="https://moov-io.github.io/fed/api/#overview">API Endpoints</a>
   ·
+  <a href="https://moov.io/blog/education/fed-api-guide/">API Guide</a>
+  ·
   <a href="https://slack.moov.io/">Community</a>
   ·
   <a href="https://moov.io/blog/">Blog</a>
