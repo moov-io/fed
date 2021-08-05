@@ -3,7 +3,7 @@ VERSION := $(shell grep -Eo '(v[0-9]+[\.][0-9]+[\.][0-9]+(-[a-zA-Z0-9]*)?)' vers
 
 .PHONY: build docker release check
 
-build: check
+build:
 # main FED binary
 	CGO_ENABLED=0 go build -o ./bin/server github.com/moov-io/fed/cmd/server
 # fedtest binary
