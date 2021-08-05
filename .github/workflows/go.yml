@@ -30,8 +30,14 @@ jobs:
     - name: Generate Code
       run: make client
 
+    - name: Build
+      run: make build
+
     - name: Check
-      run: make build && make check
+      run: make check
+      env:
+        COVER_THRESHOLD: 75.0
+        GOLANGCI_LINTERS: gosec
 
     - name: Upload Code Coverage
       if: runner.os == 'Linux'

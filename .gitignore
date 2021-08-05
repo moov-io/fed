@@ -44,3 +44,6 @@ _testmain.go
 # code coverage
 coverage.html
 cover.out
+coverage.txt
+misspell*
+/lint-project.sh
