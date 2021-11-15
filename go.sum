@@ -179,6 +179,8 @@ github.com/clearbit/clearbit-go v1.0.0 h1:kUYvXNi/b9luFl0N27jtvatc/s/Ym6wYK+2SyD
 github.com/clearbit/clearbit-go v1.0.0/go.mod h1:PCnMdDgl9MsVqn3pC9sJBFFNASyVKhLIpg8Nw/tSV6U=
 github.com/clearbit/clearbit-go v1.0.1 h1:TQFnBQb3x3FcGi2puosIcv4QZTqql5pjacKrdjC8SQ0=
 github.com/clearbit/clearbit-go v1.0.1/go.mod h1:PCnMdDgl9MsVqn3pC9sJBFFNASyVKhLIpg8Nw/tSV6U=
+github.com/clearbit/clearbit-go v1.1.0 h1:2gwkvLtSHTXqB2t/D7W2Nrzn5tGmsdhjP+yDTTE8uMw=
+github.com/clearbit/clearbit-go v1.1.0/go.mod h1:KymPS3AsX5sEBfPaGBXCgJbJZp4pRVAYusKdiugRr6I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58/go.mod h1:EOBUe0h4xcZ5GoxqC5SDxFQ8gwyZPKQoEzownBlhI80=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
@@ -1179,6 +1181,8 @@ golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f h1:Qmd2pbz05z7z6lm0DrgQVV
 golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 h1:B333XXssMuKQeBwiNODx4TupZy7bf4sxFZnN2ZOcvUE=
 golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
+golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 h1:RerP+noqYHUQ8CMRcPlC2nvTa4dcBIjegkuWdcUDuqg=
+golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
