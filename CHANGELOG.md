@@ -1,3 +1,9 @@
+## v0.7.3 (Released 2022-04-04)
+
+IMPROVEMENTS
+
+- fix: replace deprecated strings.Title
+
 ## v0.7.2 (Released 2022-04-04)
 
 BUILD
