@@ -18,6 +18,8 @@ import (
 
 	"github.com/moov-io/base"
 	"github.com/moov-io/fed/pkg/strcmp"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -256,7 +258,7 @@ func (f *ACHDictionary) createIndexACHCustomerName() {
 
 // CustomerNameLabel returns a formatted string Title for displaying ACHParticipant.CustomerName
 func (p *ACHParticipant) CustomerNameLabel() string {
-	s := strings.Title(strings.ToLower(p.CustomerName))
+	s := cases.Title(language.AmericanEnglish).String(strings.ToLower(p.CustomerName))
 	return s
 }
 
