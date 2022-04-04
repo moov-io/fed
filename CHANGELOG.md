@@ -1,3 +1,13 @@
+## v0.7.2 (Released 2022-04-04)
+
+BUILD
+
+- build(deps): bump nokogiri from 1.12.5 to 1.13.3 in /docs
+- fix(deps): update golang.org/x/oauth2 commit hash to ee48083
+- fix(deps): update module github.com/go-kit/kit to v0.12.0
+- fix(deps): update module github.com/moov-io/base to v0.28.1
+- fix(deps): update module github.com/prometheus/client_golang to v1.12.1
+
 ## v0.7.1 (Released 2021-07-16)
 
 BUILD
