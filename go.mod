@@ -10,8 +10,8 @@ require (
 	github.com/moov-io/base v0.28.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673
-	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
-	golang.org/x/text v0.3.8-0.20220124021120-d1c84af989ab // indirect
+	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
+	golang.org/x/text v0.3.8-0.20220124021120-d1c84af989ab
 	google.golang.org/appengine v1.6.7 // indirect
 )
 
