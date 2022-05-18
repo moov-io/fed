@@ -1,11 +1,11 @@
-FROM golang:1.18-buster as builder
+FROM golang:1.18-bullseye as builder
 WORKDIR /go/src/github.com/moov-io/fed
 RUN apt-get update && apt-get install make gcc g++
 COPY . .
 RUN make build
 RUN useradd --shell /bin/false moov
 
-FROM golang:1.18-buster
+FROM golang:1.18-bullseye
 LABEL maintainer="Moov <support@moov.io>"
 RUN apt-get update && apt-get install ca-certificates
 
