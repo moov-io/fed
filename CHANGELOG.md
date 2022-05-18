@@ -1,3 +1,11 @@
+## v0.7.4 (Released 2022-05-18)
+
+BUILD
+
+- build: update base images
+- build(deps): bump nokogiri from 1.13.3 to 1.13.4 in /docs
+- fix(deps): update golang.org/x/oauth2 digest to 9780585
+
 ## v0.7.3 (Released 2022-04-04)
 
 IMPROVEMENTS
