@@ -14,11 +14,12 @@ import (
 	moovhttp "github.com/moov-io/base/http"
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
+	"github.com/moov-io/fed/pkg/logos"
 )
 
-func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
-	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
-	r.Methods("GET").Path("/fed/wire/search").HandlerFunc(searchFEDWIRE(logger, searcher))
+func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher, logoGrabber logos.Grabber) {
+	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher, logoGrabber))
+	r.Methods("GET").Path("/fed/wire/search").HandlerFunc(searchFEDWIRE(logger, searcher, logoGrabber))
 }
 
 // fedSearchRequest contains the properties for fed ach search request
@@ -78,7 +79,7 @@ func (req fedSearchRequest) postalCodeOnly() bool {
 }
 
 // searchFEDACH calls search functions based on the fed ach search request url parameters
-func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
+func searchFEDACH(logger log.Logger, searcher *searcher, logoGrabber logos.Grabber) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger == nil {
 			logger = log.NewDefaultLogger()
@@ -141,13 +142,23 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&searchResponse{
-			ACHParticipants: achParticipants,
+			ACHParticipants: populateACHLogos(achParticipants, logoGrabber),
 		})
 	}
 }
 
+func populateACHLogos(achParticipants []*fed.ACHParticipant, logoGrabber logos.Grabber) []*fed.ACHParticipant {
+	for i := range achParticipants {
+		logo, _ := logoGrabber.Lookup(achParticipants[i].CustomerName)
+		if logo != nil {
+			achParticipants[i].Logo = logo
+		}
+	}
+	return achParticipants
+}
+
 // searchFEDWIRE calls search functions based on the fed wire search request url parameters
-func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
+func searchFEDWIRE(logger log.Logger, searcher *searcher, logoGrabber logos.Grabber) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if logger == nil {
 			logger = log.NewDefaultLogger()
@@ -205,7 +216,17 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&searchResponse{
-			WIREParticipants: wireParticipants,
+			WIREParticipants: populateWIRELogos(wireParticipants, logoGrabber),
 		})
 	}
+}
+
+func populateWIRELogos(wireParticipants []*fed.WIREParticipant, logoGrabber logos.Grabber) []*fed.WIREParticipant {
+	for i := range wireParticipants {
+		logo, _ := logoGrabber.Lookup(wireParticipants[i].CustomerName)
+		if logo != nil {
+			wireParticipants[i].Logo = logo
+		}
+	}
+	return wireParticipants
 }

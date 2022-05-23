@@ -15,6 +15,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/logos"
 	"github.com/moov-io/fed/pkg/strcmp"
 )
 
@@ -71,6 +72,9 @@ type WIREParticipant struct {
 	BookEntrySecuritiesTransferStatus string `json:"bookEntrySecuritiesTransferStatus"`
 	// Date of last revision: YYYYMMDD, or blank
 	Date string `json:"date"`
+
+	// Logo from third-party provider (if enabled)
+	Logo *logos.Logo
 }
 
 // WIRELocation is the city and state
