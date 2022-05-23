@@ -16,11 +16,6 @@ import (
 	"github.com/moov-io/fed"
 )
 
-const (
-	ACH  = "ACH"
-	WIRE = "WIRE"
-)
-
 func addSearchRoutes(logger log.Logger, r *mux.Router, searcher *searcher) {
 	r.Methods("GET").Path("/fed/ach/search").HandlerFunc(searchFEDACH(logger, searcher))
 	r.Methods("GET").Path("/fed/wire/search").HandlerFunc(searchFEDWIRE(logger, searcher))
