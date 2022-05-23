@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	moovhttp "github.com/moov-io/base/http"
 	"github.com/moov-io/base/log"
+	"github.com/moov-io/fed"
 )
 
 const (
@@ -81,311 +82,135 @@ func (req fedSearchRequest) postalCodeOnly() bool {
 		req.State == "" && req.PostalCode != ""
 }
 
-// setResponseHeader returns w with Content-Type and StatusOK
-func setResponseHeader(w http.ResponseWriter) http.ResponseWriter {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	return w
-}
-
 // searchFEDACH calls search functions based on the fed ach search request url parameters
 func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if logger == nil {
+			logger = log.NewDefaultLogger()
+		}
+
 		w = wrapResponseWriter(logger, w, r)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 		requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
+		logger = logger.With(log.Fields{
+			"requestID": log.String(requestID),
+			"userID":    log.String(userID),
+		})
 
 		req := readFEDSearchRequest(r.URL)
 		if req.empty() {
-			if logger != nil {
-				logger.Set("searchFEDWIRE", log.String(errNoSearchParams.Error())).
-					Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).Log("search request")
-			}
+			logger.Error().Logf("searchFedACH", log.String(errNoSearchParams.Error()))
 			moovhttp.Problem(w, errNoSearchParams)
 			return
 		}
 
-		if req.nameOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by name only %s", req.Name)
-			}
-			req.searchNameOnly(logger, searcher, ACH)(w, r)
-			return
-		} else if req.routingNumberOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber)
-			}
-			req.searchRoutingNumberOnly(logger, searcher, ACH)(w, r)
-			return
-		} else if req.stateOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by state only %s", req.State)
-			}
-			req.searchStateOnly(logger, searcher, ACH)(w, r)
-			return
-		} else if req.cityOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by city only %s", req.City)
-			}
-			req.searchCityOnly(logger, searcher, ACH)(w, r)
-			return
-		} else if req.postalCodeOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by postal code only %s", req.PostalCode)
-			}
-			req.searchPostalCodeOnly(logger, searcher, ACH)(w, r)
-			return
-		} else {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber)
-			}
-			req.search(logger, searcher, ACH)(w, r)
-			return
-		}
-	}
-}
+		searchLimit := extractSearchLimit(r)
 
-// searchNameOnly searches FEDACH / FEDWIRE by name only
-func (req fedSearchRequest) searchNameOnly(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if logger != nil {
-			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Set("requestID", log.String(requestID)).
-				Set("userID", log.String(userID)).
-				Logf("search by name %s", req.Name)
-		}
-		switch searchType {
-		case ACH:
-			achP := searcher.ACHFindNameOnly(extractSearchLimit(r), req.Name)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		case WIRE:
-			wireP := searcher.WIREFindNameOnly(extractSearchLimit(r), req.Name)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		}
-	}
-}
+		var achParticipants []*fed.ACHParticipant
+		var err error
 
-// searchRoutingNumberOnly searches FEDACH / FEDWIRE by routing number only
-func (req fedSearchRequest) searchRoutingNumberOnly(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if logger != nil {
-			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Set("requestID", log.String(requestID)).
-				Set("userID", log.String(userID)).
-				Logf("search by routing number %s", req.RoutingNumber)
-		}
-		switch searchType {
-		case ACH:
-			achP, err := searcher.ACHFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
+		switch {
+		case req.nameOnly():
+			logger.Logf("searching FED ACH Dictionary by name only %s", req.Name)
+			achParticipants = searcher.ACHFindNameOnly(searchLimit, req.Name)
+
+		case req.routingNumberOnly():
+			logger.Logf("searching FED ACH Dictionary by routing number only %s", req.RoutingNumber)
+			achParticipants, err = searcher.ACHFindRoutingNumberOnly(searchLimit, req.RoutingNumber)
 			if err != nil {
 				moovhttp.Problem(w, err)
-			}
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
 				return
 			}
-		case WIRE:
-			wireP, err := searcher.WIREFindRoutingNumberOnly(extractSearchLimit(r), req.RoutingNumber)
+
+		case req.stateOnly():
+			logger.Logf("searching FED ACH Dictionary by state only %s", req.State)
+			achParticipants = searcher.ACHFindStateOnly(searchLimit, req.State)
+
+		case req.cityOnly():
+			logger.Logf("searching FED ACH Dictionary by city only %s", req.City)
+			achParticipants = searcher.ACHFindCityOnly(searchLimit, req.City)
+
+		case req.postalCodeOnly():
+			logger.Logf("searching FED ACH Dictionary by postal code only %s", req.PostalCode)
+			achParticipants = searcher.ACHFindPostalCodeOnly(searchLimit, req.PostalCode)
+
+		default:
+			logger.Logf("searching FED ACH Dictionary by parameters %v", req.RoutingNumber)
+			achParticipants, err = searcher.ACHFind(searchLimit, req)
 			if err != nil {
 				moovhttp.Problem(w, err)
-			}
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
-				moovhttp.Problem(w, err)
 				return
 			}
-		}
-	}
-}
-
-// searchStateOnly searches FEDACH / FEDWIRE by state only
-func (req fedSearchRequest) searchStateOnly(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if logger != nil {
-			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Set("requestID", log.String(requestID)).
-				Set("userID", log.String(userID)).
-				Logf("search by state %s", req.State)
-		}
-		switch searchType {
-		case ACH:
-			achP := searcher.ACHFindStateOnly(extractSearchLimit(r), req.State)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		case WIRE:
-			wireP := searcher.WIREFindStateOnly(extractSearchLimit(r), req.State)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-
-		}
-	}
-}
-
-// searchCityOnly searches FEDACH by city only
-func (req fedSearchRequest) searchCityOnly(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if logger != nil {
-			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Set("requestID", log.String(requestID)).
-				Set("userID", log.String(userID)).
-				Logf("search by city %s", req.City)
-		}
-		switch searchType {
-		case ACH:
-			achP := searcher.ACHFindCityOnly(extractSearchLimit(r), req.City)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		case WIRE:
-			wireP := searcher.WIREFindCityOnly(extractSearchLimit(r), req.City)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		}
-	}
-}
-
-// searchPostalCodeOnly searches FEDACH by postal code only
-func (req fedSearchRequest) searchPostalCodeOnly(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if logger != nil {
-			requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
-			logger.Set("requestID", log.String(requestID)).
-				Set("userID", log.String(userID)).
-				Logf("search by city %s", req.PostalCode)
-		}
-		switch searchType {
-		case ACH:
-			achP := searcher.ACHFindPostalCodeOnly(extractSearchLimit(r), req.PostalCode)
-			w := setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		}
-	}
-}
-
-// search searches FEDACH / FEDWIRE by more than one url parameter
-func (req fedSearchRequest) search(logger log.Logger, searcher *searcher, searchType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch searchType {
-		case ACH:
-			achP, err := searcher.ACHFind(extractSearchLimit(r), req)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
-			w = setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{ACHParticipants: achP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-		case WIRE:
-			wireP, err := searcher.WIREFind(extractSearchLimit(r), req)
-			if err != nil {
-				moovhttp.Problem(w, err)
-			}
-			w = setResponseHeader(w)
-			if err := json.NewEncoder(w).Encode(&searchResponse{WIREParticipants: wireP}); err != nil {
-				moovhttp.Problem(w, err)
-				return
-			}
-
 		}
 
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&searchResponse{
+			ACHParticipants: achParticipants,
+		})
 	}
 }
 
 // searchFEDWIRE calls search functions based on the fed wire search request url parameters
 func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if logger == nil {
+			logger = log.NewDefaultLogger()
+		}
+
 		w = wrapResponseWriter(logger, w, r)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 		requestID, userID := moovhttp.GetRequestID(r), moovhttp.GetUserID(r)
+		logger = logger.With(log.Fields{
+			"requestID": log.String(requestID),
+			"userID":    log.String(userID),
+		})
 
 		req := readFEDSearchRequest(r.URL)
 		if req.empty() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: %v", errNoSearchParams)
-			}
+			logger.Error().Logf("searchFEDWIRE: %v", errNoSearchParams)
 			moovhttp.Problem(w, errNoSearchParams)
 			return
 		}
 
-		if req.nameOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: searching FED WIRE Dictionary by name only %s", req.Name)
+		searchLimit := extractSearchLimit(r)
+
+		var wireParticipants []*fed.WIREParticipant
+		var err error
+
+		switch {
+		case req.nameOnly():
+			logger.Logf("searchFEDWIRE: searching FED WIRE Dictionary by name only %s", req.Name)
+			wireParticipants = searcher.WIREFindNameOnly(searchLimit, req.Name)
+
+		case req.routingNumberOnly():
+			logger.Logf("searchFEDWIRE: searching FED WIRE Dictionary by routing number only %s", req.RoutingNumber)
+			wireParticipants, err = searcher.WIREFindRoutingNumberOnly(searchLimit, req.RoutingNumber)
+			if err != nil {
+				moovhttp.Problem(w, err)
+				return
 			}
-			req.searchNameOnly(logger, searcher, WIRE)(w, r)
-			return
-		} else if req.routingNumberOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: searching FED WIRE Dictionary by routing number only %s", req.RoutingNumber)
+
+		case req.stateOnly():
+			logger.Logf("searchFEDWIRE: searching FED WIRE Dictionary by state only %s", req.State)
+			wireParticipants = searcher.WIREFindStateOnly(searchLimit, req.State)
+
+		case req.cityOnly():
+			logger.Logf("searchFEDWIRE: searching FED WIRE Dictionary by city only %s", req.City)
+			wireParticipants = searcher.WIREFindCityOnly(searchLimit, req.City)
+
+		default:
+			logger.Logf("searchFEDWIRE: searching FED WIRE Dictionary by parameters %v", req.RoutingNumber)
+			wireParticipants, err = searcher.WIREFind(searchLimit, req)
+			if err != nil {
+				moovhttp.Problem(w, err)
 			}
-			req.searchRoutingNumberOnly(logger, searcher, WIRE)(w, r)
-			return
-		} else if req.stateOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: searching FED WIRE Dictionary by state only %s", req.State)
-			}
-			req.searchStateOnly(logger, searcher, WIRE)(w, r)
-			return
-		} else if req.cityOnly() {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: searching FED WIRE Dictionary by city only %s", req.City)
-			}
-			req.searchCityOnly(logger, searcher, WIRE)(w, r)
-			return
-		} else {
-			if logger != nil {
-				logger.Set("requestID", log.String(requestID)).
-					Set("userID", log.String(userID)).
-					Logf("searchFEDWIRE: searching FED WIRE Dictionary by parameters %v", req.RoutingNumber)
-			}
-			req.search(logger, searcher, WIRE)(w, r)
-			return
 		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(&searchResponse{
+			WIREParticipants: wireParticipants,
+		})
 	}
 }
