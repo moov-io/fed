@@ -56,10 +56,14 @@ func (c *Client) Lookup(name string) (*Logo, error) {
 			return nil, err
 		}
 
-		return &Logo{
+		logo := &Logo{
 			Name: company.Name,
 			URL:  company.Logo,
-		}, nil
+		}
+		if c.lruCache != nil && logo.Name != "" && logo.URL != "" {
+			c.lruCache.Add(name, logo)
+		}
+		return logo, nil
 	}
 
 	return nil, fmt.Errorf("no results for %q found", name)
