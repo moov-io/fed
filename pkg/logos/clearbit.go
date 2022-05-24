@@ -47,6 +47,10 @@ func (c *Client) Lookup(name string) (*Logo, error) {
 		return nil, err
 	}
 
+	if result.Domain == "" {
+		return nil, nil
+	}
+
 	if result != nil {
 		company, resp, err := c.underlying.Company.Find(clearbit.CompanyFindParams{
 			Domain: result.Domain,
