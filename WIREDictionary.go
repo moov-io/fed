@@ -74,7 +74,7 @@ type WIREParticipant struct {
 	Date string `json:"date"`
 
 	// Logo from third-party provider (if enabled)
-	Logo *logos.Logo
+	Logo *logos.Logo `json:"logo"`
 }
 
 // WIRELocation is the city and state

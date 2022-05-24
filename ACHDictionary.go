@@ -86,7 +86,7 @@ type ACHParticipant struct {
 	ViewCode string `json:"viewCode"`
 
 	// Logo from third-party provider (if enabled)
-	Logo *logos.Logo
+	Logo *logos.Logo `json:"logo"`
 }
 
 type achParticipantResult struct {
