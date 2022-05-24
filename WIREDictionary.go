@@ -73,6 +73,8 @@ type WIREParticipant struct {
 	// Date of last revision: YYYYMMDD, or blank
 	Date string `json:"date"`
 
+	// CleanName is our cleaned up value of CustomerName
+	CleanName string `json:"cleanName"`
 	// Logo from third-party provider (if enabled)
 	Logo *logos.Logo `json:"logo"`
 }

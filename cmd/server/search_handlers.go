@@ -149,7 +149,10 @@ func searchFEDACH(logger log.Logger, searcher *searcher, logoGrabber logos.Grabb
 
 func populateACHLogos(achParticipants []*fed.ACHParticipant, logoGrabber logos.Grabber) []*fed.ACHParticipant {
 	for i := range achParticipants {
-		logo, _ := logoGrabber.Lookup(achParticipants[i].CustomerName)
+		cleanName := fed.Normalize(achParticipants[i].CustomerName)
+		achParticipants[i].CleanName = cleanName
+
+		logo, _ := logoGrabber.Lookup(cleanName)
 		if logo != nil {
 			achParticipants[i].Logo = logo
 		}

@@ -85,6 +85,8 @@ type ACHParticipant struct {
 	// 1 = Current view
 	ViewCode string `json:"viewCode"`
 
+	// CleanName is our cleaned up value of CustomerName
+	CleanName string `json:"cleanName"`
 	// Logo from third-party provider (if enabled)
 	Logo *logos.Logo `json:"logo"`
 }
