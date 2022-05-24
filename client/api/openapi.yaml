@@ -218,15 +218,19 @@ components:
       description: Search results containing ACHDictionary of Participants
       example:
         ACHParticipants:
-        - routingNumber: "044112187"
-          phoneNumber: "7407325621"
-          officeCode: O
-          newRoutingNumber: "000000000"
+        - officeCode: O
           servicingFRBNumber: "041000014"
-          recordTypeCode: "1"
-          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
+          cleanName: Chase
+          routingNumber: "044112187"
+          phoneNumber: "7407325621"
+          logo:
+            name: Chase
+            url: https://logo.clearbit.com/chase.com
+          newRoutingNumber: "000000000"
+          recordTypeCode: "1"
+          revised: "20190311"
           achLocation:
             postalExtension: "0000"
             address: 430 NORTH ST
@@ -234,15 +238,19 @@ components:
             postalCode: "43724"
             state: OH
           statusCode: "1"
-        - routingNumber: "044112187"
-          phoneNumber: "7407325621"
-          officeCode: O
-          newRoutingNumber: "000000000"
+        - officeCode: O
           servicingFRBNumber: "041000014"
-          recordTypeCode: "1"
-          revised: "20190311"
           viewCode: "1"
           customerName: FARMERS & MERCHANTS BANK
+          cleanName: Chase
+          routingNumber: "044112187"
+          phoneNumber: "7407325621"
+          logo:
+            name: Chase
+            url: https://logo.clearbit.com/chase.com
+          newRoutingNumber: "000000000"
+          recordTypeCode: "1"
+          revised: "20190311"
           achLocation:
             postalExtension: "0000"
             address: 430 NORTH ST
@@ -259,15 +267,19 @@ components:
       description: ACHParticipant holds a FedACH dir routing record as defined by
         Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       example:
-        routingNumber: "044112187"
-        phoneNumber: "7407325621"
         officeCode: O
-        newRoutingNumber: "000000000"
         servicingFRBNumber: "041000014"
-        recordTypeCode: "1"
-        revised: "20190311"
         viewCode: "1"
         customerName: FARMERS & MERCHANTS BANK
+        cleanName: Chase
+        routingNumber: "044112187"
+        phoneNumber: "7407325621"
+        logo:
+          name: Chase
+          url: https://logo.clearbit.com/chase.com
+        newRoutingNumber: "000000000"
+        recordTypeCode: "1"
+        revised: "20190311"
         achLocation:
           postalExtension: "0000"
           address: 430 NORTH ST
@@ -367,6 +379,12 @@ components:
           maxLength: 1
           minLength: 1
           type: string
+        cleanName:
+          description: Normalized name of ACH participant
+          example: Chase
+          type: string
+        logo:
+          $ref: '#/components/schemas/Logo'
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       example:
@@ -409,6 +427,7 @@ components:
       example:
         WIREParticipants:
         - date: "20190401"
+          cleanName: Chase
           routingNumber: "091905114"
           wireLocation:
             city: IOWA CITY
@@ -416,9 +435,13 @@ components:
           fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
+          logo:
+            name: Chase
+            url: https://logo.clearbit.com/chase.com
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
         - date: "20190401"
+          cleanName: Chase
           routingNumber: "091905114"
           wireLocation:
             city: IOWA CITY
@@ -426,6 +449,9 @@ components:
           fundsTransferStatus: Y
           fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
+          logo:
+            name: Chase
+            url: https://logo.clearbit.com/chase.com
           customerName: MIDWESTONE BK
           bookEntrySecuritiesTransferStatus: N
       properties:
@@ -438,6 +464,7 @@ components:
         Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       example:
         date: "20190401"
+        cleanName: Chase
         routingNumber: "091905114"
         wireLocation:
           city: IOWA CITY
@@ -445,6 +472,9 @@ components:
         fundsTransferStatus: Y
         fundsSettlementOnlyStatus: S
         telegraphicName: MIDWESTONE B&T
+        logo:
+          name: Chase
+          url: https://logo.clearbit.com/chase.com
         customerName: MIDWESTONE BK
         bookEntrySecuritiesTransferStatus: N
       properties:
@@ -510,6 +540,12 @@ components:
           example: "20190401"
           maxLength: 8
           type: string
+        cleanName:
+          description: Normalized name of Wire participant
+          example: Chase
+          type: string
+        logo:
+          $ref: '#/components/schemas/Logo'
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       example:
@@ -527,11 +563,25 @@ components:
           maxLength: 2
           minLength: 2
           type: string
+    Logo:
+      description: Company logo of the Fed ACH or Wire participant
+      example:
+        name: Chase
+        url: https://logo.clearbit.com/chase.com
+      properties:
+        name:
+          description: Company name
+          example: Chase
+          type: string
+        url:
+          description: URL to the company logo
+          example: https://logo.clearbit.com/chase.com
+          type: string
     Error:
       properties:
         error:
           description: An error message describing the problem intended for humans.
-          example: Validation error(s) present.
+          example: Example error, see description
           type: string
       required:
       - error

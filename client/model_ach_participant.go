@@ -32,4 +32,7 @@ type AchParticipant struct {
 	StatusCode string `json:"statusCode,omitempty"`
 	// Code is current view  * `1` - Current view
 	ViewCode string `json:"viewCode,omitempty"`
+	// Normalized name of ACH participant
+	CleanName string `json:"cleanName,omitempty"`
+	Logo      Logo   `json:"logo,omitempty"`
 }
