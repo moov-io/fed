@@ -149,10 +149,7 @@ func searchFEDACH(logger log.Logger, searcher *searcher, logoGrabber logos.Grabb
 
 func populateACHLogos(achParticipants []*fed.ACHParticipant, logoGrabber logos.Grabber) []*fed.ACHParticipant {
 	for i := range achParticipants {
-		cleanName := fed.Normalize(achParticipants[i].CustomerName)
-		achParticipants[i].CleanName = cleanName
-
-		logo, _ := logoGrabber.Lookup(cleanName)
+		logo, _ := logoGrabber.Lookup(achParticipants[i].CleanName)
 		if logo != nil {
 			achParticipants[i].Logo = logo
 		}
@@ -226,7 +223,7 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher, logoGrabber logos.Grab
 
 func populateWIRELogos(wireParticipants []*fed.WIREParticipant, logoGrabber logos.Grabber) []*fed.WIREParticipant {
 	for i := range wireParticipants {
-		logo, _ := logoGrabber.Lookup(wireParticipants[i].CustomerName)
+		logo, _ := logoGrabber.Lookup(wireParticipants[i].CleanName)
 		if logo != nil {
 			wireParticipants[i].Logo = logo
 		}
