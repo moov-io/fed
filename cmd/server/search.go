@@ -105,7 +105,7 @@ func (s *searcher) ACHFind(limit int, req fedSearchRequest) ([]*fed.ACHParticipa
 func (s *searcher) WIREFindNameOnly(limit int, participantName string) []*fed.WIREParticipant {
 	s.RLock()
 	defer s.RUnlock()
-	fi := s.WIREDictionary.FinancialInstitutionSearch(participantName)
+	fi := s.WIREDictionary.FinancialInstitutionSearch(participantName, limit)
 	out := wireLimit(fi, limit)
 	return out
 }
@@ -114,7 +114,7 @@ func (s *searcher) WIREFindNameOnly(limit int, participantName string) []*fed.WI
 func (s *searcher) WIREFindRoutingNumberOnly(limit int, routingNumber string) ([]*fed.WIREParticipant, error) {
 	s.RLock()
 	defer s.RUnlock()
-	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber)
+	fi, err := s.WIREDictionary.RoutingNumberSearch(routingNumber, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func (s *searcher) WIREFind(limit int, req fedSearchRequest) ([]*fed.WIREPartici
 	s.RLock()
 	defer s.RUnlock()
 	var err error
-	fi := s.WIREDictionary.FinancialInstitutionSearch(req.Name)
+	fi := s.WIREDictionary.FinancialInstitutionSearch(req.Name, limit)
 
 	if req.RoutingNumber != "" {
 		fi, err = s.WIREDictionary.WIREParticipantRoutingNumberFilter(fi, req.RoutingNumber)

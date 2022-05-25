@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"math"
 	"sort"
 	"strings"
 	"unicode/utf8"
@@ -145,6 +146,9 @@ func (f *WIREDictionary) readJSON(r io.Reader) error {
 			FundsSettlementOnlyStatus:         ps[i].FundsSettlementOnlyStatus,
 			BookEntrySecuritiesTransferStatus: ps[i].SecuritiesEligibility,
 			Date:                              ps[i].ChangeDate,
+
+			// Our Custom Fields
+			CleanName: Normalize(ps[i].CustomerName),
 		}
 		f.WIREParticipants = append(f.WIREParticipants, p)
 		f.IndexWIRERoutingNumber[p.RoutingNumber] = p
@@ -200,6 +204,10 @@ func (f *WIREDictionary) parseWIREParticipant(line string) error {
 	p.BookEntrySecuritiesTransferStatus = line[92:93]
 	// Date YYYYMMDD (8): 122415
 	p.Date = line[93:101]
+
+	// Our custom fields
+	p.CleanName = Normalize(p.CustomerName)
+
 	f.WIREParticipants = append(f.WIREParticipants, p)
 	f.IndexWIRERoutingNumber[p.RoutingNumber] = p
 	return nil
@@ -232,7 +240,7 @@ func (f *WIREDictionary) FinancialInstitutionSearchSingle(s string) []*WIREParti
 // RoutingNumberSearch returns FEDWIRE participants if WIREParticipant.RoutingNumber begins with prefix string s.
 // The first 2 digits of the routing number are required.
 // Based on https://www.frbservices.org/EPaymentsDirectory/search.html
-func (f *WIREDictionary) RoutingNumberSearch(s string) ([]*WIREParticipant, error) {
+func (f *WIREDictionary) RoutingNumberSearch(s string, limit int) ([]*WIREParticipant, error) {
 	s = strings.TrimSpace(s)
 
 	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
@@ -250,58 +258,52 @@ func (f *WIREDictionary) RoutingNumberSearch(s string) ([]*WIREParticipant, erro
 		f.errors.Add(ErrRoutingNumberNumeric)
 		return nil, f.errors
 	}
+	exactMatch := len(s) == 9
 
-	Participants := make([]*WIREParticipant, 0)
-
+	out := make([]*wireParticipantResult, 0)
 	for _, wireP := range f.WIREParticipants {
-		if strings.HasPrefix(wireP.RoutingNumber, s) {
-			Participants = append(Participants, wireP)
+		if exactMatch {
+			if wireP.RoutingNumber == s {
+				out = append(out, &wireParticipantResult{
+					WIREParticipant: wireP,
+					highestMatch:    1.0,
+				})
+			}
+		} else {
+			out = append(out, &wireParticipantResult{
+				WIREParticipant: wireP,
+				highestMatch:    strcmp.JaroWinkler(wireP.RoutingNumber, s),
+			})
 		}
 	}
-
-	return Participants, nil
+	return reduceWIREResults(out, limit), nil
 }
 
 // FinancialInstitutionSearch returns a FEDWIRE participant based on a WIREParticipant.CustomerName
-func (f *WIREDictionary) FinancialInstitutionSearch(s string) []*WIREParticipant {
+func (f *WIREDictionary) FinancialInstitutionSearch(s string, limit int) []*WIREParticipant {
 	s = strings.ToLower(s)
 
-	// Participants is a subset WIREDictionary.WIREParticipants that match the search based on JaroWinkler similarity
-	// and Levenshtein similarity
-	Participants := make([]*WIREParticipant, 0)
+	out := make([]*wireParticipantResult, 0)
 
-	// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
-	// score of exact matches at the beginning of the strings. By doing this, Winkler says that
-	// typos are less common to happen at the beginning.
 	for _, wireP := range f.WIREParticipants {
-		if strcmp.JaroWinkler(strings.ToLower(wireP.CustomerName), s) > WIREJaroWinklerSimilarity {
-			Participants = append(Participants, wireP)
+		// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
+		// score of exact matches at the beginning of the strings. By doing this, Winkler says that
+		// typos are less common to happen at the beginning.
+		jaroScore := strcmp.JaroWinkler(strings.ToLower(wireP.CleanName), s)
+
+		// Levenshtein is the "edit distance" between two strings. This is the count of operations
+		// (insert, delete, replace) needed for two strings to be equal.
+		levenScore := strcmp.Levenshtein(strings.ToLower(wireP.CleanName), s)
+
+		if jaroScore > ACHJaroWinklerSimilarity || levenScore > ACHLevenshteinSimilarity {
+			out = append(out, &wireParticipantResult{
+				WIREParticipant: wireP,
+				highestMatch:    math.Max(jaroScore, levenScore),
+			})
 		}
 	}
 
-	// Levenshtein is the "edit distance" between two strings. This is the count of operations
-	// (insert, delete, replace) needed for two strings to be equal.
-	for _, wireP := range f.WIREParticipants {
-		if strcmp.Levenshtein(strings.ToLower(wireP.CustomerName), s) > WIRELevenshteinSimilarity {
-
-			// Only append if the not included in the Participant sub-set
-			if len(Participants) != 0 {
-				for _, p := range Participants {
-					if p.CustomerName == wireP.CustomerName && p.RoutingNumber == wireP.RoutingNumber {
-						break
-					}
-				}
-				Participants = append(Participants, wireP)
-
-			} else {
-				Participants = append(Participants, wireP)
-			}
-		}
-	}
-	// Sort the result
-	sort.SliceStable(Participants, func(i, j int) bool { return Participants[i].CustomerName < Participants[j].CustomerName })
-
-	return Participants
+	return reduceWIREResults(out, limit)
 }
 
 // WIREParticipantRoutingNumberFilter filters WIREParticipant by Routing Number
@@ -364,4 +366,20 @@ func (f *WIREDictionary) CityFilter(s string) []*WIREParticipant {
 		}
 	}
 	return nsl
+}
+
+type wireParticipantResult struct {
+	*WIREParticipant
+
+	highestMatch float64
+}
+
+func reduceWIREResults(in []*wireParticipantResult, limit int) []*WIREParticipant {
+	sort.SliceStable(in, func(i, j int) bool { return in[i].highestMatch > in[j].highestMatch })
+
+	out := make([]*WIREParticipant, 0)
+	for i := 0; i < limit && i < len(in); i++ {
+		out = append(out, in[i].WIREParticipant)
+	}
+	return out
 }

@@ -12,6 +12,8 @@ import (
 	"testing"
 
 	"github.com/moov-io/base"
+
+	"github.com/stretchr/testify/require"
 )
 
 func loadTestACHFiles(t *testing.T) (*ACHDictionary, *ACHDictionary) {
@@ -319,6 +321,53 @@ func TestACHRoutingNumberNumeric(t *testing.T) {
 		if !base.Has(err, ErrRoutingNumberNumeric) {
 			t.Errorf("%T: %s", err, err)
 		}
+	}
+}
+
+func TestACHFinancialInstitutionSearch__Examples(t *testing.T) {
+	_, plainDict := loadTestACHFiles(t)
+
+	cases := []struct {
+		input    string
+		expected *ACHParticipant
+	}{
+		{
+			input: "Chase",
+			expected: &ACHParticipant{
+				RoutingNumber: "021000021",
+				CustomerName:  "JPMORGAN CHASE",
+			},
+		},
+		{
+			input: "Wells",
+			expected: &ACHParticipant{
+				RoutingNumber: "101205940",
+				CustomerName:  "WELLS BANK",
+			},
+		},
+		{
+			input: "Fargo",
+			expected: &ACHParticipant{
+				RoutingNumber: "291378392",
+				CustomerName:  "FARGO VA FEDERAL CU",
+			},
+		},
+		{
+			input: "Wells Fargo",
+			expected: &ACHParticipant{
+				RoutingNumber: "011100106",
+				CustomerName:  "WELLS FARGO BANK",
+			},
+		},
+	}
+
+	for i := range cases {
+		// The plain dictionary has 18k records, so search is more realistic
+		results := plainDict.FinancialInstitutionSearch(cases[i].input, 1)
+		require.Len(t, results, 1)
+
+		require.Equal(t, cases[i].expected.RoutingNumber, results[0].RoutingNumber)
+		require.Equal(t, cases[i].expected.CustomerName, results[0].CustomerName)
 	}
 }
 

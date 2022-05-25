@@ -5,12 +5,14 @@
 package fed
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/moov-io/base"
+	"github.com/stretchr/testify/require"
 )
 
 // loadTestWireFiles returns two WIREDictionary, one from the JSON source file
@@ -186,7 +188,7 @@ func TestWIRERoutingNumberSearch(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi, err := dict.RoutingNumberSearch("325")
+		fi, err := dict.RoutingNumberSearch("325", 1)
 		if err != nil {
 			t.Fatalf("%T: %s", err, err)
 		}
@@ -204,7 +206,7 @@ func TestWIRERoutingNumberSearch02(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi, err := dict.RoutingNumberSearch("02")
+		fi, err := dict.RoutingNumberSearch("02", 1)
 		if err != nil {
 			t.Fatalf("%T: %s", err, err)
 		}
@@ -224,7 +226,7 @@ func TestWIRERoutingNumberSearchMinimumLength(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		if _, err := dict.RoutingNumberSearch("0"); err != nil {
+		if _, err := dict.RoutingNumberSearch("0", 1); err != nil {
 			if !base.Has(err, NewRecordWrongLengthErr(2, 1)) {
 				t.Errorf("%T: %s", err, err)
 			}
@@ -240,7 +242,7 @@ func TestInvalidWIRERoutingNumberSearch(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi, err := dict.RoutingNumberSearch("777777777")
+		fi, err := dict.RoutingNumberSearch("777777777", 1)
 		if err != nil {
 			t.Fatalf("%T: %s", err, err)
 		}
@@ -259,7 +261,7 @@ func TestWIRERoutingNumberSearchMaximumLength(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		if _, err := dict.RoutingNumberSearch("1234567890"); err != nil {
+		if _, err := dict.RoutingNumberSearch("1234567890", 1); err != nil {
 			if !base.Has(err, NewRecordWrongLengthErr(9, 10)) {
 				t.Errorf("%T: %s", err, err)
 			}
@@ -277,7 +279,7 @@ func TestWIRERoutingNumberNumeric(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		if _, err := dict.RoutingNumberSearch("1  S5"); err != nil {
+		if _, err := dict.RoutingNumberSearch("1  S5", 1); err != nil {
 			if !base.Has(err, ErrRoutingNumberNumeric) {
 				t.Errorf("%T: %s", err, err)
 			}
@@ -298,12 +300,52 @@ func TestWIREParsingError(t *testing.T) {
 	}
 }
 
+func TestWIREFinancialInstitutionSearch__Examples(t *testing.T) {
+	_, plainDict := loadTestWireFiles(t)
+
+	cases := []struct {
+		input    string
+		expected *ACHParticipant
+	}{
+		{
+			input: "Chase",
+			expected: &ACHParticipant{
+				RoutingNumber: "021000021",
+				CustomerName:  "JPMORGAN CHASE BANK, NA",
+			},
+		},
+		{
+			input: "Wells",
+			expected: &ACHParticipant{
+				RoutingNumber: "101205940",
+				CustomerName:  "WELLS BANK",
+			},
+		},
+		{
+			input: "Wells Fargo",
+			expected: &ACHParticipant{
+				RoutingNumber: "021052943",
+				CustomerName:  "WELLS FARGO GNMA-P&I",
+			},
+		},
+	}
+
+	for i := range cases {
+		// The plain dictionary has 18k records, so search is more realistic
+		results := plainDict.FinancialInstitutionSearch(cases[i].input, 1)
+		require.Equal(t, fmt.Sprintf("#%d = 1", i), fmt.Sprintf("#%d = %d", i, len(results)))
+
+		require.Equal(t, cases[i].expected.RoutingNumber, results[0].RoutingNumber)
+		require.Equal(t, cases[i].expected.CustomerName, results[0].CustomerName)
+	}
+}
+
 // TestWIREFinancialInstitutionSearch tests search string `First Bank`
 func TestWIREFinancialInstitutionSearch(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi := dict.FinancialInstitutionSearch("First Bank")
+		fi := dict.FinancialInstitutionSearch("First Bank", 1)
 		if len(fi) == 0 {
 			t.Fatalf("No Financial Institutions matched your search query")
 		}
@@ -318,7 +360,7 @@ func TestWIREFinancialInstitutionFarmers(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi := dict.FinancialInstitutionSearch("FaRmerS")
+		fi := dict.FinancialInstitutionSearch("FaRmerS", 1)
 		if len(fi) == 0 {
 			t.Fatalf("No Financial Institutions matched your search query")
 		}
@@ -333,7 +375,7 @@ func TestWIRESearchStateFilter(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank", 100)
 		if len(fi) == 0 {
 			t.Fatalf("No Financial Institutions matched your search query")
 		}
@@ -358,7 +400,7 @@ func TestWIRESearchCityFilter(t *testing.T) {
 	jsonDict, plainDict := loadTestWireFiles(t)
 
 	check := func(t *testing.T, kind string, dict *WIREDictionary) {
-		fi := dict.FinancialInstitutionSearch("Farmers State Bank")
+		fi := dict.FinancialInstitutionSearch("Farmers State Bank", 100)
 		if len(fi) == 0 {
 			t.Fatalf("No Financial Institutions matched your search query")
 		}

@@ -183,6 +183,9 @@ func (f *ACHDictionary) readJSON(r io.Reader) error {
 			PhoneNumber: fmt.Sprintf("%s%s%s", ps[i].CustomerAreaCode, ps[i].CustomerPhonePrefix, ps[i].CustomerPhoneSuffix),
 			StatusCode:  ps[i].InstitutionStatusCode,
 			ViewCode:    ps[i].DataViewCode,
+
+			// Our Custom Fields
+			CleanName: Normalize(ps[i].CustomerName),
 		}
 		f.IndexACHRoutingNumber[ps[i].RoutingNumber] = p
 		f.ACHParticipants = append(f.ACHParticipants, p)
@@ -249,6 +252,9 @@ func (f *ACHDictionary) parseACHParticipant(line string) error {
 	p.StatusCode = line[148:149]
 	// ViewCode (1): 1
 	p.ViewCode = line[149:150]
+
+	// Our custom fields
+	p.CleanName = Normalize(p.CustomerName)
 
 	f.ACHParticipants = append(f.ACHParticipants, p)
 	f.IndexACHRoutingNumber[p.RoutingNumber] = p
@@ -324,26 +330,24 @@ func (f *ACHDictionary) RoutingNumberSearch(s string, limit int) ([]*ACHParticip
 			})
 		}
 	}
-	return reduceResult(out, limit), nil
+	return reduceACHResults(out, limit), nil
 }
 
 // FinancialInstitutionSearch returns a FEDACH participant based on a ACHParticipant.CustomerName
 func (f *ACHDictionary) FinancialInstitutionSearch(s string, limit int) []*ACHParticipant {
 	s = strings.ToLower(s)
 
-	// Participants is a subset ACHDictionary.ACHParticipants that match the search based on JaroWinkler similarity
-	// and Levenshtein similarity
 	out := make([]*achParticipantResult, 0)
 
 	for _, achP := range f.ACHParticipants {
 		// JaroWinkler is a more accurate version of the Jaro algorithm. It works by boosting the
 		// score of exact matches at the beginning of the strings. By doing this, Winkler says that
 		// typos are less common to happen at the beginning.
-		jaroScore := strcmp.JaroWinkler(strings.ToLower(achP.CustomerName), s)
+		jaroScore := strcmp.JaroWinkler(strings.ToLower(achP.CleanName), s)
 
 		// Levenshtein is the "edit distance" between two strings. This is the count of operations
 		// (insert, delete, replace) needed for two strings to be equal.
-		levenScore := strcmp.Levenshtein(strings.ToLower(achP.CustomerName), s)
+		levenScore := strcmp.Levenshtein(strings.ToLower(achP.CleanName), s)
 
 		if jaroScore > ACHJaroWinklerSimilarity || levenScore > ACHLevenshteinSimilarity {
 			out = append(out, &achParticipantResult{
@@ -353,7 +357,7 @@ func (f *ACHDictionary) FinancialInstitutionSearch(s string, limit int) []*ACHPa
 		}
 	}
 
-	return reduceResult(out, limit)
+	return reduceACHResults(out, limit)
 }
 
 // ACHParticipantStateFilter filters ACHParticipant by State.
@@ -441,7 +445,7 @@ func (f *ACHDictionary) PostalCodeFilter(s string) []*ACHParticipant {
 	return nsl
 }
 
-func reduceResult(in []*achParticipantResult, limit int) []*ACHParticipant {
+func reduceACHResults(in []*achParticipantResult, limit int) []*ACHParticipant {
 	sort.SliceStable(in, func(i, j int) bool { return in[i].highestMatch > in[j].highestMatch })
 
 	out := make([]*ACHParticipant, 0)
