@@ -1,3 +1,20 @@
+## v0.8.0 (Released 2022-05-25)
+
+ADDITIONS
+
+- feat: add clearbit logos in responses when configured
+- feat: normalize FRB names prior to clearbit search
+
+IMPROVEMENTS
+
+- fix: improve name search by using cleaned name
+- refactor: cleanup duplicate code in search logic
+
+BUILD
+
+- build: update codeql action
+- build(deps): bump nokogiri from 1.13.4 to 1.13.6 in /docs
+
 ## v0.7.4 (Released 2022-05-18)
 
 BUILD
