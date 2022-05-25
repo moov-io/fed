@@ -15,6 +15,8 @@ Name | Type | Description | Notes
 **PhoneNumber** | **string** | The Financial Institution&#39;s phone number | [optional] 
 **StatusCode** | **string** | Code is based on the customers receiver code  * &#x60;1&#x60; - Receives Gov/Comm  | [optional] 
 **ViewCode** | **string** | Code is current view  * &#x60;1&#x60; - Current view | [optional] 
+**CleanName** | **string** | Normalized name of ACH participant | [optional] 
+**Logo** | [**Logo**](Logo.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

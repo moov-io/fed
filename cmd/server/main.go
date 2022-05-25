@@ -22,6 +22,7 @@ import (
 	"github.com/moov-io/base/http/bind"
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
+	"github.com/moov-io/fed/pkg/logos"
 
 	"github.com/gorilla/mux"
 )
@@ -114,8 +115,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create our logo grabber
+	logoGrabber := logos.NewGrabber()
+
 	// Add searcher for HTTP routes
-	addSearchRoutes(logger, router, searcher)
+	addSearchRoutes(logger, router, searcher, logoGrabber)
 
 	// Start business logic HTTP server
 	go func() {

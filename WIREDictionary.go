@@ -15,6 +15,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/moov-io/base"
+	"github.com/moov-io/fed/pkg/logos"
 	"github.com/moov-io/fed/pkg/strcmp"
 )
 
@@ -71,6 +72,11 @@ type WIREParticipant struct {
 	BookEntrySecuritiesTransferStatus string `json:"bookEntrySecuritiesTransferStatus"`
 	// Date of last revision: YYYYMMDD, or blank
 	Date string `json:"date"`
+
+	// CleanName is our cleaned up value of CustomerName
+	CleanName string `json:"cleanName"`
+	// Logo from third-party provider (if enabled)
+	Logo *logos.Logo `json:"logo"`
 }
 
 // WIRELocation is the city and state

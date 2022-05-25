@@ -18,13 +18,18 @@ type Logo struct {
 }
 
 func NewGrabber() Grabber {
-	if client := newClearbit(os.Getenv("CLEARBIT_API_KEY")); client != nil {
-		return client
+	clearbitApiKey := os.Getenv("CLEARBIT_API_KEY")
+	if clearbitApiKey != "" {
+		return newClearbit(clearbitApiKey)
 	}
 	return &noopGrabber{}
 }
 
 type noopGrabber struct{}
+
+func NewNopGrabber() Grabber {
+	return &noopGrabber{}
+}
 
 func (g *noopGrabber) Lookup(name string) (*Logo, error) {
 	return nil, nil

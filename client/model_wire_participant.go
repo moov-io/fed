@@ -26,4 +26,7 @@ type WireParticipant struct {
 	BookEntrySecuritiesTransferStatus string `json:"bookEntrySecuritiesTransferStatus,omitempty"`
 	// Date of last revision  * YYYYMMDD * Blank
 	Date string `json:"date,omitempty"`
+	// Normalized name of Wire participant
+	CleanName string `json:"cleanName,omitempty"`
+	Logo      Logo   `json:"logo,omitempty"`
 }
