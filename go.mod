@@ -8,11 +8,11 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/golang-lru v0.5.4
-	github.com/moov-io/base v0.29.2
+	github.com/moov-io/base v0.31.1
 	github.com/prometheus/client_golang v1.12.2
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673
-	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
+	golang.org/x/oauth2 v0.0.0-20220628200809-02e64fa58f26
 	golang.org/x/text v0.3.8-0.20220124021120-d1c84af989ab
 	google.golang.org/appengine v1.6.7 // indirect
 )
