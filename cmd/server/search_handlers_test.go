@@ -39,11 +39,16 @@ func TestSearch__ACHName(t *testing.T) {
 	//fmt.Printf("%s", w.Body.String())
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	for _, p := range wrapper.ACHParticipants {
@@ -72,11 +77,16 @@ func TestSearch__ACHRoutingNumber(t *testing.T) {
 	}
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	for _, p := range wrapper.ACHParticipants {
@@ -106,11 +116,16 @@ func TestSearch__ACHCity(t *testing.T) {
 	}
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	for _, p := range wrapper.ACHParticipants {
@@ -139,11 +154,16 @@ func TestSearch__ACHState(t *testing.T) {
 	}
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	for _, p := range wrapper.ACHParticipants {
@@ -172,7 +192,12 @@ func TestSearch__ACHPostalCode(t *testing.T) {
 	}
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
@@ -205,11 +230,16 @@ func TestSearch__ACH(t *testing.T) {
 	}
 
 	var wrapper struct {
-		ACHParticipants []*fed.ACHParticipant `json:"achParticipants"`
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
+		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.WIREParticipants != nil {
+		t.Errorf("Wire participants should be nil")
 	}
 
 	for _, p := range wrapper.ACHParticipants {
@@ -273,11 +303,16 @@ func TestSearch__WIREName(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	for _, p := range wrapper.WIREParticipants {
@@ -306,11 +341,16 @@ func TestSearch__WIRERoutingNumber(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	for _, p := range wrapper.WIREParticipants {
@@ -339,11 +379,16 @@ func TestSearch__WIREState(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	for _, p := range wrapper.WIREParticipants {
@@ -372,11 +417,16 @@ func TestSearch__WIRECity(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	for _, p := range wrapper.WIREParticipants {
@@ -405,11 +455,16 @@ func TestSearch__WIRE(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	for _, p := range wrapper.WIREParticipants {
@@ -525,11 +580,16 @@ func TestSearch__WIREStateSoftLimit(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	if len(wrapper.WIREParticipants) != 100 {
@@ -556,11 +616,16 @@ func TestSearch__WIREStateLimit(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	if len(wrapper.WIREParticipants) != 110 {
@@ -587,11 +652,16 @@ func TestSearch__WIREStateHardLimit(t *testing.T) {
 	}
 
 	var wrapper struct {
+		ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
 		WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
 	}
 
 	if err := json.NewDecoder(w.Body).Decode(&wrapper); err != nil {
 		t.Fatal(err)
+	}
+
+	if wrapper.ACHParticipants != nil {
+		t.Errorf("ACH participants should be nil")
 	}
 
 	if len(wrapper.WIREParticipants) != 500 {

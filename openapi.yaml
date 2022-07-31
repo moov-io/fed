@@ -88,7 +88,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ACHDictionary'
+                $ref: '#/components/schemas/SearchResponse'
         '400':
           description: Invalid, check error(s).
           content:
@@ -151,7 +151,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WIREDictionary'
+                $ref: '#/components/schemas/SearchResponse'
         '400':
           description: Invalid, check error(s).
           content:
@@ -163,13 +163,17 @@ paths:
 
 components:
   schemas:
-    ACHDictionary:
-      description: Search results containing ACHDictionary of Participants
+    SearchResponse:
+      description: Search results containing FedSearchResponse of ACH/Wire Participants
       properties:
         ACHParticipants:
           type: array
           items:
             $ref: '#/components/schemas/ACHParticipant'
+        WIREParticipants:
+          type: array
+          items:
+            $ref: '#/components/schemas/WIREParticipant'
     ACHParticipant:
       description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       properties:
@@ -294,13 +298,6 @@ components:
           maxLength: 4
           description: Postal Code Extension
           example: '0000'
-    WIREDictionary:
-      description: Search results containing WIREDictionary of Participants
-      properties:
-        WIREParticipants:
-          type: array
-          items:
-            $ref: '#/components/schemas/WIREParticipant'
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       properties:
