@@ -30,8 +30,8 @@ type searcher struct {
 
 // searchResponse defines a FEDACH search response
 type searchResponse struct {
-	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants"`
-	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants"`
+	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants,omitempty"`
+	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants,omitempty"`
 }
 
 // ACHFindNameOnly finds ACH Participants by name only
