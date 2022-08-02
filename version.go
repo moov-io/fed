@@ -5,4 +5,4 @@
 package fed
 
 // Version is the current version
-const Version = "v0.8.0"
+const Version = "v0.8.1"

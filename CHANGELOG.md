@@ -1,3 +1,15 @@
+## v0.8.1 (Released 2022-08-02)
+
+IMPROVEMENTS
+
+- fix: remove achParticipants or wireParticipants from json responses
+
+BUILD
+
+- build: require Go 1.18 and set ReadHeaderTimeout
+- fix(deps): update module github.com/moov-io/base to v0.33.0
+- fix(deps): update golang.org/x/oauth2 digest to 128564f
+
 ## v0.8.0 (Released 2022-05-25)
 
 ADDITIONS
