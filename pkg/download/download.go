@@ -11,10 +11,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
-
-	"github.com/moov-io/base/strx"
 )
 
 type Client struct {
@@ -53,16 +50,6 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		routingNumber: opts.RoutingNumber,
 		downloadCode:  opts.DownloadCode,
 	}, nil
-}
-
-var (
-	downloadDirectory = strx.Or(os.Getenv("DOWNLOAD_DIRECTORY"), os.TempDir())
-)
-
-func init() {
-	if _, err := os.Stat(downloadDirectory); os.IsNotExist(err) {
-		os.MkdirAll(downloadDirectory, 0777)
-	}
 }
 
 // GetList downloads an FRB list and saves it into an io.Reader.
