@@ -1,3 +1,9 @@
+## v0.9.0 (Released 2022-08-03)
+
+IMPROVEMENTS
+
+- Remove `DOWNLOAD_DIRECTORY` and store downloaded files in memory.
+
 ## v0.8.1 (Released 2022-08-02)
 
 IMPROVEMENTS

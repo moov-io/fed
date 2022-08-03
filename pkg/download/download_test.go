@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient__fedach(t *testing.T) {
@@ -20,11 +22,10 @@ func TestClient__fedach(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	st, err := fedach.Stat()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n := st.Size(); n < 1024 {
+	buf, ok := fedach.(*bytes.Buffer)
+	require.True(t, ok)
+
+	if n := buf.Len(); n < 1024 {
 		t.Errorf("unexpected size of %d bytes", n)
 	}
 
@@ -42,11 +43,10 @@ func TestClient__fedwire(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	st, err := fedwire.Stat()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n := st.Size(); n < 1024 {
+	buf, ok := fedwire.(*bytes.Buffer)
+	require.True(t, ok)
+
+	if n := buf.Len(); n < 1024 {
 		t.Errorf("unexpected size of %d bytes", n)
 	}
 
