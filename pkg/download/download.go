@@ -5,10 +5,10 @@
 package download
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -65,9 +65,9 @@ func init() {
 	}
 }
 
-// GetList downloads an FRB list and saves it into a temporary file.
+// GetList downloads an FRB list and saves it into an io.Reader.
 // Example listName values: fedach, fedwire
-func (c *Client) GetList(listName string) (*os.File, error) {
+func (c *Client) GetList(listName string) (io.Reader, error) {
 	where, err := url.Parse(fmt.Sprintf("https://frbservices.org/EPaymentsDirectory/directories/%s?format=json", listName))
 	if err != nil {
 		return nil, fmt.Errorf("url: %v", err)
@@ -85,20 +85,21 @@ func (c *Client) GetList(listName string) (*os.File, error) {
 	if err != nil {
 		return nil, fmt.Errorf("http get: %v", err)
 	}
-	defer resp.Body.Close()
-
-	out, err := ioutil.TempFile(downloadDirectory, fmt.Sprintf("%s-*", listName))
-	if err != nil {
-		return nil, fmt.Errorf("temp file: %v", err)
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
 	}
-	if n, err := io.Copy(out, resp.Body); n == 0 || err != nil {
+
+	// Quit if we fail to download
+	if resp.StatusCode >= 299 {
+		return nil, fmt.Errorf("unexpected http status: %d", resp.StatusCode)
+	}
+
+	var out bytes.Buffer
+	if n, err := io.Copy(&out, resp.Body); n == 0 || err != nil {
 		return nil, fmt.Errorf("copying n=%d: %v", n, err)
 	}
-	if err := out.Sync(); err != nil {
-		return nil, fmt.Errorf("sync: %v", err)
+	if out.Len() > 0 {
+		return &out, nil
 	}
-	if _, err := out.Seek(0, io.SeekStart); err != nil {
-		return nil, fmt.Errorf("seek: %v", err)
-	}
-	return out, nil
+	return nil, nil
 }

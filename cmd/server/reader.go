@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/moov-io/base/log"
@@ -13,7 +14,7 @@ import (
 	"github.com/moov-io/fed/pkg/download"
 )
 
-func fedACHDataFile(logger log.Logger) *os.File {
+func fedACHDataFile(logger log.Logger) io.Reader {
 	if file, err := attemptFileDownload(logger, "fedach"); file != nil {
 		return file
 	} else if err != nil {
@@ -21,6 +22,8 @@ func fedACHDataFile(logger log.Logger) *os.File {
 	}
 
 	path := readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
+	logger.Logf("search: loading %s for ACH data", path)
+
 	file, err := os.Open(path)
 	if err != nil {
 		panic(fmt.Sprintf("problem opening %s: %v", path, err))
@@ -28,7 +31,7 @@ func fedACHDataFile(logger log.Logger) *os.File {
 	return file
 }
 
-func fedWireDataFile(logger log.Logger) *os.File {
+func fedWireDataFile(logger log.Logger) io.Reader {
 	if file, err := attemptFileDownload(logger, "fedwire"); file != nil {
 		return file
 	} else if err != nil {
@@ -36,6 +39,8 @@ func fedWireDataFile(logger log.Logger) *os.File {
 	}
 
 	path := readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
+	logger.Logf("search: loading %s for Wire data", path)
+
 	file, err := os.Open(path)
 	if err != nil {
 		panic(fmt.Sprintf("problem opening %s: %v", path, err))
@@ -43,7 +48,7 @@ func fedWireDataFile(logger log.Logger) *os.File {
 	return file
 }
 
-func attemptFileDownload(logger log.Logger, listName string) (*os.File, error) {
+func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
 	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
 
@@ -71,14 +76,17 @@ func readDataFilepath(env, fallback string) string {
 
 // readFEDACHData opens and reads FedACHdir.txt then runs ACHDictionary.Read() to
 // parse and define ACHDictionary properties
-func (s *searcher) readFEDACHData(file *os.File) error {
+func (s *searcher) readFEDACHData(reader io.Reader) error {
 	if s.logger != nil {
 		s.logger.Logf("Read of FED data")
 	}
-	defer file.Close()
+
+	if closer, ok := reader.(io.Closer); ok {
+		defer closer.Close()
+	}
 
 	s.ACHDictionary = fed.NewACHDictionary()
-	if err := s.ACHDictionary.Read(file); err != nil {
+	if err := s.ACHDictionary.Read(reader); err != nil {
 		return fmt.Errorf("ERROR: reading FedACHdir.txt %v", err)
 	}
 
@@ -91,14 +99,17 @@ func (s *searcher) readFEDACHData(file *os.File) error {
 
 // readFEDWIREData opens and reads fpddir.txt then runs WIREDictionary.Read() to
 // parse and define WIREDictionary properties
-func (s *searcher) readFEDWIREData(file *os.File) error {
+func (s *searcher) readFEDWIREData(reader io.Reader) error {
 	if s.logger != nil {
 		s.logger.Logf("Read of FED data")
 	}
-	defer file.Close()
+
+	if closer, ok := reader.(io.Closer); ok {
+		defer closer.Close()
+	}
 
 	s.WIREDictionary = fed.NewWIREDictionary()
-	if err := s.WIREDictionary.Read(file); err != nil {
+	if err := s.WIREDictionary.Read(reader); err != nil {
 		return fmt.Errorf("ERROR: reading fpddir.txt %v", err)
 	}
 
