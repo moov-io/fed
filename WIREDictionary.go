@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"math"
 	"sort"
 	"strings"
@@ -115,7 +114,7 @@ func (f *WIREDictionary) Read(r io.Reader) error {
 		return nil
 	}
 
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}

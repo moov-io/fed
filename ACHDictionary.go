@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
 	"sort"
 	"strings"
@@ -117,7 +116,7 @@ func (f *ACHDictionary) Read(r io.Reader) error {
 		return nil
 	}
 
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}

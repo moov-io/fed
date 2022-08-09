@@ -7,7 +7,6 @@ package download
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -29,7 +28,7 @@ func TestClient__fedach(t *testing.T) {
 		t.Errorf("unexpected size of %d bytes", n)
 	}
 
-	bs, _ := ioutil.ReadAll(io.LimitReader(fedach, 10024))
+	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
 	if !bytes.Contains(bs, []byte("fedACHParticipants")) {
 		t.Errorf("unexpected output:\n%s", string(bs))
 	}
@@ -50,7 +49,7 @@ func TestClient__fedwire(t *testing.T) {
 		t.Errorf("unexpected size of %d bytes", n)
 	}
 
-	bs, _ := ioutil.ReadAll(io.LimitReader(fedwire, 10024))
+	bs, _ := io.ReadAll(io.LimitReader(fedwire, 10024))
 	if !bytes.Contains(bs, []byte("fedwireParticipants")) {
 		t.Errorf("unexpected output:\n%s", string(bs))
 	}
