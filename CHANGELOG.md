@@ -1,3 +1,11 @@
+## v0.9.1 (Released 2022-09-29)
+
+BUILD
+
+- build: remove deprecated ioutil functions
+- fix(deps): update golang.org/x/oauth2 digest to f213421
+- fix(deps): update module github.com/moov-io/base to v0.35.0
+
 ## v0.9.0 (Released 2022-08-03)
 
 IMPROVEMENTS
