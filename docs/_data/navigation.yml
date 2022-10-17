@@ -3,11 +3,23 @@
 - name: Go
   link: https://pkg.go.dev/github.com/moov-io/fed#section-documentation
 - name: Community
-  link: https://slack.moov.io/
+  dropdown:
+    - name: Awesome Fintech
+      link: https://github.com/moov-io/awesome-fintech
+    - name: Slack
+      link: https://slack.moov.io/
+    - name: Terms Dictionary
+      link: https://github.com/moov-io/terms-dictionary
 - name: Other Projects
   dropdown:
     - name: Moov ACH
       link: https://moov-io.github.io/ach/
+    - name: Moov ACHGateway
+      link: https://moov-io.github.io/achgateway/
+    - name: Moov ACH Test Harness
+      link: https://github.com/moov-io/ach-test-harness
+    - name: Moov FinCEN
+      link: https://moov-io.github.io/fincen/
     - name: Moov Image Cash Letter
       link: https://moov-io.github.io/imagecashletter/
     - name: Moov Metro 2
