@@ -42,7 +42,7 @@ jobs:
           ./Dockerfile
 
     - name: Log in to the GitHub Container registry
-      if: runner.os == 'Linux' && github.repository == 'moov-io'
+      if: runner.os == 'Linux' && github.repository == 'moov-io/fed'
       uses: redhat-actions/podman-login@v1
       with:
         registry: docker.io
@@ -50,7 +50,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push to GitHub Container Repository
-      if: runner.os == 'Linux' && github.repository == 'moov-io'
+      if: runner.os == 'Linux' && github.repository == 'moov-io/fed'
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
