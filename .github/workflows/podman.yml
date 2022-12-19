@@ -17,7 +17,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.16
+        go-version: '>= 1.19.4'
       id: go
 
     - name: Clone the repository
@@ -42,6 +42,7 @@ jobs:
           ./Dockerfile
 
     - name: Log in to the GitHub Container registry
+      if: runner.os == 'Linux' && github.repository == 'moov-io'
       uses: redhat-actions/podman-login@v1
       with:
         registry: docker.io
@@ -49,6 +50,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push to GitHub Container Repository
+      if: runner.os == 'Linux' && github.repository == 'moov-io'
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
