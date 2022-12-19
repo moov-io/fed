@@ -21,8 +21,6 @@ var (
 		Name: "http_response_duration_seconds",
 		Help: "Histogram representing the http response durations",
 	}, []string{"route"})
-
-	//inmemIdempotentRecorder = lru.New()
 )
 
 func wrapResponseWriter(logger log.Logger, w http.ResponseWriter, r *http.Request) http.ResponseWriter {
