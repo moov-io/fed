@@ -26,9 +26,9 @@ func init() {
 }
 
 func randString() string {
-	size := mrand.Uint32() % 1000 // max string size of 1k
+	size := mrand.Uint32() % 1000 //nolint:gosec // max string size of 1k
 	bs := make([]byte, size)
-	n, err := rand.Read(bs) //nolint:gosec
+	n, err := rand.Read(bs)
 	if err != nil || n == 0 {
 		return ""
 	}
