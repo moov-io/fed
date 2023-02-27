@@ -35,7 +35,11 @@ func (c *Client) Lookup(name string) (*Logo, error) {
 	if c.lruCache != nil {
 		item, found := c.lruCache.Get(name)
 		if found {
-			return item.(*Logo), nil
+			logo, ok := item.(*Logo)
+			if !ok {
+				return nil, fmt.Errorf("unexpected Logo of %T", item)
+			}
+			return logo, nil
 		}
 	}
 
