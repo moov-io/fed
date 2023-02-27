@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/golang-lru v0.6.0
 	github.com/moov-io/base v0.39.0
 	github.com/prometheus/client_golang v1.14.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673
 	golang.org/x/oauth2 v0.5.0
 	golang.org/x/text v0.7.0
