@@ -47,3 +47,4 @@ cover.out
 coverage.txt
 misspell*
 /lint-project.sh
+gitleaks.tar.gz
