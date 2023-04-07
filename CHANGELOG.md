@@ -1,3 +1,16 @@
+## v0.9.2 (Released 2023-04-07)
+
+IMPROVEMENTS
+
+- fix: check typecast of Logo
+
+BUILD
+
+- build: upgrade golang to 1.20
+- fix(deps): update module github.com/moov-io/base to v0.39.0
+- bump golang.org/x/net from 0.6.0 to 0.7.0
+- build: update github.com/stretchr/testify to v1.8.2
+
 ## v0.9.1 (Released 2022-09-29)
 
 BUILD
