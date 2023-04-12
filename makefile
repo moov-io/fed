@@ -27,7 +27,7 @@ else
 # Versions from https://github.com/OpenAPITools/openapi-generator/releases
 	@chmod +x ./openapi-generator
 	@rm -rf ./client
-	OPENAPI_GENERATOR_VERSION=4.2.2 ./openapi-generator generate -i ./api/client.yaml -g go -o ./client
+	OPENAPI_GENERATOR_VERSION=6.5.0 ./openapi-generator generate -i ./api/client.yaml -g go -o ./client
 	rm -f client/go.mod client/go.sum ./client/.travis.yml
 	go fmt ./...
 	go build github.com/moov-io/fed/client
