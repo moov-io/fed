@@ -166,7 +166,7 @@ components:
     ACHDictionary:
       description: Search results containing ACHDictionary of Participants
       properties:
-        ACHParticipants:
+        achParticipants:
           type: array
           items:
             $ref: '#/components/schemas/ACHParticipant'
@@ -297,7 +297,7 @@ components:
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
       properties:
-        WIREParticipants:
+        wireParticipants:
           type: array
           items:
             $ref: '#/components/schemas/WIREParticipant'
