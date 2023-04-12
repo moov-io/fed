@@ -1,3 +1,15 @@
+## v0.10.0 (Released 2023-04-12)
+
+IMPROVEMENTS
+
+- chore: update openapi-generator from 4.2.2 to 6.5.0
+- fix: lowercase ach/wire participants in OpenAPI
+
+BUILD
+
+- build(deps): bump nokogiri from 1.13.10 to 1.14.3 in /docs
+- build(deps): bump github.com/moov-io/base from v0.39.0 to v0.40.1
+
 ## v0.9.2 (Released 2023-04-07)
 
 IMPROVEMENTS
