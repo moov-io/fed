@@ -70,7 +70,7 @@ paths:
         name: routingNumber
         required: false
         schema:
-          example: "044112187"
+          example: "44112187"
           type: string
         style: form
       - description: FEDACH Financial Institution State
@@ -121,9 +121,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: "Invalid, check error(s)."
+          description: Invalid, check error(s).
         "500":
-          description: "Internal error, check error(s) and report the issue."
+          description: Internal error, check error(s) and report the issue.
       summary: Search FEDACH names and metadata
       tags:
       - FED
@@ -164,7 +164,7 @@ paths:
         name: routingNumber
         required: false
         schema:
-          example: "091905114"
+          example: "91905114"
           type: string
         style: form
       - description: FEDWIRE Financial Institution State
@@ -206,9 +206,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: "Invalid, check error(s)."
+          description: Invalid, check error(s).
         "500":
-          description: "Internal error, check error(s) and report the issue."
+          description: Internal error, check error(s) and report the issue.
       summary: Search FEDWIRE names and metadata
       tags:
       - FED
@@ -433,7 +433,7 @@ components:
             city: IOWA CITY
             state: IA
           fundsTransferStatus: "Y"
-          fundsSettlementOnlyStatus: ""
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           logo:
             name: Chase
@@ -447,7 +447,7 @@ components:
             city: IOWA CITY
             state: IA
           fundsTransferStatus: "Y"
-          fundsSettlementOnlyStatus: ""
+          fundsSettlementOnlyStatus: S
           telegraphicName: MIDWESTONE B&T
           logo:
             name: Chase
@@ -470,7 +470,7 @@ components:
           city: IOWA CITY
           state: IA
         fundsTransferStatus: "Y"
-        fundsSettlementOnlyStatus: ""
+        fundsSettlementOnlyStatus: S
         telegraphicName: MIDWESTONE B&T
         logo:
           name: Chase
@@ -516,7 +516,6 @@ components:
              * `S` - Settlement-Only
           enum:
           - S
-          example: ""
           maxLength: 1
           type: string
         bookEntrySecuritiesTransferStatus:
@@ -582,7 +581,7 @@ components:
       properties:
         error:
           description: An error message describing the problem intended for humans.
-          example: "Example error, see description"
+          example: Example error, see description
           type: string
       required:
       - error

@@ -12,42 +12,13 @@ Method | HTTP request | Description
 
 ## Ping
 
-> Ping(ctx).Execute()
+> Ping(ctx, )
 
 Ping the FED service to check if running
 
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.FEDApi.Ping(context.Background()).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `FEDApi.Ping``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-}
-```
-
-### Path Parameters
+### Required Parameters
 
 This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiPingRequest struct via the builder pattern
-
 
 ### Return type
 
@@ -69,67 +40,37 @@ No authorization required
 
 ## SearchFEDACH
 
-> ACHDictionary SearchFEDACH(ctx).XRequestID(xRequestID).XUserID(xUserID).Name(name).RoutingNumber(routingNumber).State(state).City(city).PostalCode(postalCode).Limit(limit).Execute()
+> AchDictionary SearchFEDACH(ctx, optional)
 
 Search FEDACH names and metadata
 
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-    xRequestID := "rs4f9915" // string | Optional Request ID allows application developer to trace requests through the systems logs (optional)
-    xUserID := "xUserID_example" // string | Optional User ID used to perform this search (optional)
-    name := "Farmers" // string | FEDACH Financial Institution Name (optional)
-    routingNumber := "044112187" // string | FEDACH Routing Number for a Financial Institution (optional)
-    state := "OH" // string | FEDACH Financial Institution State (optional)
-    city := "CALDWELL" // string | FEDACH Financial Institution City (optional)
-    postalCode := "43724" // string | FEDACH Financial Institution Postal Code (optional)
-    limit := int32(499) // int32 | Maximum results returned by a search (optional)
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.FEDApi.SearchFEDACH(context.Background()).XRequestID(xRequestID).XUserID(xUserID).Name(name).RoutingNumber(routingNumber).State(state).City(city).PostalCode(postalCode).Limit(limit).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `FEDApi.SearchFEDACH``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `SearchFEDACH`: ACHDictionary
-    fmt.Fprintf(os.Stdout, "Response from `FEDApi.SearchFEDACH`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiSearchFEDACHRequest struct via the builder pattern
+### Required Parameters
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xRequestID** | **string** | Optional Request ID allows application developer to trace requests through the systems logs | 
- **xUserID** | **string** | Optional User ID used to perform this search | 
- **name** | **string** | FEDACH Financial Institution Name | 
- **routingNumber** | **string** | FEDACH Routing Number for a Financial Institution | 
- **state** | **string** | FEDACH Financial Institution State | 
- **city** | **string** | FEDACH Financial Institution City | 
- **postalCode** | **string** | FEDACH Financial Institution Postal Code | 
- **limit** | **int32** | Maximum results returned by a search | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+ **optional** | ***SearchFEDACHOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+
+Optional parameters are passed through a pointer to a SearchFEDACHOpts struct
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xRequestID** | **optional.String**| Optional Request ID allows application developer to trace requests through the systems logs | 
+ **xUserID** | **optional.String**| Optional User ID used to perform this search | 
+ **name** | **optional.String**| FEDACH Financial Institution Name | 
+ **routingNumber** | **optional.String**| FEDACH Routing Number for a Financial Institution | 
+ **state** | **optional.String**| FEDACH Financial Institution State | 
+ **city** | **optional.String**| FEDACH Financial Institution City | 
+ **postalCode** | **optional.String**| FEDACH Financial Institution Postal Code | 
+ **limit** | **optional.Int32**| Maximum results returned by a search | 
 
 ### Return type
 
-[**ACHDictionary**](ACHDictionary.md)
+[**AchDictionary**](ACHDictionary.md)
 
 ### Authorization
 
@@ -147,65 +88,36 @@ No authorization required
 
 ## SearchFEDWIRE
 
-> WIREDictionary SearchFEDWIRE(ctx).XRequestID(xRequestID).XUserID(xUserID).Name(name).RoutingNumber(routingNumber).State(state).City(city).Limit(limit).Execute()
+> WireDictionary SearchFEDWIRE(ctx, optional)
 
 Search FEDWIRE names and metadata
 
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-    xRequestID := "rs4f9915" // string | Optional Request ID allows application developer to trace requests through the systems logs (optional)
-    xUserID := "xUserID_example" // string | Optional User ID used to perform this search (optional)
-    name := "MIDWEST" // string | FEDWIRE Financial Institution Name (optional)
-    routingNumber := "091905114" // string | FEDWIRE Routing Number for a Financial Institution (optional)
-    state := "IA" // string | FEDWIRE Financial Institution State (optional)
-    city := "IOWA CITY" // string | FEDWIRE Financial Institution City (optional)
-    limit := int32(499) // int32 | Maximum results returned by a search (optional)
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.FEDApi.SearchFEDWIRE(context.Background()).XRequestID(xRequestID).XUserID(xUserID).Name(name).RoutingNumber(routingNumber).State(state).City(city).Limit(limit).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `FEDApi.SearchFEDWIRE``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `SearchFEDWIRE`: WIREDictionary
-    fmt.Fprintf(os.Stdout, "Response from `FEDApi.SearchFEDWIRE`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiSearchFEDWIRERequest struct via the builder pattern
+### Required Parameters
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xRequestID** | **string** | Optional Request ID allows application developer to trace requests through the systems logs | 
- **xUserID** | **string** | Optional User ID used to perform this search | 
- **name** | **string** | FEDWIRE Financial Institution Name | 
- **routingNumber** | **string** | FEDWIRE Routing Number for a Financial Institution | 
- **state** | **string** | FEDWIRE Financial Institution State | 
- **city** | **string** | FEDWIRE Financial Institution City | 
- **limit** | **int32** | Maximum results returned by a search | 
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+ **optional** | ***SearchFEDWIREOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+
+Optional parameters are passed through a pointer to a SearchFEDWIREOpts struct
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xRequestID** | **optional.String**| Optional Request ID allows application developer to trace requests through the systems logs | 
+ **xUserID** | **optional.String**| Optional User ID used to perform this search | 
+ **name** | **optional.String**| FEDWIRE Financial Institution Name | 
+ **routingNumber** | **optional.String**| FEDWIRE Routing Number for a Financial Institution | 
+ **state** | **optional.String**| FEDWIRE Financial Institution State | 
+ **city** | **optional.String**| FEDWIRE Financial Institution City | 
+ **limit** | **optional.Int32**| Maximum results returned by a search | 
 
 ### Return type
 
-[**WIREDictionary**](WIREDictionary.md)
+[**WireDictionary**](WIREDictionary.md)
 
 ### Authorization
 

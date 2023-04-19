@@ -27,11 +27,11 @@ else
 # Versions from https://github.com/OpenAPITools/openapi-generator/releases
 	@chmod +x ./openapi-generator
 	@rm -rf ./client
-	OPENAPI_GENERATOR_VERSION=6.5.0 ./openapi-generator generate -i ./api/client.yaml -g go -o ./client
-	rm -f client/go.mod client/go.sum ./client/.travis.yml
+	OPENAPI_GENERATOR_VERSION=4.3.1 ./openapi-generator generate --git-user-id=moov-io --git-repo-id=fed --package-name client -i ./api/client.yaml -g go -o ./client
+	rm -f ./client/go.mod ./client/go.sum ./client/.travis.yml ./client/git_push.sh
 	go fmt ./...
 	go build github.com/moov-io/fed/client
-	go test ./client
+	go test ./client/...
 endif
 
 .PHONY: clean
