@@ -1,3 +1,9 @@
+## v0.10.1 (Released 2023-04-19)
+
+REVERTS
+
+- client: revert openapi-generator back to 4.3.1
+
 ## v0.10.0 (Released 2023-04-12)
 
 IMPROVEMENTS
