@@ -1,3 +1,9 @@
+## v0.10.2 (Released 2023-06-15)
+
+IMPROVEMENTS
+
+- Use Go 1.20.x in build, update deps
+
 ## v0.10.1 (Released 2023-04-19)
 
 REVERTS
