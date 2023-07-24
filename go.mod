@@ -9,7 +9,7 @@ require (
 	github.com/go-kit/kit v0.12.0
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/golang-lru v0.6.0
-	github.com/moov-io/base v0.45.0
+	github.com/moov-io/base v0.45.1
 	github.com/prometheus/client_golang v1.16.0
 	github.com/stretchr/testify v1.8.4
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673
