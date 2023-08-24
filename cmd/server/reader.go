@@ -14,11 +14,11 @@ import (
 	"github.com/moov-io/fed/pkg/download"
 )
 
-func fedACHDataFile(logger log.Logger) io.Reader {
+func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 	if file, err := attemptFileDownload(logger, "fedach"); file != nil {
-		return file
+		return file, nil
 	} else if err != nil {
-		panic(fmt.Sprintf("problem downloading fedach: %v", err))
+		return nil, fmt.Errorf("problem downloading fedach: %v", err)
 	}
 
 	path := readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
@@ -26,16 +26,16 @@ func fedACHDataFile(logger log.Logger) io.Reader {
 
 	file, err := os.Open(path)
 	if err != nil {
-		panic(fmt.Sprintf("problem opening %s: %v", path, err))
+		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
-	return file
+	return file, nil
 }
 
-func fedWireDataFile(logger log.Logger) io.Reader {
+func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 	if file, err := attemptFileDownload(logger, "fedwire"); file != nil {
-		return file
+		return file, nil
 	} else if err != nil {
-		panic(fmt.Sprintf("problem downloading fedwire: %v", err))
+		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	path := readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
@@ -43,9 +43,9 @@ func fedWireDataFile(logger log.Logger) io.Reader {
 
 	file, err := os.Open(path)
 	if err != nil {
-		panic(fmt.Sprintf("problem opening %s: %v", path, err))
+		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
-	return file
+	return file, nil
 }
 
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
