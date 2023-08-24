@@ -40,6 +40,21 @@ jobs:
       if: runner.os == 'Linux'
       run: bash <(curl -s https://codecov.io/bash)
 
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v4
+      with:
+        go-version: 'stable'
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
     - name: Docker Build
       if: runner.os == 'Linux'
       run: make docker && make build && make test-integration && make clean-integration

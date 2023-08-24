@@ -98,7 +98,13 @@ func main() {
 	}
 
 	// Start Admin server (with Prometheus metrics)
-	adminServer := admin.NewServer(*adminAddr)
+	adminServer, err := admin.New(admin.Opts{
+		Addr: *adminAddr,
+	})
+	if err != nil {
+		logger.LogErrorf("problem creating admin server: %v", err)
+		os.Exit(1)
+	}
 	adminServer.AddVersionHandler(fed.Version) // Setup 'GET /version'
 	go func() {
 		logger.Info().Logf(fmt.Sprintf("listening on %s", adminServer.BindAddr()))
@@ -113,8 +119,16 @@ func main() {
 	// Start our searcher
 	searcher := &searcher{logger: logger}
 
-	fedACHData := fedACHDataFile(logger)
-	fedWireData := fedWireDataFile(logger)
+	fedACHData, err := fedACHDataFile(logger)
+	if err != nil {
+		logger.LogErrorf("problem downloading FedACH: %v", err)
+		os.Exit(1)
+	}
+	fedWireData, err := fedWireDataFile(logger)
+	if err != nil {
+		logger.LogErrorf("problem downloading FedWire: %v", err)
+		os.Exit(1)
+	}
 
 	if err := setupSearcher(logger, searcher, fedACHData, fedWireData); err != nil {
 		logger.Logf("read: %v", err)

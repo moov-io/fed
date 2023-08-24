@@ -10,7 +10,27 @@ import (
 	"testing"
 
 	"github.com/moov-io/base/log"
+
+	"github.com/stretchr/testify/require"
 )
+
+func TestReader__fedACHDataFile(t *testing.T) {
+	t.Setenv("FRB_ROUTING_NUMBER", "")
+	t.Setenv("FRB_DOWNLOAD_CODE", "")
+
+	r, err := fedACHDataFile(log.NewTestLogger())
+	require.Nil(t, r)
+	require.ErrorContains(t, err, "no such file or directory")
+}
+
+func TestReader__fedWireDataFile(t *testing.T) {
+	t.Setenv("FRB_ROUTING_NUMBER", "")
+	t.Setenv("FRB_DOWNLOAD_CODE", "")
+
+	r, err := fedWireDataFile(log.NewTestLogger())
+	require.Nil(t, r)
+	require.ErrorContains(t, err, "no such file or directory")
+}
 
 func TestReader__readFEDACHData(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
