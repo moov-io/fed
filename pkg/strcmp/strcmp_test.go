@@ -12,7 +12,6 @@ import (
 	mrand "math/rand"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/docker/docker/pkg/namesgenerator"
 )
@@ -20,10 +19,6 @@ import (
 var (
 	flagIterations = flag.Int("iterations", 1000, "How many iterations of each algorithm to test")
 )
-
-func init() {
-	mrand.Seed(time.Now().Unix())
-}
 
 func randString() string {
 	size := mrand.Uint32() % 1000 //nolint:gosec // max string size of 1k
