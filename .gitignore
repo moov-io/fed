@@ -16,13 +16,6 @@ openapi-generator*jar
 _obj
 _test
 
-# VSCode ignore
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
 # Architecture specific extensions/prefixes
 *.[568vq]
 [568vq].out
@@ -48,3 +41,5 @@ coverage.txt
 misspell*
 /lint-project.sh
 gitleaks.tar.gz
+.idea/
+.vscode/
