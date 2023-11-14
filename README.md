@@ -57,7 +57,7 @@ Moov Fed is actively used in multiple production environments. Please star the p
 
 The Fed project implements an HTTP server and [Go library](https://pkg.go.dev/github.com/moov-io/fed) for searching for FedACH and Fedwire participants.
 
-**Note**: The data files included in this repository ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [Accuity](https://accuity.com/product/us-payments-routing-and-transit-number-file/) or your financial institution.
+**Note**: The data files included in this repository ([`FedACHdir.md`](./docs/FedACHdir.md) and [`fpddir.md`](./docs/fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [LexisNexis](https://risk.lexisnexis.com/financial-services/payments-efficiency/payment-routing) or your financial institution.
 
 Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
 
