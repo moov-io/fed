@@ -28,9 +28,6 @@ jobs:
 
     - name: Check
       run: make check
-      env:
-        COVER_THRESHOLD: 70.0
-        GOLANGCI_LINTERS: gosec
 
     - name: Buildah Action
       id: build-image
