@@ -44,7 +44,7 @@ func TestClient__fedach_custom_url(t *testing.T) {
 	}))
 	defer mockHTTPServer.Close()
 
-	err := os.Setenv("CUSTOM_DOWNLOAD_URL", mockHTTPServer.URL+"/%s")
+	err := os.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
 	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
 	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
 	require.NoError(t, err)
@@ -97,7 +97,7 @@ func TestClient__wire_custom_url(t *testing.T) {
 	}))
 	defer mockHTTPServer.Close()
 
-	err := os.Setenv("CUSTOM_DOWNLOAD_URL", mockHTTPServer.URL+"/%s")
+	err := os.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
 	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
 	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
 	require.NoError(t, err)

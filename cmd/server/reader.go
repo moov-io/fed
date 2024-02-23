@@ -51,7 +51,7 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
 	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
-	downloadURL := os.Getenv("CUSTOM_DOWNLOAD_URL")
+	downloadURL := os.Getenv("FRB_DOWNLOAD_URL_TEMPLATE")
 
 	logger.Logf("download: attempting %s", listName)
 	client, err := download.NewClient(&download.ClientOpts{
