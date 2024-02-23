@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
@@ -15,16 +16,19 @@ import (
 )
 
 func fedACHDataFile(logger log.Logger) (io.Reader, error) {
-	if file, err := attemptFileDownload(logger, "fedach"); file != nil {
-		return file, nil
-	} else if err != nil {
+	file, err := attemptFileDownload(logger, "fedach")
+	if err != nil && !strings.Contains(err.Error(), download.MissingRoutingNumberErr) && !strings.Contains(err.Error(), download.MissingDownloadCodeErr) {
 		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+	}
+
+	if file != nil {
+		return file, nil
 	}
 
 	path := readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
 	logger.Logf("search: loading %s for ACH data", path)
 
-	file, err := os.Open(path)
+	file, err = os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
@@ -32,16 +36,19 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
-	if file, err := attemptFileDownload(logger, "fedwire"); file != nil {
+	file, err := attemptFileDownload(logger, "fedach")
+	if err != nil && !strings.Contains(err.Error(), download.MissingRoutingNumberErr) && !strings.Contains(err.Error(), download.MissingDownloadCodeErr) {
+		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+	}
+
+	if file != nil {
 		return file, nil
-	} else if err != nil {
-		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	path := readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
 	logger.Logf("search: loading %s for Wire data", path)
 
-	file, err := os.Open(path)
+	file, err = os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
