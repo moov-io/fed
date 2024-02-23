@@ -19,11 +19,13 @@ type Client struct {
 
 	routingNumber string // X_FRB_EPAYMENTS_DIRECTORY_ORG_ID header
 	downloadCode  string // X_FRB_EPAYMENTS_DIRECTORY_DOWNLOAD_CD
+	downloadURL   string // defaults to "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json" where %s is the list name
+
 }
 
 type ClientOpts struct {
-	HTTPClient                  *http.Client
-	RoutingNumber, DownloadCode string
+	HTTPClient                               *http.Client
+	RoutingNumber, DownloadCode, DownloadURL string
 }
 
 func NewClient(opts *ClientOpts) (*Client, error) {
@@ -45,17 +47,22 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		return nil, errors.New("missing download code")
 	}
 
+	if opts.DownloadURL == "" {
+		opts.DownloadURL = "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json"
+	}
+
 	return &Client{
 		httpClient:    opts.HTTPClient,
 		routingNumber: opts.RoutingNumber,
 		downloadCode:  opts.DownloadCode,
+		downloadURL:   opts.DownloadURL,
 	}, nil
 }
 
 // GetList downloads an FRB list and saves it into an io.Reader.
 // Example listName values: fedach, fedwire
 func (c *Client) GetList(listName string) (io.Reader, error) {
-	where, err := url.Parse(fmt.Sprintf("https://frbservices.org/EPaymentsDirectory/directories/%s?format=json", listName))
+	where, err := url.Parse(fmt.Sprintf(c.downloadURL, listName))
 	if err != nil {
 		return nil, fmt.Errorf("url: %v", err)
 	}
@@ -64,8 +71,11 @@ func (c *Client) GetList(listName string) (io.Reader, error) {
 	if err != nil {
 		return nil, fmt.Errorf("building %s url: %v", listName, err)
 	}
-	req.Header.Set("X_FRB_EPAYMENTS_DIRECTORY_ORG_ID", c.routingNumber)
-	req.Header.Set("X_FRB_EPAYMENTS_DIRECTORY_DOWNLOAD_CD", c.downloadCode)
+
+	if c.downloadCode != "" && c.routingNumber != "" {
+		req.Header.Set("X_FRB_EPAYMENTS_DIRECTORY_ORG_ID", c.routingNumber)
+		req.Header.Set("X_FRB_EPAYMENTS_DIRECTORY_DOWNLOAD_CD", c.downloadCode)
+	}
 
 	// perform our request
 	resp, err := c.httpClient.Do(req)

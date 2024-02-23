@@ -6,7 +6,10 @@ package download
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -34,6 +37,38 @@ func TestClient__fedach(t *testing.T) {
 	}
 }
 
+func TestClient__fedach_custom_url(t *testing.T) {
+	byteArray := make([]byte, 1024)
+	mockHTTPServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, string(byteArray))
+	}))
+	defer mockHTTPServer.Close()
+
+	err := os.Setenv("CUSTOM_DOWNLOAD_URL", mockHTTPServer.URL+"/%s")
+	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
+	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
+	require.NoError(t, err)
+
+	client := setupClient(t)
+
+	fedach, err := client.GetList("fedach")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	buf, ok := fedach.(*bytes.Buffer)
+	require.True(t, ok)
+
+	if n := buf.Len(); n < 1024 {
+		t.Errorf("unexpected size of %d bytes", n)
+	}
+
+	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
+	if !bytes.Equal(bs, byteArray) {
+		t.Errorf("unexpected output:\n%s \n%s", string(bs), byteArray)
+	}
+}
+
 func TestClient__fedwire(t *testing.T) {
 	client := setupClient(t)
 
@@ -51,6 +86,38 @@ func TestClient__fedwire(t *testing.T) {
 
 	bs, _ := io.ReadAll(io.LimitReader(fedwire, 10024))
 	if !bytes.Contains(bs, []byte("fedwireParticipants")) {
+		t.Errorf("unexpected output:\n%s", string(bs))
+	}
+}
+
+func TestClient__wire_custom_url(t *testing.T) {
+	byteArray := make([]byte, 1024)
+	mockHTTPServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, string(byteArray))
+	}))
+	defer mockHTTPServer.Close()
+
+	err := os.Setenv("CUSTOM_DOWNLOAD_URL", mockHTTPServer.URL+"/%s")
+	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
+	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
+	require.NoError(t, err)
+
+	client := setupClient(t)
+
+	fedach, err := client.GetList("fedwire")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	buf, ok := fedach.(*bytes.Buffer)
+	require.True(t, ok)
+
+	if n := buf.Len(); n < 1024 {
+		t.Errorf("unexpected size of %d bytes", n)
+	}
+
+	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
+	if !bytes.Equal(bs, byteArray) {
 		t.Errorf("unexpected output:\n%s", string(bs))
 	}
 }

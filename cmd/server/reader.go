@@ -51,20 +51,18 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
 	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
+	downloadURL := os.Getenv("CUSTOM_DOWNLOAD_URL")
 
-	if routingNumber != "" && downloadCode != "" {
-		logger.Logf("download: attempting %s", listName)
-		client, err := download.NewClient(&download.ClientOpts{
-			RoutingNumber: routingNumber,
-			DownloadCode:  downloadCode,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("client setup: %v", err)
-		}
-		return client.GetList(listName)
+	logger.Logf("download: attempting %s", listName)
+	client, err := download.NewClient(&download.ClientOpts{
+		RoutingNumber: routingNumber,
+		DownloadCode:  downloadCode,
+		DownloadURL:   downloadURL,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("client setup: %v", err)
 	}
-
-	return nil, nil
+	return client.GetList(listName)
 }
 
 func readDataFilepath(env, fallback string) string {
