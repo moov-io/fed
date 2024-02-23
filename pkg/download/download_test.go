@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -38,16 +39,19 @@ func TestClient__fedach(t *testing.T) {
 }
 
 func TestClient__fedach_custom_url(t *testing.T) {
-	byteArray := make([]byte, 1024)
+	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedachdir.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	mockHTTPServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer, string(byteArray))
+		fmt.Fprint(writer, string(file))
 	}))
 	defer mockHTTPServer.Close()
 
-	err := os.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
-	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
-	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
-	require.NoError(t, err)
+	t.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
+	t.Setenv("FRB_ROUTING_NUMBER", "123456789")
+	t.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
 
 	client := setupClient(t)
 
@@ -64,8 +68,8 @@ func TestClient__fedach_custom_url(t *testing.T) {
 	}
 
 	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
-	if !bytes.Equal(bs, byteArray) {
-		t.Errorf("unexpected output:\n%s \n%s", string(bs), byteArray)
+	if !bytes.Equal(bs, file) {
+		t.Errorf("unexpected output:\n%s", string(bs))
 	}
 }
 
@@ -91,16 +95,18 @@ func TestClient__fedwire(t *testing.T) {
 }
 
 func TestClient__wire_custom_url(t *testing.T) {
-	byteArray := make([]byte, 1024)
+	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedachdir.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	mockHTTPServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer, string(byteArray))
+		fmt.Fprint(writer, string(file))
 	}))
 	defer mockHTTPServer.Close()
 
-	err := os.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
-	err = os.Setenv("FRB_ROUTING_NUMBER", "123456789")
-	err = os.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
-	require.NoError(t, err)
+	t.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", mockHTTPServer.URL+"/%s")
+	t.Setenv("FRB_ROUTING_NUMBER", "123456789")
+	t.Setenv("FRB_DOWNLOAD_CODE", "a1b2c3d4-123b-9876-1234-z1x2y3a1b2c3")
 
 	client := setupClient(t)
 
@@ -117,7 +123,7 @@ func TestClient__wire_custom_url(t *testing.T) {
 	}
 
 	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
-	if !bytes.Equal(bs, byteArray) {
+	if !bytes.Equal(bs, file) {
 		t.Errorf("unexpected output:\n%s", string(bs))
 	}
 }
@@ -127,6 +133,7 @@ func setupClient(t *testing.T) *Client {
 
 	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
+	downloadURL := os.Getenv("FRB_DOWNLOAD_URL_TEMPLATE")
 	if routingNumber == "" || downloadCode == "" {
 		t.Skip("missing FRB routing number or download code")
 	}
@@ -134,6 +141,7 @@ func setupClient(t *testing.T) *Client {
 	client, err := NewClient(&ClientOpts{
 		RoutingNumber: routingNumber,
 		DownloadCode:  downloadCode,
+		DownloadURL:   downloadURL,
 	})
 	if err != nil {
 		t.Fatal(err)
