@@ -14,8 +14,7 @@ import (
 	"time"
 )
 
-var MissingRoutingNumberErr = "missing routing number"
-var MissingDownloadCodeErr = "missing download code"
+var ErrMissingData = errors.New("missing data")
 
 type Client struct {
 	httpClient *http.Client
@@ -46,10 +45,10 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 	// the client needs either routing number && download code OR download URL
 
 	if opts.RoutingNumber == "" {
-		return nil, errors.New(MissingRoutingNumberErr)
+		return nil, ErrMissingData
 	}
 	if opts.DownloadCode == "" {
-		return nil, errors.New(MissingDownloadCodeErr)
+		return nil, ErrMissingData
 	}
 
 	if opts.DownloadURL == "" {

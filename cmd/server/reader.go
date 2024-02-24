@@ -5,19 +5,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"io"
-	"os"
-	"strings"
-
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 	"github.com/moov-io/fed/pkg/download"
+	"io"
+	"os"
 )
 
 func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 	file, err := attemptFileDownload(logger, "fedach")
-	if err != nil && !strings.Contains(err.Error(), download.MissingRoutingNumberErr) && !strings.Contains(err.Error(), download.MissingDownloadCodeErr) {
+	if err != nil && !errors.Is(err, download.ErrMissingData) {
 		return nil, fmt.Errorf("problem downloading fedach: %v", err)
 	}
 
@@ -37,7 +36,7 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 	file, err := attemptFileDownload(logger, "fedach")
-	if err != nil && !strings.Contains(err.Error(), download.MissingRoutingNumberErr) && !strings.Contains(err.Error(), download.MissingDownloadCodeErr) {
+	if err != nil && !errors.Is(err, download.ErrMissingData) {
 		return nil, fmt.Errorf("problem downloading fedach: %v", err)
 	}
 
@@ -67,7 +66,7 @@ func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) 
 		DownloadURL:   downloadURL,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("client setup: %v", err)
+		return nil, fmt.Errorf("client setup: %w", err)
 	}
 	return client.GetList(listName)
 }
