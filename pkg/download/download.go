@@ -14,7 +14,13 @@ import (
 	"time"
 )
 
-var ErrMissingData = errors.New("missing data")
+const DefaultFRBDownloadURLTemplate = "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json"
+
+var (
+	ErrMissingConfigValue   = errors.New("missing config value")
+	ErrMissingRoutingNumber = errors.New("missing routing number")
+	ErrMissingDownloadCD    = errors.New("missing download code")
+)
 
 type Client struct {
 	httpClient *http.Client
@@ -42,17 +48,16 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		}
 	}
 
-	// the client needs either routing number && download code OR download URL
+	if opts.RoutingNumber == "" {
+		return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingRoutingNumber)
+	}
 
 	if opts.RoutingNumber == "" {
-		return nil, ErrMissingData
-	}
-	if opts.DownloadCode == "" {
-		return nil, ErrMissingData
+		return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingDownloadCD)
 	}
 
 	if opts.DownloadURL == "" {
-		opts.DownloadURL = "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json"
+		opts.DownloadURL = DefaultFRBDownloadURLTemplate
 	}
 
 	return &Client{
