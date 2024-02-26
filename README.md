@@ -70,6 +70,14 @@ FRB_ROUTING_NUMBER=123456780
 FRB_DOWNLOAD_CODE=86cfa5a9-1ab9-4af5-bd89-0f84d546de13
 ```
 
+#### Download files from proxy
+
+Fed can download the files from a proxy or other HTTP resources. The optional URL template is configured as an environment variable. If the URL template is not configured, Fed will download the files directly from FRB eServices by default. This value is considered a template because when preparing the request Fed replaces `%s` in the path with the requested list name(`fedach` or `fedwire`).
+
+```
+FRB_DOWNLOAD_URL_TEMPLATE=https://my.example.com/files/%s?format=json
+```
+
 ### Docker
 
 We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
