@@ -5,26 +5,29 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"io"
-	"os"
-
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 	"github.com/moov-io/fed/pkg/download"
+	"io"
+	"os"
 )
 
 func fedACHDataFile(logger log.Logger) (io.Reader, error) {
-	if file, err := attemptFileDownload(logger, "fedach"); file != nil {
-		return file, nil
-	} else if err != nil {
+	file, err := attemptFileDownload(logger, "fedach")
+	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
 		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+	}
+
+	if file != nil {
+		return file, nil
 	}
 
 	path := readDataFilepath("FEDACH_DATA_PATH", "./data/FedACHdir.txt")
 	logger.Logf("search: loading %s for ACH data", path)
 
-	file, err := os.Open(path)
+	file, err = os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
@@ -32,16 +35,19 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
-	if file, err := attemptFileDownload(logger, "fedwire"); file != nil {
+	file, err := attemptFileDownload(logger, "fedach")
+	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
+		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+	}
+
+	if file != nil {
 		return file, nil
-	} else if err != nil {
-		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	path := readDataFilepath("FEDWIRE_DATA_PATH", "./data/fpddir.txt")
 	logger.Logf("search: loading %s for Wire data", path)
 
-	file, err := os.Open(path)
+	file, err = os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
@@ -51,20 +57,18 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
 	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
 	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
+	downloadURL := os.Getenv("FRB_DOWNLOAD_URL_TEMPLATE")
 
-	if routingNumber != "" && downloadCode != "" {
-		logger.Logf("download: attempting %s", listName)
-		client, err := download.NewClient(&download.ClientOpts{
-			RoutingNumber: routingNumber,
-			DownloadCode:  downloadCode,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("client setup: %v", err)
-		}
-		return client.GetList(listName)
+	logger.Logf("download: attempting %s", listName)
+	client, err := download.NewClient(&download.ClientOpts{
+		RoutingNumber: routingNumber,
+		DownloadCode:  downloadCode,
+		DownloadURL:   downloadURL,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("client setup: %w", err)
 	}
-
-	return nil, nil
+	return client.GetList(listName)
 }
 
 func readDataFilepath(env, fallback string) string {

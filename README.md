@@ -70,6 +70,14 @@ FRB_ROUTING_NUMBER=123456780
 FRB_DOWNLOAD_CODE=86cfa5a9-1ab9-4af5-bd89-0f84d546de13
 ```
 
+#### Download files from proxy
+
+Fed can download the files from a proxy or other HTTP resources. The optional URL template is configured as an environment variable. If the URL template is not configured, Fed will download the files directly from FRB eServices by default. This value is considered a template because when preparing the request Fed replaces `%s` in the path with the requested list name(`fedach` or `fedwire`).
+
+```
+FRB_DOWNLOAD_URL_TEMPLATE=https://my.example.com/files/%s?format=json
+```
+
 ### Docker
 
 We publish a [public Docker image `moov/fed`](https://hub.docker.com/r/moov/fed/) from Docker Hub or use this repository. No configuration is required to serve on `:8086` and metrics at `:9096/metrics` in Prometheus format. We also have Docker images for [OpenShift](https://quay.io/repository/moov/fed?tab=tags) published as `quay.io/moov/fed`.
@@ -181,17 +189,18 @@ PONG
 
 ### Configuration settings
 
-| Environmental Variable | Description | Default |
-|-----|-----|-----|
-| `FEDACH_DATA_PATH` | Filepath to FedACH data file | `./data/FedACHdir.txt` |
-| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
-| `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files | Empty |
-| `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files | Empty |
-| `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
-| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
-| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
+| Environmental Variable | Description                                                                                                                         | Default |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------|-----|
+| `FEDACH_DATA_PATH` | Filepath to FedACH data file                                                                                                        | `./data/FedACHdir.txt` |
+| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file                                                                                                       | `./data/fpddir.txt` |
+| `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files                                      | Empty |
+| `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files                                       | Empty |
+| `FRB_DOWNLOAD_URL_TEMPLATE` | URL Template for downloading files from alternate source                                                                            | `https://frbservices.org/EPaymentsDirectory/directories/%s?format=json`|
+| `LOG_FORMAT` | Format for logging lines to be written as.                                                                                          | Options: `json`, `plain` - Default: `plain` |
+| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`.                                      | Default: `:8086` |
+| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`.                               | Default: `:9096` |
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
-| `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
+| `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`.                                                     | Empty |
 
 #### Logos
 
