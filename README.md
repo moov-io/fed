@@ -189,17 +189,18 @@ PONG
 
 ### Configuration settings
 
-| Environmental Variable | Description | Default |
-|-----|-----|-----|
-| `FEDACH_DATA_PATH` | Filepath to FedACH data file | `./data/FedACHdir.txt` |
-| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file | `./data/fpddir.txt` |
-| `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files | Empty |
-| `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files | Empty |
-| `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
-| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
-| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
+| Environmental Variable | Description                                                                                                                         | Default |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------|-----|
+| `FEDACH_DATA_PATH` | Filepath to FedACH data file                                                                                                        | `./data/FedACHdir.txt` |
+| `FEDWIRE_DATA_PATH` | Filepath to Fedwire data file                                                                                                       | `./data/fpddir.txt` |
+| `FRB_ROUTING_NUMBER` | Federal Reserve Board eServices (ABA) routing number used to download FedACH and FedWire files                                      | Empty |
+| `FRB_DOWNLOAD_CODE` | Federal Reserve Board eServices (ABA) download code used to download FedACH and FedWire files                                       | Empty |
+| `FRB_DOWNLOAD_URL_TEMPLATE` | URL Template for downloading files from alternate source                                                                            | `https://frbservices.org/EPaymentsDirectory/directories/%s?format=json`|
+| `LOG_FORMAT` | Format for logging lines to be written as.                                                                                          | Options: `json`, `plain` - Default: `plain` |
+| `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`.                                      | Default: `:8086` |
+| `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`.                               | Default: `:9096` |
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
-| `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
+| `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`.                                                     | Empty |
 
 #### Logos
 
