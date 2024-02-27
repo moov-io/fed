@@ -1,3 +1,16 @@
+## v0.11.0 (Released 2024-02-27)
+
+IMPROVEMENTS
+
+- feat: Enable fedach and fedwire download from proxy
+- fix: close xml encoder and remove unneeded panics
+
+BUILD
+
+- build: use latest stable Go release
+- fix(deps): update module golang.org/x/oauth2 to v0.16.0
+- fix(deps): update module github.com/moov-io/base to v0.48.5
+
 ## v0.10.2 (Released 2023-06-15)
 
 IMPROVEMENTS
