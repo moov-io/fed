@@ -1,3 +1,9 @@
+## v0.11.1 (Released 2024-03-05)
+
+IMPROVEMENTS
+
+- fix: wire file parse bug, improve logic for picking json vs plaintext parser
+
 ## v0.11.0 (Released 2024-02-27)
 
 IMPROVEMENTS
