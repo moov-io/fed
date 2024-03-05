@@ -95,11 +95,14 @@ func TestClient__fedwire(t *testing.T) {
 }
 
 func TestClient__wire_custom_url(t *testing.T) {
-	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedachdir.json"))
+	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedwiredir.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	mockHTTPServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/fedwire" {
+			writer.WriteHeader(http.StatusNotFound)
+		}
 		fmt.Fprint(writer, string(file))
 	}))
 	defer mockHTTPServer.Close()
@@ -110,19 +113,19 @@ func TestClient__wire_custom_url(t *testing.T) {
 
 	client := setupClient(t)
 
-	fedach, err := client.GetList("fedwire")
+	fedwire, err := client.GetList("fedwire")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	buf, ok := fedach.(*bytes.Buffer)
+	buf, ok := fedwire.(*bytes.Buffer)
 	require.True(t, ok)
 
 	if n := buf.Len(); n < 1024 {
 		t.Errorf("unexpected size of %d bytes", n)
 	}
 
-	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
+	bs, _ := io.ReadAll(io.LimitReader(fedwire, 10024))
 	if !bytes.Equal(bs, file) {
 		t.Errorf("unexpected output:\n%s", string(bs))
 	}

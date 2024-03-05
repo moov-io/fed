@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -48,23 +49,27 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		}
 	}
 
-	if opts.RoutingNumber == "" {
-		return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingRoutingNumber)
-	}
+	routingNum, rnExists := os.LookupEnv("FRB_ROUTING_NUMBER")
+	downloadcd, dcdExists := os.LookupEnv("FRB_DOWNLOAD_CODE")
+	downloadurltemp, urlExists := os.LookupEnv("FRB_DOWNLOAD_URL_TEMPLATE")
 
-	if opts.RoutingNumber == "" {
-		return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingDownloadCD)
-	}
+	if !urlExists {
+		if !rnExists {
+			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingRoutingNumber)
+		}
 
-	if opts.DownloadURL == "" {
-		opts.DownloadURL = DefaultFRBDownloadURLTemplate
+		if !dcdExists {
+			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingDownloadCD)
+		}
+
+		downloadurltemp = DefaultFRBDownloadURLTemplate
 	}
 
 	return &Client{
 		httpClient:    opts.HTTPClient,
-		routingNumber: opts.RoutingNumber,
-		downloadCode:  opts.DownloadCode,
-		downloadURL:   opts.DownloadURL,
+		routingNumber: routingNum,
+		downloadCode:  downloadcd,
+		downloadURL:   downloadurltemp,
 	}, nil
 }
 

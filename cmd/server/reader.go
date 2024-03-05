@@ -35,9 +35,9 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
-	file, err := attemptFileDownload(logger, "fedach")
+	file, err := attemptFileDownload(logger, "fedwire")
 	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
-		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	if file != nil {
