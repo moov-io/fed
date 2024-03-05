@@ -95,7 +95,7 @@ func TestClient__fedwire(t *testing.T) {
 }
 
 func TestClient__wire_custom_url(t *testing.T) {
-	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedwiredir.json"))
+	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fpddir.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

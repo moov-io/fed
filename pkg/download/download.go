@@ -53,12 +53,12 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 	downloadcd, dcdExists := os.LookupEnv("FRB_DOWNLOAD_CODE")
 	downloadurltemp, urlExists := os.LookupEnv("FRB_DOWNLOAD_URL_TEMPLATE")
 
-	if !urlExists {
-		if !rnExists {
+	if !urlExists || downloadurltemp == "" {
+		if !rnExists || routingNum == "" {
 			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingRoutingNumber)
 		}
 
-		if !dcdExists {
+		if !dcdExists || downloadcd == "" {
 			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingDownloadCD)
 		}
 

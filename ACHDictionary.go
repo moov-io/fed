@@ -121,10 +121,15 @@ func (f *ACHDictionary) Read(r io.Reader) error {
 		return err
 	}
 
-	// Try reading the file as JSON and if that fails read as plaintext
-	if err := f.readJSON(bytes.NewReader(bs)); err == nil {
+	// Try validating the file as JSON and if that fails read as plaintext
+	if json.Valid(bs) {
+		err = f.readJSON(bytes.NewReader(bs))
+		if err != nil {
+			return err
+		}
 		return nil
 	}
+
 	return f.readPlaintext(bytes.NewReader(bs))
 }
 
