@@ -35,9 +35,9 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
-	file, err := attemptFileDownload(logger, "fedach")
+	file, err := attemptFileDownload(logger, "fedwire")
 	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
-		return nil, fmt.Errorf("problem downloading fedach: %v", err)
+		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	if file != nil {
@@ -55,16 +55,8 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
-	routingNumber := os.Getenv("FRB_ROUTING_NUMBER")
-	downloadCode := os.Getenv("FRB_DOWNLOAD_CODE")
-	downloadURL := os.Getenv("FRB_DOWNLOAD_URL_TEMPLATE")
-
 	logger.Logf("download: attempting %s", listName)
-	client, err := download.NewClient(&download.ClientOpts{
-		RoutingNumber: routingNumber,
-		DownloadCode:  downloadCode,
-		DownloadURL:   downloadURL,
-	})
+	client, err := download.NewClient(nil)
 	if err != nil {
 		return nil, fmt.Errorf("client setup: %w", err)
 	}
