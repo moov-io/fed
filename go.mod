@@ -11,7 +11,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/golang-lru v0.6.0
-	github.com/moov-io/base v0.49.2
+	github.com/moov-io/base v0.49.3
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
 	github.com/xrash/smetrics v0.0.0-20240312152122-5f08fbb34913
