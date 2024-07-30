@@ -7,7 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/clearbit/clearbit-go v1.1.0
-	github.com/docker/docker v24.0.9+incompatible
+	github.com/docker/docker v26.1.4+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/golang-lru v1.0.2
