@@ -2,7 +2,7 @@ module github.com/moov-io/fed
 
 go 1.21
 
-toolchain go1.22.5
+toolchain go1.22.6
 
 require (
 	github.com/antihax/optional v1.0.0
@@ -15,8 +15,8 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1
-	golang.org/x/oauth2 v0.21.0
-	golang.org/x/text v0.16.0
+	golang.org/x/oauth2 v0.22.0
+	golang.org/x/text v0.17.0
 )
 
 require (
