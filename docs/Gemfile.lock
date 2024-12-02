@@ -108,7 +108,7 @@ GEM
       activesupport (>= 2)
       nokogiri (>= 1.4)
     http_parser.rb (0.8.0)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     jekyll (3.10.0)
       addressable (~> 2.4)
@@ -275,7 +275,7 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (1.8.0)
     uri (0.13.0)
-    webrick (1.8.2)
+    webrick (1.9.1)
 
 PLATFORMS
   universal-darwin-20
