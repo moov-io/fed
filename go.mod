@@ -7,10 +7,11 @@ toolchain go1.22.6
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/clearbit/clearbit-go v1.1.0
-	github.com/docker/docker v26.1.5+incompatible
+	github.com/docker/docker v27.5.1+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
-	github.com/hashicorp/golang-lru v1.0.2
+	github.com/hashicorp/golang-lru v0.5.4
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/moov-io/base v0.51.1
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
