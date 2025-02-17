@@ -16,7 +16,6 @@
 
 [![GoDoc](https://godoc.org/github.com/moov-io/fed?status.svg)](https://godoc.org/github.com/moov-io/fed)
 [![Build Status](https://github.com/moov-io/fed/workflows/Go/badge.svg)](https://github.com/moov-io/fed/actions)
-[![Coverage Status](https://codecov.io/gh/moov-io/fed/branch/master/graph/badge.svg)](https://codecov.io/gh/moov-io/fed)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moov-io/fed)](https://goreportcard.com/report/github.com/moov-io/fed)
 [![Repo Size](https://img.shields.io/github/languages/code-size/moov-io/fed?label=project%20size)](https://github.com/moov-io/fed)
 [![Apache 2 License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/moov-io/ach/master/LICENSE)
@@ -260,7 +259,7 @@ To make a release of fed simply open a pull request with `CHANGELOG.md` and `ver
 
 ### Testing
 
-We maintain a comprehensive suite of unit tests and recommend table-driven testing when a particular function warrants several very similar test cases. To run all test files in the current directory, use `go test`. Current overall coverage can be found on [Codecov](https://app.codecov.io/gh/moov-io/fed/).
+We maintain a comprehensive suite of unit tests and recommend table-driven testing when a particular function warrants several very similar test cases. To run all test files in the current directory, use `go test`.
 
 ## Related projects
 As part of Moov's initiative to offer open source fintech infrastructure, we have a large collection of active projects you may find useful:
