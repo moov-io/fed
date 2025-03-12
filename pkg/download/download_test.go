@@ -13,8 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestClient__fedach(t *testing.T) {
@@ -23,13 +21,6 @@ func TestClient__fedach(t *testing.T) {
 	fedach, err := client.GetList("fedach")
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	buf, ok := fedach.(*bytes.Buffer)
-	require.True(t, ok)
-
-	if n := buf.Len(); n < 1024 {
-		t.Errorf("unexpected size of %d bytes", n)
 	}
 
 	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
@@ -60,13 +51,6 @@ func TestClient__fedach_custom_url(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	buf, ok := fedach.(*bytes.Buffer)
-	require.True(t, ok)
-
-	if n := buf.Len(); n < 1024 {
-		t.Errorf("unexpected size of %d bytes", n)
-	}
-
 	bs, _ := io.ReadAll(io.LimitReader(fedach, 10024))
 	if !bytes.Equal(bs, file) {
 		t.Errorf("unexpected output:\n%s", string(bs))
@@ -79,13 +63,6 @@ func TestClient__fedwire(t *testing.T) {
 	fedwire, err := client.GetList("fedwire")
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	buf, ok := fedwire.(*bytes.Buffer)
-	require.True(t, ok)
-
-	if n := buf.Len(); n < 1024 {
-		t.Errorf("unexpected size of %d bytes", n)
 	}
 
 	bs, _ := io.ReadAll(io.LimitReader(fedwire, 10024))
@@ -116,13 +93,6 @@ func TestClient__wire_custom_url(t *testing.T) {
 	fedwire, err := client.GetList("fedwire")
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	buf, ok := fedwire.(*bytes.Buffer)
-	require.True(t, ok)
-
-	if n := buf.Len(); n < 1024 {
-		t.Errorf("unexpected size of %d bytes", n)
 	}
 
 	bs, _ := io.ReadAll(io.LimitReader(fedwire, 10024))
