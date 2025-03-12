@@ -10,7 +10,8 @@ require (
 	github.com/docker/docker v26.1.5+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
-	github.com/hashicorp/golang-lru v1.0.2
+	github.com/hashicorp/golang-lru v0.5.4
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/moov-io/base v0.53.0
 	github.com/prometheus/client_golang v1.21.1
 	github.com/stretchr/testify v1.10.0
