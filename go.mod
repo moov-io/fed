@@ -1,6 +1,6 @@
 module github.com/moov-io/fed
 
-go 1.21
+go 1.23.0
 
 toolchain go1.24.2
 
@@ -17,7 +17,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1
 	golang.org/x/oauth2 v0.26.0
-	golang.org/x/text v0.22.0
+	golang.org/x/text v0.23.0
 )
 
 require (
