@@ -201,13 +201,6 @@ PONG
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`.                                                     | Empty |
 
-#### Logos
-
-| Environmental Variable | Description                                           | Default |
-|------------------------|-------------------------------------------------------|---------|
-| `CLEARBIT_API_KEY`     | API key for connecting to Clearbit for logo requests. | Empty   |
-| `LOGO_CACHE_SIZE`      | Maximum size for an in-memory cache of logos.         | Empty   |
-
 ### Data persistence
 By design, Fed  **does not persist** (save) any data about the search queries created. The only storage occurs in memory of the process and upon restart Fed will have no files or data saved. Also, no in-memory encryption of the data is performed.
 
