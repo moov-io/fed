@@ -1,12 +1,17 @@
 {
   "extends": ["config:base"],
-  "separateMajorMinor": true,
-  "separateMinorPatch": true,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "automerge": true,
+  "automergeType": "pr",
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true,
-      "automergeType": "pr"
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ]
 }
