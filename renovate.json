@@ -1,11 +1,12 @@
 {
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["config:base"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr",
+      "separateMajorMinor": true,
+      "separateMinorPatch": true
     }
   ]
 }
