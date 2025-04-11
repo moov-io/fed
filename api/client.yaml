@@ -267,8 +267,6 @@ components:
           type: string
           description: Normalized name of ACH participant
           example: Chase
-        logo:
-          $ref: '#/components/schemas/Logo'
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       properties:
@@ -377,8 +375,6 @@ components:
           type: string
           description: Normalized name of Wire participant
           example: Chase
-        logo:
-          $ref: '#/components/schemas/Logo'
     WIRELocation:
       description: WIRELocation is the FEDWIRE delivery address
       properties:
@@ -393,14 +389,3 @@ components:
           maxLength: 2
           description: State
           example: 'IA'
-    Logo:
-      description: Company logo of the Fed ACH or Wire participant
-      properties:
-        name:
-          type: string
-          description: Company name
-          example: Chase
-        url:
-          type: string
-          description: URL to the company logo
-          example: "https://logo.clearbit.com/chase.com"
