@@ -7,11 +7,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 	"github.com/moov-io/fed/pkg/download"
-	"io"
-	"os"
 )
 
 func fedACHDataFile(logger log.Logger) (io.Reader, error) {
@@ -21,6 +22,8 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 	}
 
 	if file != nil {
+		logger.Info().Log("search: downloaded ACH file")
+
 		return file, nil
 	}
 
@@ -41,6 +44,8 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 	}
 
 	if file != nil {
+		logger.Info().Log("search: downloaded Wire file")
+
 		return file, nil
 	}
 
@@ -74,7 +79,7 @@ func readDataFilepath(env, fallback string) string {
 // parse and define ACHDictionary properties
 func (s *searcher) readFEDACHData(reader io.Reader) error {
 	if s.logger != nil {
-		s.logger.Logf("Read of FED data")
+		s.logger.Logf("Read of FED ACH data from %T", reader)
 	}
 
 	if closer, ok := reader.(io.Closer); ok {
@@ -87,7 +92,9 @@ func (s *searcher) readFEDACHData(reader io.Reader) error {
 	}
 
 	if s.logger != nil {
-		s.logger.Logf("Finished refresh of ACH data")
+		s.logger.With(log.Fields{
+			"records": log.Int(len(s.ACHDictionary.ACHParticipants)),
+		}).Logf("Finished refresh of ACH data")
 	}
 
 	return nil
@@ -97,7 +104,7 @@ func (s *searcher) readFEDACHData(reader io.Reader) error {
 // parse and define WIREDictionary properties
 func (s *searcher) readFEDWIREData(reader io.Reader) error {
 	if s.logger != nil {
-		s.logger.Logf("Read of FED data")
+		s.logger.Logf("Read of FED Wire data from %T", reader)
 	}
 
 	if closer, ok := reader.(io.Closer); ok {
@@ -110,7 +117,9 @@ func (s *searcher) readFEDWIREData(reader io.Reader) error {
 	}
 
 	if s.logger != nil {
-		s.logger.Logf("Finished refresh of WIRE data")
+		s.logger.With(log.Fields{
+			"records": log.Int(len(s.WIREDictionary.WIREParticipants)),
+		}).Logf("Finished refresh of WIRE data")
 	}
 
 	return nil
