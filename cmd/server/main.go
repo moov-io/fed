@@ -180,9 +180,9 @@ func setupSearcher(logger log.Logger, s *searcher, achFile, wireFile io.Reader) 
 	if err := s.readFEDACHData(achFile); err != nil {
 		return fmt.Errorf("error reading ACH data: %v", err)
 	}
-
 	if err := s.readFEDWIREData(wireFile); err != nil {
 		return fmt.Errorf("error reading wire data: %v", err)
 	}
-	return nil
+
+	return s.precompute()
 }

@@ -6,9 +6,12 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
@@ -25,13 +28,87 @@ type searcher struct {
 	WIREDictionary *fed.WIREDictionary
 	sync.RWMutex   // protects all above fields
 
+	achStats  ListStats
+	wireStats ListStats
+
 	logger log.Logger
+}
+
+type ListStats struct {
+	Records int       `json:"records"`
+	Latest  time.Time `json:"latest"`
+}
+
+func (s *searcher) precompute() error {
+	if err := s.precomputeACHStats(); err != nil {
+		return fmt.Errorf("precomputing ACH stats: %w", err)
+	}
+	if err := s.precomputeWireStats(); err != nil {
+		return fmt.Errorf("precomputing wire stats: %w", err)
+	}
+	return nil
+}
+
+func (s *searcher) precomputeACHStats() error {
+	if s.ACHDictionary != nil {
+		s.achStats.Records = len(s.ACHDictionary.ACHParticipants)
+	}
+
+	for idx := range s.ACHDictionary.ACHParticipants {
+		t, err := readDate(s.ACHDictionary.ACHParticipants[idx].Revised)
+		if err != nil {
+			return fmt.Errorf("parsing ACH record date: %w", err)
+		}
+		if s.achStats.Latest.Before(t) {
+			s.achStats.Latest = t
+		}
+	}
+
+	return nil
+}
+
+func (s *searcher) precomputeWireStats() error {
+	if s.WIREDictionary != nil {
+		s.wireStats.Records = len(s.WIREDictionary.WIREParticipants)
+	}
+
+	for idx := range s.WIREDictionary.WIREParticipants {
+		t, err := readDate(s.WIREDictionary.WIREParticipants[idx].Date)
+		if err != nil {
+			return fmt.Errorf("parsing WIRE record date: %w", err)
+		}
+		if s.wireStats.Latest.Before(t) {
+			s.wireStats.Latest = t
+		}
+	}
+
+	return nil
+}
+
+var (
+	acceptedDateFormats = []string{"060102", "010206", "20060102"}
+)
+
+func readDate(value string) (tt time.Time, err error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return
+	}
+	for _, fmt := range acceptedDateFormats {
+		tt, err = time.Parse(fmt, value)
+		if err == nil {
+			return tt, nil
+		}
+	}
+	return
 }
 
 // searchResponse defines a FEDACH search response
 type searchResponse struct {
 	ACHParticipants  []*fed.ACHParticipant  `json:"achParticipants,omitempty"`
 	WIREParticipants []*fed.WIREParticipant `json:"wireParticipants,omitempty"`
+
+	Stats *ListStats `json:"stats"`
 }
 
 // ACHFindNameOnly finds ACH Participants by name only
