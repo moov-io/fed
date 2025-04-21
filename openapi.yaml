@@ -170,6 +170,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ACHParticipant'
+        stats:
+          $ref: '#/components/schemas/ListStats'
     ACHParticipant:
       description: ACHParticipant holds a FedACH dir routing record as defined by Fed ACH Format.  https://www.frbservices.org/EPaymentsDirectory/achFormat.html
       properties:
@@ -294,6 +296,17 @@ components:
           maxLength: 4
           description: Postal Code Extension
           example: '0000'
+
+    ListStats:
+      type: object
+      properties:
+        records:
+          type: integer
+          example: 17124
+        latest:
+          type: string
+          format: date-time
+
     WIREDictionary:
       description: Search results containing WIREDictionary of Participants
       properties:
@@ -301,6 +314,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WIREParticipant'
+        stats:
+          $ref: '#/components/schemas/ListStats'
     WIREParticipant:
       description: WIREParticipant holds a FedWIRE dir routing record as defined by Fed WIRE Format.  https://frbservices.org/EPaymentsDirectory/fedwireFormat.html
       properties:

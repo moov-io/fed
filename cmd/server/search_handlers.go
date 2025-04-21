@@ -142,6 +142,7 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&searchResponse{
 			ACHParticipants: achParticipants,
+			Stats:           &searcher.achStats,
 		})
 	}
 }
@@ -206,6 +207,7 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&searchResponse{
 			WIREParticipants: wireParticipants,
+			Stats:            &searcher.wireStats,
 		})
 	}
 }
