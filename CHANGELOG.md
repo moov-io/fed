@@ -1,4 +1,4 @@
-## v0.12.0 (Released 2025-04-22)
+## v0.12.1 (Released 2025-04-22)
 
 IMPROVEMENTS
 
