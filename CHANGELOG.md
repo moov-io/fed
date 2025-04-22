@@ -1,3 +1,15 @@
+## v0.12.0 (Released 2025-04-22)
+
+IMPROVEMENTS
+
+- cmd/server: improve startup logging
+- cmd/server: return list stats in search response
+
+BUILD
+
+- build: update dependencies
+- chore(deps): update dependency go to v1.24.1 (#319)
+
 ## v0.11.1 (Released 2024-03-05)
 
 IMPROVEMENTS
