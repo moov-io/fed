@@ -4,6 +4,9 @@ on:
   push:
     tags: [ "v*.*.*" ]
 
+permissions:
+  contents: write
+
 jobs:
   testing:
     name: Testing
@@ -18,7 +21,7 @@ jobs:
         go-version: stable
       id: go
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v4
 
     - name: Check
@@ -47,6 +50,7 @@ jobs:
       with:
         name: release_url
         path: release_url.txt
+        retention-days: 1
 
   publish:
     name: Publish
@@ -62,13 +66,14 @@ jobs:
         go-version: stable
       id: go
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v4
 
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v4
       with:
         name: release_url
+        path: release_url
 
     - name: Distribute
       run: make dist
@@ -83,7 +88,7 @@ jobs:
         TAG_REF_NAME: ${{ github.ref }}
         REPOSITORY_NAME: ${{ github.repository }}
 
-    - name: Upload Linux Binary
+    - name: Upload Linux Server Binary
       if: runner.os == 'Linux'
       uses: actions/upload-release-asset@v1
       env:
@@ -94,7 +99,7 @@ jobs:
         asset_name: fed-linux-amd64
         asset_content_type: application/octet-stream
 
-    - name: Upload macOS Binary
+    - name: Upload macOS Server Binary
       if: runner.os == 'macOS'
       uses: actions/upload-release-asset@v1
       env:
@@ -105,7 +110,7 @@ jobs:
         asset_name: fed-darwin-amd64
         asset_content_type: application/octet-stream
 
-    - name: Upload Windows Binary
+    - name: Upload Windows Server Binary
       if: runner.os == 'Windows'
       uses: actions/upload-release-asset@v1
       env:
@@ -127,7 +132,7 @@ jobs:
         go-version: stable
       id: go
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v4
 
     - name: Docker
