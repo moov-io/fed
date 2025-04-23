@@ -32,6 +32,33 @@ func TestReader__fedWireDataFile(t *testing.T) {
 	require.ErrorContains(t, err, "no such file or directory")
 }
 
+func TestReader_inspectInitialDataDirectory(t *testing.T) {
+	logger := log.NewNopLogger()
+
+	dir := t.TempDir()
+
+	err := os.WriteFile(filepath.Join(dir, "fedach.txt"), nil, 0600)
+	require.NoError(t, err)
+	err = os.WriteFile(filepath.Join(dir, "fedwire.txt"), nil, 0600)
+	require.NoError(t, err)
+
+	// FedACH files
+	fd, err := inspectInitialDataDirectory(logger, dir, fedachFilenames)
+	require.NoError(t, err)
+
+	file, ok := fd.(*os.File)
+	require.True(t, ok)
+	require.Equal(t, filepath.Join(dir, "fedach.txt"), file.Name())
+
+	// FedWire files
+	fd, err = inspectInitialDataDirectory(logger, dir, fedwireFilenames)
+	require.NoError(t, err)
+
+	file, ok = fd.(*os.File)
+	require.True(t, ok)
+	require.Equal(t, filepath.Join(dir, "fedwire.txt"), file.Name())
+}
+
 func TestReader__readFEDACHData(t *testing.T) {
 	s := &searcher{logger: log.NewNopLogger()}
 
