@@ -144,10 +144,15 @@ func (s *searcher) readFEDACHData(reader io.Reader) error {
 		return fmt.Errorf("ERROR: reading FedACHdir.txt %v", err)
 	}
 
-	if s.logger != nil {
-		s.logger.With(log.Fields{
-			"records": log.Int(len(s.ACHDictionary.ACHParticipants)),
-		}).Logf("Finished refresh of ACH data")
+	recordCount := len(s.ACHDictionary.ACHParticipants)
+	if recordCount <= 0 {
+		return errors.New("read zero records from FedACH file")
+	} else {
+		if s.logger != nil {
+			s.logger.With(log.Fields{
+				"records": log.Int(recordCount),
+			}).Logf("Finished refresh of ACH data")
+		}
 	}
 
 	return nil
@@ -169,10 +174,15 @@ func (s *searcher) readFEDWIREData(reader io.Reader) error {
 		return fmt.Errorf("ERROR: reading fpddir.txt %v", err)
 	}
 
-	if s.logger != nil {
-		s.logger.With(log.Fields{
-			"records": log.Int(len(s.WIREDictionary.WIREParticipants)),
-		}).Logf("Finished refresh of WIRE data")
+	recordCount := len(s.WIREDictionary.WIREParticipants)
+	if recordCount <= 0 {
+		return errors.New("read zero records from FedWire file")
+	} else {
+		if s.logger != nil {
+			s.logger.With(log.Fields{
+				"records": log.Int(recordCount),
+			}).Logf("Finished refresh of WIRE data")
+		}
 	}
 
 	return nil
