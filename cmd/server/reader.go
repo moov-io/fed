@@ -9,21 +9,37 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
 	"github.com/moov-io/fed/pkg/download"
 )
 
+var (
+	fedachFilenames  = []string{"FedACHdir.txt", "fedachdir.json", "fedach.txt", "fedach.json"}
+	fedwireFilenames = []string{"fpddir.json", "fpddir.txt", "fedwire.txt", "fedwire.json"}
+)
+
 func fedACHDataFile(logger log.Logger) (io.Reader, error) {
-	file, err := attemptFileDownload(logger, "fedach")
+	initialDir := os.Getenv("INITIAL_DATA_DIRECTORY")
+	file, err := inspectInitialDataDirectory(logger, initialDir, fedachFilenames)
+	if err != nil {
+		return nil, fmt.Errorf("inspecting %s for FedACH file failed: %w", initialDir, err)
+	}
+	if file != nil {
+		logger.Info().Logf("found FedACH file in %s", initialDir)
+		return file, nil
+	}
+
+	file, err = attemptFileDownload(logger, "fedach")
 	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
 		return nil, fmt.Errorf("problem downloading fedach: %v", err)
 	}
 
 	if file != nil {
 		logger.Info().Log("search: downloaded ACH file")
-
 		return file, nil
 	}
 
@@ -38,14 +54,23 @@ func fedACHDataFile(logger log.Logger) (io.Reader, error) {
 }
 
 func fedWireDataFile(logger log.Logger) (io.Reader, error) {
-	file, err := attemptFileDownload(logger, "fedwire")
+	initialDir := os.Getenv("INITIAL_DATA_DIRECTORY")
+	file, err := inspectInitialDataDirectory(logger, initialDir, fedwireFilenames)
+	if err != nil {
+		return nil, fmt.Errorf("inspecting %s for FedWire file failed: %w", initialDir, err)
+	}
+	if file != nil {
+		logger.Info().Logf("found FedWire file in %s", initialDir)
+		return file, nil
+	}
+
+	file, err = attemptFileDownload(logger, "fedwire")
 	if err != nil && !errors.Is(err, download.ErrMissingConfigValue) {
 		return nil, fmt.Errorf("problem downloading fedwire: %v", err)
 	}
 
 	if file != nil {
 		logger.Info().Log("search: downloaded Wire file")
-
 		return file, nil
 	}
 
@@ -57,6 +82,34 @@ func fedWireDataFile(logger log.Logger) (io.Reader, error) {
 		return nil, fmt.Errorf("problem opening %s: %v", path, err)
 	}
 	return file, nil
+}
+
+func inspectInitialDataDirectory(logger log.Logger, dir string, needles []string) (io.Reader, error) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("readdir on %s failed: %w", dir, err)
+	}
+
+	for _, entry := range entries {
+		_, filename := filepath.Split(entry.Name())
+
+		for idx := range needles {
+			if strings.EqualFold(filename, needles[idx]) {
+				where := filepath.Join(dir, entry.Name())
+
+				fd, err := os.Open(where)
+				if err != nil {
+					return nil, fmt.Errorf("opening %s failed: %w", where, err)
+				}
+				return fd, nil
+			}
+		}
+	}
+
+	return nil, nil
 }
 
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
