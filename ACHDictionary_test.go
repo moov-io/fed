@@ -529,3 +529,26 @@ func TestACHDictionaryPostalCodeFilter(t *testing.T) {
 	check(t, "json", jsonDict)
 	check(t, "plain", plainDict)
 }
+
+func TestACHDictionary_EmptyRead(t *testing.T) {
+	// Response for when headers are missing
+	dict := NewACHDictionary()
+	input := strings.NewReader(`{ }`)
+	err := dict.Read(input)
+	require.NoError(t, err)
+	require.Empty(t, dict.ACHParticipants)
+
+	// Another response (when headers are set, but incorrect)
+	dict = NewACHDictionary()
+	input = strings.NewReader(`{
+  "fedACHParticipants" : {
+    "response" : {
+      "code" : 202
+    },
+    "fedACHParticipants" : [ ]
+  }
+}`)
+	err = dict.Read(input)
+	require.NoError(t, err)
+	require.Empty(t, dict.ACHParticipants)
+}

@@ -460,3 +460,26 @@ func TestWIREDictionaryCityFilter(t *testing.T) {
 	check(t, "json", jsonDict)
 	check(t, "plain", plainDict)
 }
+
+func TestWireDictionary_EmptyRead(t *testing.T) {
+	// Response for when headers are missing
+	dict := NewWIREDictionary()
+	input := strings.NewReader(`{ }`)
+	err := dict.Read(input)
+	require.NoError(t, err)
+	require.Empty(t, dict.WIREParticipants)
+
+	// Another response (when headers are set, but incorrect)
+	dict = NewWIREDictionary()
+	input = strings.NewReader(`{
+  "fedwireParticipants" : {
+    "response" : {
+      "code" : 202
+    },
+    "fedwireParticipants" : [ ]
+  }
+}`)
+	err = dict.Read(input)
+	require.NoError(t, err)
+	require.Empty(t, dict.WIREParticipants)
+}
