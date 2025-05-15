@@ -1,3 +1,20 @@
+## v0.13.0 (Released 2025-05-15)
+
+ADDITIONS
+
+- feat: read files from INITIAL_DATA_DIRECTORY
+
+IMPROVEMENTS
+
+- cmd/server: fail on startup when zero participants are found
+
+BUILD
+
+- chore(deps): update dependency go to v1.24.3 (#338)
+- fix(deps): update module github.com/moov-io/base to v0.55.0 (#339)
+- fix(deps): update module golang.org/x/oauth2 to v0.30.0 (#336)
+- fix(deps): update module golang.org/x/text to v0.25.0 (#337)
+
 ## v0.12.1 (Released 2025-04-22)
 
 IMPROVEMENTS
