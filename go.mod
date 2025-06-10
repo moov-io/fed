@@ -9,7 +9,7 @@ require (
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
-	github.com/moov-io/base v0.55.0
+	github.com/moov-io/base v0.55.1
 	github.com/prometheus/client_golang v1.22.0
 	github.com/stretchr/testify v1.10.0
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1
@@ -30,7 +30,7 @@ require (
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rickar/cal/v2 v2.1.23 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
