@@ -9,7 +9,7 @@ require (
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
-	github.com/moov-io/base v0.55.1
+	github.com/moov-io/base v0.56.0
 	github.com/prometheus/client_golang v1.22.0
 	github.com/stretchr/testify v1.10.0
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1
