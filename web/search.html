@@ -97,38 +97,54 @@
         <div id="error" class="error-msg"></div>
     </div>
     <script>
-        // This can be set by your Go binary (template inject)
-        const API_BASE_URL = window.API_BASE_URL || "http://localhost:8086";
-    </script>
-    <script>
         const input = document.getElementById('searchInput');
         const btn = document.getElementById('searchBtn');
         const resultDiv = document.getElementById('result');
         const errorDiv = document.getElementById('error');
 
         function renderResult(data) {
-            if (!data || !data.achParticipants || !data.achParticipants.length) {
-                resultDiv.innerHTML = '';
-                errorDiv.textContent = 'No ACH participant found for this routing number.';
-                return;
+            if (data && data.achParticipants && data.achParticipants.length) {
+                const p = data.achParticipants[0];
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-title">${p.customerName}</div>
+                        <div class="result-row"><span class="result-label">Routing Number:</span> ${p.routingNumber}</div>
+                        <div class="result-row"><span class="result-label">Office Code:</span> ${p.officeCode}</div>
+                        <div class="result-row"><span class="result-label">Servicing FRB Number:</span> ${p.servicingFRBNumber}</div>
+                        <div class="result-row"><span class="result-label">Record Type Code:</span> ${p.recordTypeCode}</div>
+                        <div class="result-row"><span class="result-label">Revised:</span> ${p.revised}</div>
+                        <div class="result-row"><span class="result-label">New Routing Number:</span> ${p.newRoutingNumber}</div>
+                        <div class="result-row"><span class="result-label">Address:</span> ${p.achLocation.address}, ${p.achLocation.city}, ${p.achLocation.state} ${p.achLocation.postalCode}-${p.achLocation.postalCodeExtension}</div>
+                        <div class="result-row"><span class="result-label">Phone Number:</span> ${p.phoneNumber}</div>
+                        <div class="result-row"><span class="result-label">Status Code:</span> ${p.statusCode}</div>
+                        <div class="result-row"><span class="result-label">View Code:</span> ${p.viewCode}</div>
+                    </div>
+                `;
+                errorDiv.textContent = '';
+                return true;
             }
-            const p = data.achParticipants[0];
-            resultDiv.innerHTML = `
-                <div class="result-card">
-                    <div class="result-title">${p.customerName}</div>
-                    <div class="result-row"><span class="result-label">Routing Number:</span> ${p.routingNumber}</div>
-                    <div class="result-row"><span class="result-label">Office Code:</span> ${p.officeCode}</div>
-                    <div class="result-row"><span class="result-label">Servicing FRB Number:</span> ${p.servicingFRBNumber}</div>
-                    <div class="result-row"><span class="result-label">Record Type Code:</span> ${p.recordTypeCode}</div>
-                    <div class="result-row"><span class="result-label">Revised:</span> ${p.revised}</div>
-                    <div class="result-row"><span class="result-label">New Routing Number:</span> ${p.newRoutingNumber}</div>
-                    <div class="result-row"><span class="result-label">Address:</span> ${p.achLocation.address}, ${p.achLocation.city}, ${p.achLocation.state} ${p.achLocation.postalCode}-${p.achLocation.postalCodeExtension}</div>
-                    <div class="result-row"><span class="result-label">Phone Number:</span> ${p.phoneNumber}</div>
-                    <div class="result-row"><span class="result-label">Status Code:</span> ${p.statusCode}</div>
-                    <div class="result-row"><span class="result-label">View Code:</span> ${p.viewCode}</div>
-                </div>
-            `;
-            errorDiv.textContent = '';
+            return false;
+        }
+
+        function renderWireResult(data) {
+            if (data && data.wireParticipants && data.wireParticipants.length) {
+                const p = data.wireParticipants[0];
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-title">${p.customerName}</div>
+                        <div class="result-row"><span class="result-label">Routing Number:</span> ${p.routingNumber}</div>
+                        <div class="result-row"><span class="result-label">Telegraphic Name:</span> ${p.telegraphicName}</div>
+                        <div class="result-row"><span class="result-label">Location:</span> ${p.wireLocation.city}, ${p.wireLocation.state}</div>
+                        <div class="result-row"><span class="result-label">Funds Transfer Status:</span> ${p.fundsTransferStatus}</div>
+                        <div class="result-row"><span class="result-label">Funds Settlement Only Status:</span> ${p.fundsSettlementOnlyStatus}</div>
+                        <div class="result-row"><span class="result-label">Book Entry Securities Transfer Status:</span> ${p.bookEntrySecuritiesTransferStatus}</div>
+                        <div class="result-row"><span class="result-label">Date:</span> ${p.date}</div>
+                    </div>
+                `;
+                errorDiv.textContent = '';
+                return true;
+            }
+            return false;
         }
 
         async function search() {
@@ -140,10 +156,16 @@
                 return;
             }
             try {
-                const res = await fetch(`/fed/ach/search?routingNumber=${routingNumber}`);
+                let res = await fetch(`/fed/ach/search?routingNumber=${routingNumber}`);
                 if (!res.ok) throw new Error('Network error');
-                const data = await res.json();
-                renderResult(data);
+                let data = await res.json();
+                if (renderResult(data)) return;
+                // Try wire search if no ACH participant
+                res = await fetch(`/fed/wire/search?routingNumber=${routingNumber}`);
+                if (!res.ok) throw new Error('Network error');
+                data = await res.json();
+                if (renderWireResult(data)) return;
+                errorDiv.textContent = 'No participant found for this routing number.';
             } catch (err) {
                 resultDiv.innerHTML = '';
                 errorDiv.textContent = 'Error fetching data. Please try again.';
