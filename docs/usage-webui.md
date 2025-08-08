@@ -12,7 +12,7 @@ With the release of `v0.14.1` Moov Fed contains a builtin Web UI that's hosted f
 
 <table>
 <tr style="align:center;">
-<td><img src="images/ach-search.png" /></td>
-<td><img src="images/wire-search.png" /></td>
+<td><img src="../images/ach-search.png" /></td>
+<td><img src="../images/wire-search.png" /></td>
 </tr>
 </table>
