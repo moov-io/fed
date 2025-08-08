@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Routing Number Search</title>
     <style>
         body {
@@ -12,14 +13,14 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             box-sizing: border-box;
         }
         .search-container {
             background: #ffffff;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             width: 100%;
             max-width: 400px;
             transition: transform 0.2s ease;
@@ -28,26 +29,28 @@
             transform: translateY(-2px);
         }
         .search-title {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             text-align: center;
             letter-spacing: -0.02em;
         }
         .search-box {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         select, input[type="text"] {
-            padding: 12px 16px;
-            font-size: 1rem;
+            padding: 10px 14px;
+            font-size: 0.95rem;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             background: #f8fafc;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
         }
         select:focus, input[type="text"]:focus {
             border-color: #2563eb;
@@ -58,15 +61,15 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
-            background-size: 1.2em;
+            background-size: 1.1em;
         }
         button {
-            padding: 12px;
+            padding: 10px;
             background: #2563eb;
             color: #ffffff;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
@@ -81,24 +84,24 @@
         .result-card {
             background: #f8fafc;
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 10px;
+            padding: 1rem;
             margin-top: 1rem;
             transition: box-shadow 0.2s;
         }
         .result-card:hover {
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
         .result-title {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #2563eb;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         .result-row {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             color: #1e293b;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .result-label {
             font-weight: 500;
@@ -106,16 +109,33 @@
         }
         .error-msg {
             color: #dc2626;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
             .search-container {
-                padding: 1.5rem;
+                padding: 1.25rem;
+                max-width: 100%;
             }
             .search-title {
-                font-size: 1.25rem;
+                font-size: 1.125rem;
+            }
+            select, input[type="text"], button {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+            .result-title {
+                font-size: 0.95rem;
+            }
+            .result-row {
+                font-size: 0.85rem;
+            }
+            .error-msg {
+                font-size: 0.85rem;
             }
         }
     </style>
