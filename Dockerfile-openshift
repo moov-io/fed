@@ -8,6 +8,7 @@ COPY ./cmd/server ./cmd/server
 COPY ./client ./client
 COPY ./data ./data
 COPY ./pkg ./pkg
+COPY ./webui ./webui
 COPY makefile makefile
 RUN make build
 

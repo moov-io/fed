@@ -23,6 +23,7 @@ import (
 	"github.com/moov-io/base/http/bind"
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
+	"github.com/moov-io/fed/webui"
 
 	"github.com/gorilla/mux"
 )
@@ -136,6 +137,10 @@ func main() {
 
 	// Add searcher for HTTP routes
 	addSearchRoutes(logger, router, searcher)
+
+	// Add webui routes
+	webuiController := webui.NewController(logger)
+	webuiController.AppendRoutes(router)
 
 	// Start business logic HTTP server
 	go func() {
