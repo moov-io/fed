@@ -38,6 +38,7 @@ The data and formats in this repository represent a compilation of **FedWire** a
 - [Usage](#usage)
   - As an API
     - [Docker](#docker) ([Config](#configuration-settings))
+    - [Web UI](#webui)
     - [Google Cloud](#google-cloud-run) ([Config](#configuration-settings))
     - [Data persistence](#data-persistence)
   - [As a Go module](#go-library)
@@ -86,6 +87,10 @@ Pull & start the Docker image:
 docker pull moov/fed:latest
 docker run -p 8086:8086 -p 9096:9096 moov/fed:latest
 ```
+
+### WebUI
+
+With the release of `v0.14.1` Moov Fed contains a builtin Web UI that's hosted from the Go binary / Docker image.
 
 #### **ACH routing number example**
 

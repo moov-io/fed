@@ -9,6 +9,8 @@
   items:
     - name: Docker
       link: /usage-docker/
+    - name: Web UI
+      link: /usage-webui/
     - name: Google Cloud Run
       link: /usage-google-cloud/
     - name: Binary distribution
@@ -26,7 +28,7 @@
       link: /fpddir_FORMAT/
     - name: Fed state codes
       link: /Fed_STATE_CODES/
-      
+
 
 - label: Production and monitoring
   items:
