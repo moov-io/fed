@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f0ff 0%, #f7f7f7 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .search-container {
+            background: #fff;
+            padding: 32px 24px 24px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            min-width: 350px;
+        }
+        .search-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3a4b;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #b0c4de;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f5faff;
+        }
+        input[type="text"]:focus {
+            border-color: #0078d4;
+        }
+        button {
+            padding: 12px 18px;
+            background: #0078d4;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #005fa3;
+        }
+        .result-card {
+            background: #f5faff;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 8px;
+            box-shadow: 0 2px 8px rgba(0,120,212,0.07);
+        }
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #0078d4;
+            margin-bottom: 10px;
+        }
+        .result-row {
+            margin-bottom: 7px;
+            color: #2d3a4b;
+        }
+        .result-label {
+            font-weight: 500;
+            color: #5a6b7b;
+        }
+        .error-msg {
+            color: #d32f2f;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="search-title">ACH Routing Number Search</div>
+        <div class="search-box">
+            <input id="searchInput" type="text" placeholder="Enter routing number..." maxlength="9" />
+            <button id="searchBtn">Search</button>
+        </div>
+        <div id="result"></div>
+        <div id="error" class="error-msg"></div>
+    </div>
+    <script>
+        const input = document.getElementById('searchInput');
+        const btn = document.getElementById('searchBtn');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+
+        function renderResult(data) {
+            if (data && data.achParticipants && data.achParticipants.length) {
+                const p = data.achParticipants[0];
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-title">${p.customerName}</div>
+                        <div class="result-row"><span class="result-label">Routing Number:</span> ${p.routingNumber}</div>
+                        <div class="result-row"><span class="result-label">Office Code:</span> ${p.officeCode}</div>
+                        <div class="result-row"><span class="result-label">Servicing FRB Number:</span> ${p.servicingFRBNumber}</div>
+                        <div class="result-row"><span class="result-label">Record Type Code:</span> ${p.recordTypeCode}</div>
+                        <div class="result-row"><span class="result-label">Revised:</span> ${p.revised}</div>
+                        <div class="result-row"><span class="result-label">New Routing Number:</span> ${p.newRoutingNumber}</div>
+                        <div class="result-row"><span class="result-label">Address:</span> ${p.achLocation.address}, ${p.achLocation.city}, ${p.achLocation.state} ${p.achLocation.postalCode}-${p.achLocation.postalCodeExtension}</div>
+                        <div class="result-row"><span class="result-label">Phone Number:</span> ${p.phoneNumber}</div>
+                        <div class="result-row"><span class="result-label">Status Code:</span> ${p.statusCode}</div>
+                        <div class="result-row"><span class="result-label">View Code:</span> ${p.viewCode}</div>
+                    </div>
+                `;
+                errorDiv.textContent = '';
+                return true;
+            }
+            return false;
+        }
+
+        function renderWireResult(data) {
+            if (data && data.wireParticipants && data.wireParticipants.length) {
+                const p = data.wireParticipants[0];
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-title">${p.customerName}</div>
+                        <div class="result-row"><span class="result-label">Routing Number:</span> ${p.routingNumber}</div>
+                        <div class="result-row"><span class="result-label">Telegraphic Name:</span> ${p.telegraphicName}</div>
+                        <div class="result-row"><span class="result-label">Location:</span> ${p.wireLocation.city}, ${p.wireLocation.state}</div>
+                        <div class="result-row"><span class="result-label">Funds Transfer Status:</span> ${p.fundsTransferStatus}</div>
+                        <div class="result-row"><span class="result-label">Funds Settlement Only Status:</span> ${p.fundsSettlementOnlyStatus}</div>
+                        <div class="result-row"><span class="result-label">Book Entry Securities Transfer Status:</span> ${p.bookEntrySecuritiesTransferStatus}</div>
+                        <div class="result-row"><span class="result-label">Date:</span> ${p.date}</div>
+                    </div>
+                `;
+                errorDiv.textContent = '';
+                return true;
+            }
+            return false;
+        }
+
+        async function search() {
+            const routingNumber = input.value.trim();
+            resultDiv.innerHTML = '';
+            errorDiv.textContent = '';
+            if (!/^\d{9}$/.test(routingNumber)) {
+                errorDiv.textContent = 'Please enter a valid 9-digit routing number.';
+                return;
+            }
+            try {
+                let res = await fetch(`/fed/ach/search?routingNumber=${routingNumber}`);
+                if (!res.ok) throw new Error('Network error');
+                let data = await res.json();
+                if (renderResult(data)) return;
+                // Try wire search if no ACH participant
+                res = await fetch(`/fed/wire/search?routingNumber=${routingNumber}`);
+                if (!res.ok) throw new Error('Network error');
+                data = await res.json();
+                if (renderWireResult(data)) return;
+                errorDiv.textContent = 'No participant found for this routing number.';
+            } catch (err) {
+                resultDiv.innerHTML = '';
+                errorDiv.textContent = 'Error fetching data. Please try again.';
+            }
+        }
+
+        btn.addEventListener('click', search);
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                search();
+            }
+        });
+    </script>
+</body>
+</html>
