@@ -22,7 +22,7 @@ jobs:
       id: go
 
     - name: Check out code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Check
       run: make check
@@ -67,7 +67,7 @@ jobs:
       id: go
 
     - name: Check out code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Load Release URL File from release job
       uses: actions/download-artifact@v5
@@ -133,7 +133,7 @@ jobs:
       id: go
 
     - name: Check out code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Docker
       run: make docker
