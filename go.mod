@@ -2,7 +2,7 @@ module github.com/moov-io/fed
 
 go 1.24.0
 
-toolchain go1.25.4
+toolchain go1.25.5
 
 require (
 	github.com/antihax/optional v1.0.0
