@@ -1,4 +1,4 @@
-FROM golang:1.25 as builder
+FROM golang:1.26 as builder
 WORKDIR /go/src/github.com/moov-io/fed
 RUN apt-get update && apt-get install make gcc g++
 COPY . .
