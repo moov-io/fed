@@ -36,6 +36,7 @@ jobs:
       with:
         image: moov/fed
         tags: podman-${{ github.sha }}
+        platforms: linux/amd64,linux/arm64
         containerfiles: |
           ./Dockerfile
 
