@@ -12,8 +12,6 @@ import (
 	mrand "math/rand"
 	"strings"
 	"testing"
-
-	"github.com/docker/docker/pkg/namesgenerator"
 )
 
 var (
@@ -53,12 +51,11 @@ func TestHamming(t *testing.T) {
 
 func TestSoundex(t *testing.T) {
 	for i := 0; i < 500; i += 1 {
-		parts := strings.Split(namesgenerator.GetRandomName(0), "_")
-		if len(parts) < 2 {
-			continue // invalid random name
+		a, b := randString(), randString()
+		if a == "" || b == "" {
+			continue
 		}
 
-		a, b := parts[0], parts[1]
 		score := Soundex(a, b)
 		if score > 1.0 || score < 0.0 {
 			t.Fatalf("a=%q b=%q got score %.2f", a, b, score)

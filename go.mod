@@ -6,7 +6,6 @@ toolchain go1.26.3
 
 require (
 	github.com/antihax/optional v1.0.0
-	github.com/docker/docker v28.5.2+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
 	github.com/moov-io/base v0.61.1
