@@ -31,6 +31,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/moov-io/base v0.61.2 h1:eK9sDmY7VCQzOGqo7VvQ9GrLLwzMEzIYn4cri9Xw5Zg=
 github.com/moov-io/base v0.61.2/go.mod h1:KyWc04fbQzmD/aU2A3lyYbEWZVzgpc7Y174zmXKuH4c=
+github.com/moov-io/base v0.61.3 h1:c0Hvy497geIXbCA915YC6P7XxC4iKu7qdSBU2mcOGKA=
+github.com/moov-io/base v0.61.3/go.mod h1:t9UWAnoRBDl6cqcZc3g2Cpm1BJzQ0Q+7xqLHyPVk1Gw=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
