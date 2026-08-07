@@ -32,7 +32,7 @@ jobs:
     - name: Buildah Action
       id: build-image
       if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
-      uses: redhat-actions/buildah-build@v2
+      uses: redhat-actions/buildah-build@v3
       with:
         image: moov/fed
         tags: podman-${{ github.sha }}
