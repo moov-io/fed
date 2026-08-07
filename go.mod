@@ -1,6 +1,6 @@
 module github.com/moov-io/fed
 
-go 1.25.0
+go 1.25.8
 
 toolchain go1.26.5
 
@@ -8,7 +8,7 @@ require (
 	github.com/antihax/optional v1.0.0
 	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
-	github.com/moov-io/base v0.61.3
+	github.com/moov-io/base v0.62.0
 	github.com/prometheus/client_golang v1.24.1
 	github.com/stretchr/testify v1.11.1
 	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342
@@ -28,7 +28,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.70.1 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
-	github.com/rickar/cal/v2 v2.1.27 // indirect
+	github.com/rickar/cal/v2 v2.1.28 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
