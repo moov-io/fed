@@ -50,7 +50,7 @@ jobs:
     - name: Push to GitHub Container Repository
       if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
       id: push-to-ghcr
-      uses: redhat-actions/push-to-registry@v2
+      uses: redhat-actions/push-to-registry@v3
       with:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
