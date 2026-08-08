@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/moov-io/base/admin"
-	moovhttp "github.com/moov-io/base/http"
 	"github.com/moov-io/base/http/bind"
 	"github.com/moov-io/base/log"
 	"github.com/moov-io/fed"
@@ -60,7 +59,7 @@ func main() {
 
 	// Setup business HTTP routes
 	router := mux.NewRouter()
-	moovhttp.AddCORSHandler(router)
+	addCORSHandler(router)
 	addPingRoute(router)
 
 	// Start business HTTP server
@@ -167,7 +166,7 @@ func main() {
 
 func addPingRoute(r *mux.Router) {
 	r.Methods("GET").Path("/ping").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		moovhttp.SetAccessControlAllowHeaders(w, r.Header.Get("Origin"))
+		setAccessControlAllowHeaders(w, r.Header.Get("Origin"))
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("PONG"))

@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strings"
 
-	moovhttp "github.com/moov-io/base/http"
 	"github.com/moov-io/base/log"
 
 	"github.com/go-kit/kit/metrics/prometheus"
@@ -25,5 +24,6 @@ var (
 
 func wrapResponseWriter(logger log.Logger, w http.ResponseWriter, r *http.Request) http.ResponseWriter {
 	route := fmt.Sprintf("%s%s", strings.ToLower(r.Method), strings.Replace(r.URL.Path, "/", "-", -1)) // TODO: filter out random ID's later
-	return moovhttp.Wrap(logger, routeHistogram.With("route", route), w, r)
+	// Use allowlisted CORS wrapper (not moovhttp.Wrap) until moov-io/base#509 is bumped.
+	return wrapResponseWriterAllowlist(logger, routeHistogram.With("route", route), w, r)
 }
