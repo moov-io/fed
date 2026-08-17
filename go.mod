@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/moov-io/base v0.63.1
 	github.com/prometheus/client_golang v1.24.1
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/text v0.41.0
