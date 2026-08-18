@@ -1,3 +1,4 @@
+# Use https://app.stepsecurity.io/ to improve workflow security
 name: Podman
 
 on:
@@ -5,6 +6,9 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -15,13 +19,16 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - name: Set up Go 1.x
-      uses: actions/setup-go@v7
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: stable
+        cache: false
       id: go
 
     - name: Clone the repository
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Build
       run: make build
@@ -32,7 +39,7 @@ jobs:
     - name: Buildah Action
       id: build-image
       if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
-      uses: redhat-actions/buildah-build@v3
+      uses: redhat-actions/buildah-build@3a51aade9afa17e5c78256bcbe2e1ee08c7b995b # v3.0.2
       with:
         image: moov/fed
         tags: podman-${{ github.sha }}
@@ -41,7 +48,7 @@ jobs:
 
     - name: Log in to the GitHub Container registry
       if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
-      uses: redhat-actions/podman-login@v2
+      uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
       with:
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -50,7 +57,7 @@ jobs:
     - name: Push to GitHub Container Repository
       if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
       id: push-to-ghcr
-      uses: redhat-actions/push-to-registry@v3
+      uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
       with:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
