@@ -38,27 +38,9 @@ jobs:
 
     - name: Buildah Action
       id: build-image
-      if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
       uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
       with:
         image: moov/fed
         tags: podman-${{ github.sha }}
         containerfiles: |
           ./Dockerfile
-
-    - name: Log in to the GitHub Container registry
-      if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
-      uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
-      with:
-        registry: docker.io
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Push to GitHub Container Repository
-      if: ${{ github.event.pull_request.head.repo.full_name == 'moov-io/fed' }}
-      id: push-to-ghcr
-      uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
-      with:
-        image: ${{ steps.build-image.outputs.image }}
-        tags: ${{ steps.build-image.outputs.tags }}
-        registry: docker.io
