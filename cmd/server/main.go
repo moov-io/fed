@@ -99,7 +99,8 @@ func main() {
 
 	// Start Admin server (with Prometheus metrics)
 	adminServer, err := admin.New(admin.Opts{
-		Addr: *adminAddr,
+		Addr:  *adminAddr,
+		Pprof: adminPprofFromEnv(),
 	})
 	if err != nil {
 		logger.LogErrorf("problem creating admin server: %v", err)
@@ -107,7 +108,7 @@ func main() {
 	}
 	adminServer.AddVersionHandler(fed.Version) // Setup 'GET /version'
 	go func() {
-		logger.Info().Logf(fmt.Sprintf("listening on %s", adminServer.BindAddr()))
+		logger.Info().Logf("listening on %s", adminServer.BindAddr())
 		if err := adminServer.Listen(); err != nil {
 			err = fmt.Errorf("problem starting admin http: %v", err)
 			logger.Logf("admin: %v", err)

@@ -95,7 +95,7 @@ func searchFEDACH(logger log.Logger, searcher *searcher) http.HandlerFunc {
 
 		req := readFEDSearchRequest(r.URL)
 		if req.empty() {
-			logger.Error().Logf("searchFedACH", log.String(errNoSearchParams.Error()))
+			logger.Error().Logf("searchFedACH: %v", errNoSearchParams)
 			moovhttp.Problem(w, errNoSearchParams)
 			return
 		}
