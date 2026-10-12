@@ -15,6 +15,8 @@ menubar: docs-menu
 | `LOG_FORMAT` | Format for logging lines to be written as. | Options: `json`, `plain` - Default: `plain` |
 | `HTTP_BIND_ADDRESS` | Address for Fed to bind its HTTP server on. This overrides the command-line flag `-http.addr`. | Default: `:8086` |
 | `HTTP_ADMIN_BIND_ADDRESS` | Address for Fed to bind its admin HTTP server on. This overrides the command-line flag `-admin.addr`. | Default: `:9096` |
+| `HTTP_ADMIN_PPROF_ENABLED` | Set `true`/`1`/`yes` to enable or `false`/`0`/`no` to disable Go pprof on the admin server. Unset keeps historical pprof on. | Unset (enabled) |
+| `HTTP_ADMIN_PPROF_SECRET` | Optional bearer token required for pprof when it is enabled. | Empty |
 | `HTTPS_CERT_FILE` | Filepath containing a certificate (or intermediate chain) to be served by the HTTP server. Requires all traffic be over secure HTTP. | Empty |
 | `HTTPS_KEY_FILE`  | Filepath of a private key matching the leaf certificate from `HTTPS_CERT_FILE`. | Empty |
 
