@@ -51,7 +51,7 @@ GEM
       rubyzip (>= 1.3.0, < 4.0)
     jekyll-sass-converter (1.5.2)
       sass (~> 3.4)
-    jekyll-seo-tag (2.8.0)
+    jekyll-seo-tag (2.9.1)
       jekyll (>= 3.8, < 5.0)
     jekyll-sitemap (1.4.0)
       jekyll (>= 3.7, < 5.0)
@@ -99,7 +99,7 @@ DEPENDENCIES
   jekyll-remote-theme (>= 0.5.2)
   kramdown-parser-gfm
   rubyzip (>= 3.4.0)
-  tzinfo (~> 1.2)
+  tzinfo (~> 2.0)
   tzinfo-data
   wdm (~> 0.2.0)
   webrick
