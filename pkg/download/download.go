@@ -49,16 +49,16 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		}
 	}
 
-	routingNum, rnExists := os.LookupEnv("FRB_ROUTING_NUMBER")
-	downloadcd, dcdExists := os.LookupEnv("FRB_DOWNLOAD_CODE")
-	downloadurltemp, urlExists := os.LookupEnv("FRB_DOWNLOAD_URL_TEMPLATE")
+	routingNum := firstNonEmpty(opts.RoutingNumber, os.Getenv("FRB_ROUTING_NUMBER"))
+	downloadcd := firstNonEmpty(opts.DownloadCode, os.Getenv("FRB_DOWNLOAD_CODE"))
+	downloadurltemp := firstNonEmpty(opts.DownloadURL, os.Getenv("FRB_DOWNLOAD_URL_TEMPLATE"))
 
-	if !urlExists || downloadurltemp == "" {
-		if !rnExists || routingNum == "" {
+	if downloadurltemp == "" {
+		if routingNum == "" {
 			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingRoutingNumber)
 		}
 
-		if !dcdExists || downloadcd == "" {
+		if downloadcd == "" {
 			return nil, fmt.Errorf("%w: %w", ErrMissingConfigValue, ErrMissingDownloadCD)
 		}
 
@@ -71,6 +71,15 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		downloadCode:  downloadcd,
 		downloadURL:   downloadurltemp,
 	}, nil
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 // GetList downloads an FRB list and saves it into an io.Reader.
