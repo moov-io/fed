@@ -13,7 +13,7 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/xrash/smetrics v0.0.0-20261013231157-39c47d93efba
 	golang.org/x/oauth2 v0.38.0
-	golang.org/x/text v0.43.0
+	golang.org/x/text v0.44.0
 )
 
 require (
