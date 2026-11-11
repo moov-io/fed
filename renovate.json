@@ -23,6 +23,16 @@
       "automerge": false
     },
     {
+      "description": "GitHub Pages builds docs with Jekyll 3.9; stay on jekyll ~> 3.10",
+      "matchPackageNames": [
+        "jekyll"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
       "description": "Automerge GitHub Actions updates (including majors)",
       "matchManagers": [
         "github-actions"
