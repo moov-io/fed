@@ -23,7 +23,7 @@
       "automerge": false
     },
     {
-      "description": "GitHub Pages builds docs with Jekyll 3.9; stay on jekyll ~> 3.10",
+      "description": "The docs Gemfile pins jekyll ~> 3.10; disable major updates",
       "matchPackageNames": [
         "jekyll"
       ],
