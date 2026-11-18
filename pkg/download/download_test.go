@@ -183,6 +183,31 @@ func TestNewClient__optsOverrideEnv(t *testing.T) {
 	}
 }
 
+func TestNewClient__envOnly(t *testing.T) {
+	t.Setenv("FRB_ROUTING_NUMBER", "123456789")
+	t.Setenv("FRB_DOWNLOAD_CODE", "env-code")
+	t.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", "https://env.example.com/%s")
+
+	tests := []struct {
+		name string
+		opts *ClientOpts
+	}{
+		{name: "nil", opts: nil},
+		{name: "empty", opts: &ClientOpts{}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client, err := NewClient(tt.opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if client.routingNumber != "123456789" || client.downloadCode != "env-code" || client.downloadURL != "https://env.example.com/%s" {
+				t.Errorf("unexpected client config: %#v", client)
+			}
+		})
+	}
+}
+
 func TestNewClient__missingConfig(t *testing.T) {
 	t.Setenv("FRB_ROUTING_NUMBER", "")
 	t.Setenv("FRB_DOWNLOAD_CODE", "")
