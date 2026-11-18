@@ -1,3 +1,15 @@
+## v0.16.0 (Released 2026-11-18)
+
+ADDITIONS
+
+- download: honor ClientOpts RoutingNumber, DownloadCode, and DownloadURL in NewClient (falls back to FRB_* env) (#488)
+- ci: publish linux/amd64 and linux/arm64 images for moov/fed, moov/fedtest, and quay.io/moov/fed (#403)
+
+BUILD
+
+- Go toolchain 1.27.4
+- github.com/moov-io/base v0.68.2
+
 ## v0.13.0 (Released 2025-05-15)
 
 ADDITIONS
