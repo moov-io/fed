@@ -40,8 +40,18 @@ jobs:
       run: make check
 
   docker:
-    name: Docker Build
-    runs-on: ubuntu-latest
+    name: Docker Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
     - name: Set up Go 1.x
       uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
@@ -56,5 +66,9 @@ jobs:
         persist-credentials: false
 
     - name: Docker Build
-      if: runner.os == 'Linux'
-      run: make docker && make build && make test-integration && make clean-integration
+      run: make docker
+      env:
+        ARCH: ${{ matrix.arch }}
+
+    - name: Integration
+      run: make build && make test-integration && make clean-integration

@@ -1,5 +1,14 @@
 PLATFORM=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 VERSION := $(shell grep -Eo '(v[0-9]+[\.][0-9]+[\.][0-9]+(-[a-zA-Z0-9]*)?)' version.go)
+ifndef ARCH
+ARCH=$(shell uname -m)
+endif
+ifeq ($(ARCH),x86_64)
+	ARCH=amd64
+endif
+ifeq ($(ARCH),aarch64)
+	ARCH=arm64
+endif
 
 .PHONY: build docker release check
 
@@ -49,16 +58,64 @@ else
 	CGO_ENABLED=1 GOOS=$(PLATFORM) go build -o bin/fed-$(PLATFORM)-amd64 github.com/moov-io/fed/cmd/server
 endif
 
-docker: clean
-# main FED image
-	docker build --pull -t moov/fed:$(VERSION) -f Dockerfile .
-	docker tag moov/fed:$(VERSION) moov/fed:latest
-# OpenShift Docker image
-	docker build --pull -t quay.io/moov/fed:$(VERSION) -f Dockerfile-openshift --build-arg VERSION=$(VERSION) .
-	docker tag quay.io/moov/fed:$(VERSION) quay.io/moov/fed:latest
-# fedtest image
-	docker build --pull -t moov/fedtest:$(VERSION) -f Dockerfile-fedtest ./
-	docker tag moov/fedtest:$(VERSION) moov/fedtest:latest
+# Buildx on GitHub-hosted runners attaches provenance attestations by default.
+# That makes ${VERSION}.amd64 a manifest list, and `docker manifest create`
+# fails with "is a manifest list". Keep each arch tag as a single image, and
+# combine them with imagetools so ${VERSION} is linux/amd64 + linux/arm64.
+DOCKER_BUILD_FLAGS ?= --provenance=false --sbom=false
+
+docker: clean docker-hub docker-openshift docker-fedtest
+	docker tag moov/fed:$(VERSION).$(ARCH) moov/fed:$(VERSION)
+	docker tag moov/fed:$(VERSION).$(ARCH) moov/fed:latest
+	docker tag quay.io/moov/fed:$(VERSION).$(ARCH) quay.io/moov/fed:$(VERSION)
+	docker tag quay.io/moov/fed:$(VERSION).$(ARCH) quay.io/moov/fed:latest
+	docker tag moov/fedtest:$(VERSION).$(ARCH) moov/fedtest:$(VERSION)
+	docker tag moov/fedtest:$(VERSION).$(ARCH) moov/fedtest:latest
+
+.PHONY: docker-hub docker-hub-push docker-hub-manifest
+docker-hub:
+	docker build --pull ${DOCKER_BUILD_FLAGS} -t moov/fed:$(VERSION).$(ARCH) -f Dockerfile .
+
+docker-hub-push:
+	docker push moov/fed:$(VERSION).$(ARCH)
+
+docker-hub-manifest:
+	@if docker manifest inspect moov/fed:$(VERSION) >/dev/null 2>&1; then \
+		echo "error: docker tag already exists: moov/fed:$(VERSION)" >&2; \
+		exit 1; \
+	fi
+	docker buildx imagetools create -t moov/fed:$(VERSION) moov/fed:$(VERSION).arm64 moov/fed:$(VERSION).amd64
+	docker buildx imagetools create -t moov/fed:latest moov/fed:$(VERSION).arm64 moov/fed:$(VERSION).amd64
+
+.PHONY: docker-openshift docker-openshift-push docker-openshift-manifest
+docker-openshift:
+	docker build --pull ${DOCKER_BUILD_FLAGS} --build-arg VERSION=$(VERSION) -t quay.io/moov/fed:$(VERSION).$(ARCH) -f Dockerfile-openshift .
+
+docker-openshift-push:
+	docker push quay.io/moov/fed:$(VERSION).$(ARCH)
+
+docker-openshift-manifest:
+	@if docker manifest inspect quay.io/moov/fed:$(VERSION) >/dev/null 2>&1; then \
+		echo "error: docker tag already exists: quay.io/moov/fed:$(VERSION)" >&2; \
+		exit 1; \
+	fi
+	docker buildx imagetools create -t quay.io/moov/fed:$(VERSION) quay.io/moov/fed:$(VERSION).arm64 quay.io/moov/fed:$(VERSION).amd64
+	docker buildx imagetools create -t quay.io/moov/fed:latest quay.io/moov/fed:$(VERSION).arm64 quay.io/moov/fed:$(VERSION).amd64
+
+.PHONY: docker-fedtest docker-fedtest-push docker-fedtest-manifest
+docker-fedtest:
+	docker build --pull ${DOCKER_BUILD_FLAGS} -t moov/fedtest:$(VERSION).$(ARCH) -f Dockerfile-fedtest .
+
+docker-fedtest-push:
+	docker push moov/fedtest:$(VERSION).$(ARCH)
+
+docker-fedtest-manifest:
+	@if docker manifest inspect moov/fedtest:$(VERSION) >/dev/null 2>&1; then \
+		echo "error: docker tag already exists: moov/fedtest:$(VERSION)" >&2; \
+		exit 1; \
+	fi
+	docker buildx imagetools create -t moov/fedtest:$(VERSION) moov/fedtest:$(VERSION).arm64 moov/fedtest:$(VERSION).amd64
+	docker buildx imagetools create -t moov/fedtest:latest moov/fedtest:$(VERSION).arm64 moov/fedtest:$(VERSION).amd64
 
 clean-integration:
 	docker compose kill
@@ -73,14 +130,6 @@ release: docker AUTHORS
 	go vet ./...
 	go test -coverprofile=cover-$(VERSION).out ./...
 	git tag -f $(VERSION)
-
-release-push:
-	docker push moov/fed:$(VERSION)
-	docker push moov/fed:latest
-
-quay-push:
-	docker push quay.io/moov/fed:$(VERSION)
-	docker push quay.io/moov/fed:latest
 
 .PHONY: cover-test cover-web
 cover-test:
