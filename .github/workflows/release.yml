@@ -96,39 +96,146 @@ jobs:
         fi
         gh release upload "$TAG" "$asset" --repo "$REPO" --clobber
 
-  docker:
-    name: Docker
+  docker-hub:
+    name: Docker Hub (${{ matrix.platform }})
     if: github.repository_owner == 'moov-io' && !github.event.repository.fork
     needs: [testing, create_release]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
-      with:
-        go-version: stable
-        cache: false
-      id: go
-
     - name: Check out code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         persist-credentials: false
 
-    - name: Docker
-      run: make docker
-
-    - name: Docker Push
+    - name: Docker Hub
+      run: make docker-hub docker-fedtest
       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        make release-push
+        ARCH: ${{ matrix.arch }}
+
+    - name: Login to Docker Hub
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Docker Hub Push
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      run: make docker-hub-push docker-fedtest-push
+      env:
+        ARCH: ${{ matrix.arch }}
+
+  docker-hub-manifest:
+    name: Docker Hub Manifest
+    if: github.repository_owner == 'moov-io' && !github.event.repository.fork
+    needs: [docker-hub]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+    - name: Check out code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Login to Docker Hub
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Docker Manifest
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      run: make docker-hub-manifest docker-fedtest-manifest
+
+  docker-openshift:
+    name: Docker Openshift (${{ matrix.platform }})
+    if: github.repository_owner == 'moov-io' && !github.event.repository.fork
+    needs: [testing, create_release]
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    env:
+      DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    steps:
+    - name: Check out code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Docker Openshift
+      run: make docker-openshift
+      env:
+        ARCH: ${{ matrix.arch }}
+
+    - name: Login to Quay.io
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+      with:
+        registry: quay.io
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
 
     - name: Quay.io Push
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      run: make docker-openshift-push
       env:
-        DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
-      run: |
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin quay.io
-        make quay-push
+        ARCH: ${{ matrix.arch }}
+
+  docker-openshift-manifest:
+    name: Docker Openshift Manifest
+    if: github.repository_owner == 'moov-io' && !github.event.repository.fork
+    needs: [docker-openshift]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+    steps:
+    - name: Check out code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Login to Quay.io
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+      with:
+        registry: quay.io
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+
+    - name: Quay.io Manifest
+      if: ${{ env.DOCKER_USERNAME != '' }}
+      run: make docker-openshift-manifest

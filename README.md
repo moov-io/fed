@@ -245,6 +245,7 @@ Twitter [@moov](https://twitter.com/moov)	| You can follow Moov.io's Twitter fee
 ## Supported and tested platforms
 
 - 64-bit Linux (Ubuntu, Debian), macOS, and Windows
+- Docker images for `linux/amd64` and `linux/arm64`
 
 Note: 32-bit platforms have known issues and are not supported.
 
