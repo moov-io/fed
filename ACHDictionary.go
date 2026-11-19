@@ -164,6 +164,9 @@ func (f *ACHDictionary) readJSON(r io.Reader) error {
 	if err := json.NewDecoder(r).Decode(&wrapper); err != nil {
 		return err
 	}
+	if code := wrapper.FedACHParticipants.Response.Code; code != 0 && code != 100 {
+		return fmt.Errorf("FRB FedACH directory response code %d (100 means success) with %d participants; check FRB_ROUTING_NUMBER and FRB_DOWNLOAD_CODE", code, len(wrapper.FedACHParticipants.FedACHParticipants))
+	}
 	ps := wrapper.FedACHParticipants.FedACHParticipants
 	for i := range ps {
 		p := &ACHParticipant{

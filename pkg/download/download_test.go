@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -218,5 +219,115 @@ func TestNewClient__missingConfig(t *testing.T) {
 	}
 	if _, err := NewClient(&ClientOpts{RoutingNumber: "123456789"}); !errors.Is(err, ErrMissingDownloadCD) {
 		t.Errorf("expected ErrMissingDownloadCD, got %v", err)
+	}
+}
+
+func TestClient_GetListRejectedDownloadCode(t *testing.T) {
+	// FRB returns HTTP 200 with application-level code 202 and an empty list
+	// when the routing number or download code is missing or incorrect.
+	body := `{
+  "fedACHParticipants" : {
+    "response" : {
+      "code" : 202
+    },
+    "fedACHParticipants" : [ ]
+  }
+}`
+	var logs []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, body)
+	}))
+	defer srv.Close()
+
+	t.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", srv.URL+"/%s")
+	t.Setenv("FRB_ROUTING_NUMBER", "123456780")
+	t.Setenv("FRB_DOWNLOAD_CODE", "invalid-download-code")
+
+	client, err := NewClient(&ClientOpts{
+		Logf: func(format string, args ...any) {
+			logs = append(logs, fmt.Sprintf(format, args...))
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.GetList("fedach")
+	if err == nil {
+		t.Fatal("expected error for rejected download code")
+	}
+	if !errors.Is(err, ErrEmptyDirectory) {
+		t.Fatalf("expected ErrEmptyDirectory, got %v", err)
+	}
+	if !strings.Contains(err.Error(), "response code 202") {
+		t.Fatalf("expected response code in error, got %v", err)
+	}
+
+	joined := strings.Join(logs, "\n")
+	if !strings.Contains(joined, "HTTP 200") {
+		t.Fatalf("expected HTTP status to be logged, got %q", joined)
+	}
+	if !strings.Contains(joined, "response code 202") {
+		t.Fatalf("expected FRB response code to be logged, got %q", joined)
+	}
+}
+
+func TestClient_GetListRejectedWireDownloadCode(t *testing.T) {
+	body := `{
+  "fedwireParticipants" : {
+    "response" : {
+      "code" : 202
+    },
+    "fedwireParticipants" : [ ]
+  }
+}`
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, body)
+	}))
+	defer srv.Close()
+
+	t.Setenv("FRB_DOWNLOAD_URL_TEMPLATE", srv.URL+"/%s")
+	t.Setenv("FRB_ROUTING_NUMBER", "123456780")
+	t.Setenv("FRB_DOWNLOAD_CODE", "invalid-download-code")
+
+	client, err := NewClient(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.GetList("fedwire")
+	if err == nil {
+		t.Fatal("expected error for rejected download code")
+	}
+	if !strings.Contains(err.Error(), "response code 202") {
+		t.Fatalf("expected response code in error, got %v", err)
+	}
+}
+
+func TestInspectFRBListSuccess(t *testing.T) {
+	file, err := os.ReadFile(filepath.Join("..", "..", "data", "fedachdir.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	code, count, err := inspectFRBList("fedach", file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if code != FRBSuccessResponseCode {
+		t.Errorf("code: got %d", code)
+	}
+	if count == 0 {
+		t.Error("expected participants")
+	}
+}
+
+func TestInspectFRBListPlaintext(t *testing.T) {
+	code, count, err := inspectFRBList("fedach", []byte("011000015O0110000150"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if code != 0 || count != 0 {
+		t.Errorf("plaintext should be ignored, got code=%d count=%d", code, count)
 	}
 }

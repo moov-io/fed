@@ -549,6 +549,7 @@ func TestACHDictionary_EmptyRead(t *testing.T) {
   }
 }`)
 	err = dict.Read(input)
-	require.NoError(t, err)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "response code 202")
 	require.Empty(t, dict.ACHParticipants)
 }

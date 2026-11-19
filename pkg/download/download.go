@@ -6,6 +6,7 @@ package download
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -17,10 +18,17 @@ import (
 
 const DefaultFRBDownloadURLTemplate = "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json"
 
+// FRBSuccessResponseCode is the response.code FRB eServices returns when a
+// directory download succeeds. Sample files in this repo use 100. Other codes
+// (for example 202) are returned with an empty participant list when the
+// routing number or download code is missing or incorrect.
+const FRBSuccessResponseCode = 100
+
 var (
 	ErrMissingConfigValue   = errors.New("missing config value")
 	ErrMissingRoutingNumber = errors.New("missing routing number")
 	ErrMissingDownloadCD    = errors.New("missing download code")
+	ErrEmptyDirectory       = errors.New("FRB directory contained no participants")
 )
 
 type Client struct {
@@ -29,12 +37,14 @@ type Client struct {
 	routingNumber string // X_FRB_EPAYMENTS_DIRECTORY_ORG_ID header
 	downloadCode  string // X_FRB_EPAYMENTS_DIRECTORY_DOWNLOAD_CD
 	downloadURL   string // defaults to "https://frbservices.org/EPaymentsDirectory/directories/%s?format=json" where %s is the list name
-
+	logf          func(string, ...any)
 }
 
 type ClientOpts struct {
 	HTTPClient                               *http.Client
 	RoutingNumber, DownloadCode, DownloadURL string
+	// Logf, if set, receives download status messages (HTTP status and FRB response code).
+	Logf func(string, ...any)
 }
 
 func NewClient(opts *ClientOpts) (*Client, error) {
@@ -70,6 +80,7 @@ func NewClient(opts *ClientOpts) (*Client, error) {
 		routingNumber: routingNum,
 		downloadCode:  downloadcd,
 		downloadURL:   downloadurltemp,
+		logf:          opts.Logf,
 	}, nil
 }
 
@@ -113,13 +124,74 @@ func (c *Client) GetList(listName string) (io.Reader, error) {
 	if resp.StatusCode >= 299 {
 		return nil, fmt.Errorf("unexpected http status: %d", resp.StatusCode)
 	}
+	if c.logf != nil {
+		c.logf("FRB %s download HTTP %d", listName, resp.StatusCode)
+	}
 
 	var out bytes.Buffer
 	if n, err := io.Copy(&out, resp.Body); n == 0 || err != nil {
 		return nil, fmt.Errorf("copying n=%d: %v", n, err)
 	}
-	if out.Len() > 0 {
-		return &out, nil
+	if out.Len() == 0 {
+		return nil, nil
 	}
-	return nil, nil
+
+	code, count, err := inspectFRBList(listName, out.Bytes())
+	if c.logf != nil && code != 0 {
+		c.logf("FRB %s directory response code %d (%d participants)", listName, code, count)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// frbListEnvelope is the official FRB eServices JSON wrapper for directory downloads.
+type frbListEnvelope struct {
+	FedACHParticipants *struct {
+		Response struct {
+			Code int `json:"code"`
+		} `json:"response"`
+		FedACHParticipants []json.RawMessage `json:"fedACHParticipants"`
+	} `json:"fedACHParticipants"`
+	FedwireParticipants *struct {
+		Response struct {
+			Code int `json:"code"`
+		} `json:"response"`
+		FedwireParticipants []json.RawMessage `json:"fedwireParticipants"`
+	} `json:"fedwireParticipants"`
+}
+
+// inspectFRBList reads the FRB application-level response code from a JSON
+// directory download. Plaintext files are ignored. A non-success code or an
+// empty participant list is returned as an error; HTTP 200 is not sufficient
+// because FRB still returns 200 when the download code is rejected.
+func inspectFRBList(listName string, body []byte) (code, count int, err error) {
+	if !json.Valid(body) {
+		return 0, 0, nil
+	}
+
+	var env frbListEnvelope
+	if err := json.Unmarshal(body, &env); err != nil {
+		return 0, 0, nil
+	}
+
+	switch {
+	case env.FedACHParticipants != nil:
+		code = env.FedACHParticipants.Response.Code
+		count = len(env.FedACHParticipants.FedACHParticipants)
+	case env.FedwireParticipants != nil:
+		code = env.FedwireParticipants.Response.Code
+		count = len(env.FedwireParticipants.FedwireParticipants)
+	default:
+		return 0, 0, nil
+	}
+
+	if code != 0 && code != FRBSuccessResponseCode {
+		return code, count, fmt.Errorf("%w: FRB %s response code %d with %d participants; check FRB_ROUTING_NUMBER and FRB_DOWNLOAD_CODE", ErrEmptyDirectory, listName, code, count)
+	}
+	if count == 0 {
+		return code, count, fmt.Errorf("%w: FRB %s response code %d returned no participants; check FRB_ROUTING_NUMBER and FRB_DOWNLOAD_CODE", ErrEmptyDirectory, listName, code)
+	}
+	return code, count, nil
 }

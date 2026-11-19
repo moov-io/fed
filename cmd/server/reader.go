@@ -114,7 +114,11 @@ func inspectInitialDataDirectory(logger log.Logger, dir string, needles []string
 
 func attemptFileDownload(logger log.Logger, listName string) (io.Reader, error) {
 	logger.Logf("download: attempting %s", listName)
-	client, err := download.NewClient(nil)
+	client, err := download.NewClient(&download.ClientOpts{
+		Logf: func(format string, args ...interface{}) {
+			logger.Info().Logf(format, args...)
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("client setup: %w", err)
 	}
