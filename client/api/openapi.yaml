@@ -232,7 +232,7 @@ components:
           recordTypeCode: "1"
           revised: "20190311"
           achLocation:
-            postalExtension: "0000"
+            postalCodeExtension: "0000"
             address: 430 NORTH ST
             city: CALDWELL
             postalCode: "43724"
@@ -252,7 +252,7 @@ components:
           recordTypeCode: "1"
           revised: "20190311"
           achLocation:
-            postalExtension: "0000"
+            postalCodeExtension: "0000"
             address: 430 NORTH ST
             city: CALDWELL
             postalCode: "43724"
@@ -281,7 +281,7 @@ components:
         recordTypeCode: "1"
         revised: "20190311"
         achLocation:
-          postalExtension: "0000"
+          postalCodeExtension: "0000"
           address: 430 NORTH ST
           city: CALDWELL
           postalCode: "43724"
@@ -388,7 +388,7 @@ components:
     ACHLocation:
       description: ACHLocation is the FEDACH delivery address
       example:
-        postalExtension: "0000"
+        postalCodeExtension: "0000"
         address: 430 NORTH ST
         city: CALDWELL
         postalCode: "43724"
@@ -416,7 +416,7 @@ components:
           maxLength: 5
           minLength: 5
           type: string
-        postalExtension:
+        postalCodeExtension:
           description: Postal Code Extension
           example: "0000"
           maxLength: 4
