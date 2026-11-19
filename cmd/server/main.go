@@ -190,5 +190,9 @@ func setupSearcher(logger log.Logger, s *searcher, achFile, wireFile io.Reader) 
 		return fmt.Errorf("error reading wire data: %v", err)
 	}
 
-	return s.precompute()
+	if err := s.precompute(); err != nil {
+		return err
+	}
+	s.warnIfDataStale(logger)
+	return nil
 }

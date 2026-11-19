@@ -85,6 +85,22 @@ func (s *searcher) precomputeWireStats() error {
 	return nil
 }
 
+// warnIfDataStale logs a warning when the latest record date in either
+// dictionary is more than a year old. The files bundled in this repository
+// date from 2018 and should be replaced with a current FRB or vendor file.
+func (s *searcher) warnIfDataStale(logger log.Logger) {
+	if logger == nil {
+		return
+	}
+	cutoff := time.Now().AddDate(-1, 0, 0)
+	if !s.achStats.Latest.IsZero() && s.achStats.Latest.Before(cutoff) {
+		logger.Warn().Logf("FedACH data is stale: latest record date is %s; replace data/FedACHdir.txt with a current directory file", s.achStats.Latest.Format("2006-01-02"))
+	}
+	if !s.wireStats.Latest.IsZero() && s.wireStats.Latest.Before(cutoff) {
+		logger.Warn().Logf("Fedwire data is stale: latest record date is %s; replace data/fpddir.txt with a current directory file", s.wireStats.Latest.Format("2006-01-02"))
+	}
+}
+
 var (
 	acceptedDateFormats = []string{"060102", "010206", "20060102"}
 )
