@@ -20,5 +20,5 @@ type AchLocation struct {
 	// Postal Code
 	PostalCode string `json:"postalCode,omitempty"`
 	// Postal Code Extension
-	PostalExtension string `json:"postalExtension,omitempty"`
+	PostalExtension string `json:"postalCodeExtension,omitempty"`
 }

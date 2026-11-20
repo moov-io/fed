@@ -11,5 +11,5 @@ package client
 
 // WireDictionary Search results containing WIREDictionary of Participants
 type WireDictionary struct {
-	WIREParticipants []WireParticipant `json:"WIREParticipants,omitempty"`
+	WIREParticipants []WireParticipant `json:"wireParticipants,omitempty"`
 }

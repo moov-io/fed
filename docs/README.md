@@ -16,9 +16,9 @@ Fed can be used standalone to search for routing numbers by Financial Institutio
 
 ## FED Data Files
 
-The data files included in this repository ([`FedACHdir.md`](FedACHdir.md) and [`fpddir.md`](fpddir.md)) are **outdated** and from 2018. The Fed no longer releases this data publicly and licensing on more recent files prevents us from distributing them. However, the Fed still complies this data and you can retrieve up-to-date files for use in our project, either from [LexisNexis](https://risk.lexisnexis.com/financial-services/payments-efficiency/payment-routing) or your financial institution.
+The HTTP server loads the plaintext (or official FRB JSON) directories in [`data/FedACHdir.txt`](https://github.com/moov-io/fed/tree/master/data/FedACHdir.txt) and [`data/fpddir.txt`](https://github.com/moov-io/fed/tree/master/data/fpddir.txt). The format of those files is documented in [`FedACHdir.md`](FedACHdir.md) and [`fpddir.md`](fpddir.md). The copies bundled in this repository are from 2018. The Federal Reserve Banks no longer publish the complete directories on the public website (as of December 9, 2018) and licensing prevents us from distributing more recent files. The Fed still compiles this data; see [Getting current directory data](https://github.com/moov-io/fed#getting-current-directory-data) in the project README.
 
-Moov Fed can read the data files from anywhere on the filesystem. This allows you to mount the files and set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` environmental variables. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
+Moov Fed can read the data files from anywhere on the filesystem. Set `FEDACH_DATA_PATH` / `FEDWIRE_DATA_PATH` or `INITIAL_DATA_DIRECTORY`. Both official formats from the Federal Reserve (plaintext and JSON) are supported.
 
 ### Copyright and Terms of Use
 

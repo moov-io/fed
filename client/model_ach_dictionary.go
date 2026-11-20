@@ -11,5 +11,5 @@ package client
 
 // AchDictionary Search results containing ACHDictionary of Participants
 type AchDictionary struct {
-	ACHParticipants []AchParticipant `json:"ACHParticipants,omitempty"`
+	ACHParticipants []AchParticipant `json:"achParticipants,omitempty"`
 }

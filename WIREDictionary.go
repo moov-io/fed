@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"math"
 	"sort"
@@ -132,6 +133,9 @@ func (f *WIREDictionary) readJSON(r io.Reader) error {
 	var wrapper jsonWIREDictionary
 	if err := json.NewDecoder(r).Decode(&wrapper); err != nil {
 		return err
+	}
+	if code := wrapper.FedwireParticipants.Response.Code; code != 0 && code != 100 {
+		return fmt.Errorf("FRB Fedwire directory response code %d (100 means success) with %d participants; check FRB_ROUTING_NUMBER and FRB_DOWNLOAD_CODE", code, len(wrapper.FedwireParticipants.FedwireParticipants))
 	}
 	ps := wrapper.FedwireParticipants.FedwireParticipants
 	for i := range ps {

@@ -16,7 +16,7 @@ menubar: docs-menu
 | Telegraphic Name | 18 | 10-27 |
 | Customer Name | 36 | 28-63 |
 | [State or territory abbreviation](Fed_STATE_CODES.md) | 2 | 64-65 |
-| [City](https://frbservices.org/EPaymentsDirectory/fedwireCities.html) | 25 | 66-90 |
+| [City](https://www.frbservices.org/resources/e-payments-routing-directory/) | 25 | 66-90 |
 | Funds transfer status: <br/> Y - Eligible <br/> N - Ineligible | 1 | 91 |
 | Funds settlement-only status: <br/> S - Settlement-Only | 1 | 92 |
 | Book-Entry Securities transfer status: <br/> Y - Eligible <br/> N - Ineligible | 1 | 93 |
