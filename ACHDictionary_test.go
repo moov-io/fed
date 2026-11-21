@@ -553,3 +553,21 @@ func TestACHDictionary_EmptyRead(t *testing.T) {
 	require.Contains(t, err.Error(), "response code 202")
 	require.Empty(t, dict.ACHParticipants)
 }
+
+// TestACHRoutingNumberSearchErrorsDoNotAccumulate checks that each failed search
+// reports its own error instead of the errors of every earlier failed search.
+func TestACHRoutingNumberSearchErrorsDoNotAccumulate(t *testing.T) {
+	jsonDict, _ := loadTestACHFiles(t)
+
+	_, err := jsonDict.RoutingNumberSearch("0", 10)
+	require.Error(t, err)
+	require.Equal(t, NewRecordWrongLengthErr(2, 1).Error(), err.Error())
+
+	_, err = jsonDict.RoutingNumberSearch("12a", 10)
+	require.Error(t, err)
+	require.Equal(t, ErrRoutingNumberNumeric.Error(), err.Error())
+
+	_, err = jsonDict.ACHParticipantRoutingNumberFilter(jsonDict.ACHParticipants, "1")
+	require.Error(t, err)
+	require.Equal(t, NewRecordWrongLengthErr(2, 1).Error(), err.Error())
+}

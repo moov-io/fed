@@ -484,3 +484,21 @@ func TestWireDictionary_EmptyRead(t *testing.T) {
 	require.Contains(t, err.Error(), "response code 202")
 	require.Empty(t, dict.WIREParticipants)
 }
+
+// TestWIRERoutingNumberSearchErrorsDoNotAccumulate checks that each failed search
+// reports its own error instead of the errors of every earlier failed search.
+func TestWIRERoutingNumberSearchErrorsDoNotAccumulate(t *testing.T) {
+	jsonDict, _ := loadTestWireFiles(t)
+
+	_, err := jsonDict.RoutingNumberSearch("0", 10)
+	require.Error(t, err)
+	require.Equal(t, NewRecordWrongLengthErr(2, 1).Error(), err.Error())
+
+	_, err = jsonDict.RoutingNumberSearch("12a", 10)
+	require.Error(t, err)
+	require.Equal(t, ErrRoutingNumberNumeric.Error(), err.Error())
+
+	_, err = jsonDict.WIREParticipantRoutingNumberFilter(jsonDict.WIREParticipants, "1")
+	require.Error(t, err)
+	require.Equal(t, NewRecordWrongLengthErr(2, 1).Error(), err.Error())
+}
