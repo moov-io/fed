@@ -592,3 +592,25 @@ func TestSearch__WireEmpty(t *testing.T) {
 
 	require.Equal(t, http.StatusBadRequest, w.Code)
 }
+
+func TestSearch__WIREInvalidRoutingNumberSingleResponse(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/fed/wire/search?routingNumber=0&state=IA", nil)
+
+	s := searcher{}
+	err := s.helperLoadFEDWIREFile(t)
+	require.NoError(t, err)
+
+	router := mux.NewRouter()
+	addSearchRoutes(log.NewNopLogger(), router, &s)
+	router.ServeHTTP(w, req)
+	w.Flush()
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+
+	dec := json.NewDecoder(w.Body)
+	var problem map[string]interface{}
+	require.NoError(t, dec.Decode(&problem))
+	require.Contains(t, problem, "error")
+	require.False(t, dec.More(), "unexpected data after the error response: %s", w.Body.String())
+}

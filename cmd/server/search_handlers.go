@@ -201,6 +201,7 @@ func searchFEDWIRE(logger log.Logger, searcher *searcher) http.HandlerFunc {
 			wireParticipants, err = searcher.WIREFind(searchLimit, req)
 			if err != nil {
 				moovhttp.Problem(w, err)
+				return
 			}
 		}
 
