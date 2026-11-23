@@ -303,18 +303,15 @@ func (f *ACHDictionary) RoutingNumberSearch(s string, limit int) ([]*ACHParticip
 
 	if utf8.RuneCountInString(s) < MinimumRoutingNumberDigits {
 		// The first 2 digits (characters) are required
-		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
-		return nil, f.errors
+		return nil, base.ErrorList{NewRecordWrongLengthErr(2, len(s))}
 	}
 	if utf8.RuneCountInString(s) > MaximumRoutingNumberDigits {
-		f.errors.Add(NewRecordWrongLengthErr(9, len(s)))
 		// Routing Number cannot be greater than 10 digits (characters)
-		return nil, f.errors
+		return nil, base.ErrorList{NewRecordWrongLengthErr(9, len(s))}
 	}
 	if err := f.isNumeric(s); err != nil {
 		// Routing Number is not numeric
-		f.errors.Add(ErrRoutingNumberNumeric)
-		return nil, f.errors
+		return nil, base.ErrorList{ErrRoutingNumberNumeric}
 	}
 	exactMatch := len(s) == 9
 
@@ -403,8 +400,7 @@ func (f *ACHDictionary) ACHParticipantRoutingNumberFilter(achParticipants []*ACH
 
 	if len(s) < MinimumRoutingNumberDigits {
 		// The first 2 digits (characters) are required
-		f.errors.Add(NewRecordWrongLengthErr(2, len(s)))
-		return nil, f.errors
+		return nil, base.ErrorList{NewRecordWrongLengthErr(2, len(s))}
 	}
 	nsl := make([]*ACHParticipant, 0)
 	for _, achP := range achParticipants {
