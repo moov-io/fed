@@ -1,3 +1,12 @@
+## v0.16.1 (Released 2026-11-23)
+
+IMPROVEMENTS
+
+- cmd/server: return a single JSON error document from Fedwire search when the routing-number filter is invalid (#499)
+- RoutingNumberSearch: return a fresh error list so failed ACH and Fedwire searches do not accumulate (#500)
+- download: fail clearly on FRB response code 202 and empty directories (#497)
+- client: unmarshal live search JSON (achParticipants, wireParticipants, postalCodeExtension) (#497)
+
 ## v0.16.0 (Released 2026-11-18)
 
 ADDITIONS
